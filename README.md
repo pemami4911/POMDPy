@@ -1,4 +1,4 @@
-Stochastic Approximation with Application to Q-Learning
+Q-Learning and Multi-Armed Bandit Approach to Solving POMDPs
 =======================================================
 
 This project will contain the Python code that I am writing to implement my altered version of the Q-Learning 
@@ -7,10 +7,10 @@ Stochastic Approximation algorithm and the benchmark problem that I am going to 
 Features to implement
 =====================
 
-Why does the agent not establish that a rock is bad if it sees that the chance that it is good is very low
-- Kill the agent (end the sequence) if it does a bad action
-- forget legal actions, let it learn by doing
-- stop the simulation if the agent reaches a percentage within the max total reward
+- The agent should establish that a rock is bad if it sees that the chance that it is good is very low
+- Kill the agent & end the sequence if it does a bad action
+- forget legal actions.. let it learn by doing!
+- Stop the simulation if the agent reaches a percentage within the max total reward ?
 
 
 Notes
