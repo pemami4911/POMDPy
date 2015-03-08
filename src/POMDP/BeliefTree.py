@@ -54,6 +54,11 @@ class BeliefTree:
         self.root = BeliefNode.BeliefNode(self.solver, None, None)
         return self.root
 
-    def initialize_root(self):
+    def reset_root_data(self):
         self.root.data = self.solver.model.create_root_historical_data(self.solver)
+
+    def initialize_root(self):
+        self.reset_root_data()
         self.root.action_map = self.solver.action_pool.create_action_mapping(self.root)
+
+

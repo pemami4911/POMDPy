@@ -7,6 +7,7 @@ import RockObservation as Ro
 import GridPosition as Gp
 import logging
 import numpy as np
+import RockSolver
 
 class RockData:
     """
@@ -46,10 +47,18 @@ class PositionAndRockData(Hd.HistoricalData):
 
         self.logger = logging.getLogger("Model.RockModel.PositionAndRockData")
 
+        # Holds reference to the function for generating legal actions
+        self.legal_actions = self.generate_smart_actions
 
     def copy(self):
         return PositionAndRockData(self.model, self.grid_position.copy(), self.all_rock_data, self.solver)
 
+    def update(self):
+        if hasattr(self.solver, 'done_exploring') and self.solver.done_exploring:
+            self.legal_actions = self.generate_sampling_actions
+            print 'Sampling actions now'
+        else:
+            self.legal_actions = self.generate_exploratory_actions
 
     def create_child(self, rock_action, rock_observation):
         next_data = self.copy()
@@ -110,7 +119,6 @@ class PositionAndRockData(Hd.HistoricalData):
         if 0 <= rock_no < n_rocks:
             rock_data = self.all_rock_data[rock_no]
             if rock_data.chance_good == 1.0 or rock_data.goodness_number > 0:
-                # smart_actions.append(self.solver.action_pool.sample_an_action(Ra.ActionType.SAMPLE))
                 smart_actions.append(Ra.ActionType.SAMPLE)
                 return smart_actions
 
@@ -165,11 +173,21 @@ class PositionAndRockData(Hd.HistoricalData):
 
         return smart_actions
 
+    '''
+    These methods determine which actions are considered legal vs. illegal
+    '''
+    def generate_exploratory_actions(self):
+        """
+        These actions are simply for the agent to construct a representation of the environment and are used exclusively
+        early on
+        """
+        return [Ra.ActionType.NORTH, Ra.ActionType.SOUTH, Ra.ActionType.EAST, Ra.ActionType.WEST]
+
     # Generate suggested actions for the agent, according to these *fair* rules
     #   1. If the agent is on top of a rock and the rock has been checked, suggest sampling
     #   2. If the agent knows that there is a worthwhile rock out there, it is suggest the check action for that rock
     #   3. Always suggest all actions
-    def generate_suggested_actions(self):
+    def generate_sampling_actions(self):
 
         n_rocks = self.model.n_rocks
         # check if we are currently on top of a rock

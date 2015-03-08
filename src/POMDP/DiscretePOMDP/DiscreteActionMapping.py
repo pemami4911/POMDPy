@@ -28,11 +28,12 @@ class DiscreteActionMapping(Am.ActionMapping):
             self.entries.__setitem__(i, entry)
 
         # Only entries in the sequence are legal
-        for bin_number in range(0, self.bin_sequence.__len__()):
-            self.entries.get(self.bin_sequence[bin_number]).is_legal = True
+        for bin_number in self.bin_sequence:
+            self.entries.get(bin_number).is_legal = True
 
-        for i in range(0, preferred_actions.__len__()):
-            self.entries.get(preferred_actions[i]).preferred_action = True
+        for i in preferred_actions:
+            #self.entries.get(preferred_actions[i]).preferred_action = True
+            self.entries.get(i).total_q_value = 0.0
 
     def get_action_node(self, discrete_action):
         bin_number = discrete_action.get_bin_number()
@@ -95,6 +96,16 @@ class DiscreteActionMapping(Am.ActionMapping):
         mapping_entry = self.get_entry(action)
         return mapping_entry.update_visit_count(delta_n_visits)
 
+    def update(self):
+        self.bin_sequence = self.pool.create_bin_sequence(self.owner)
+
+        # reset the entries to false
+        for entry in self.entries.values():
+            entry.is_legal = False
+
+         # Only entries in the sequence are legal
+        for bin_number in self.bin_sequence:
+            self.entries.get(bin_number).is_legal = True
 
 class DiscreteActionMappingEntry(Am.ActionMappingEntry):
     """

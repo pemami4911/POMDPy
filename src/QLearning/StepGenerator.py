@@ -19,6 +19,8 @@ class SearchStatus(enum.Enum):
 class StepGenerator(object):
     """
     Abstract class for extending History Sequences
+
+    This is the core Temporal-Difference class for obtaining the estimates of each action's optimal Q value
     """
     __metaclass__ = abc.ABCMeta
 
@@ -36,4 +38,12 @@ class StepGenerator(object):
         :param state:
         :param historical_data:
         :return: Model.StepResult()
+        """
+
+    @abc.abstractmethod
+    def update_sequence(self, history_sequence):
+        """
+        Q Backup for the current history-sequence
+        :param history_sequence:
+        :return:
         """

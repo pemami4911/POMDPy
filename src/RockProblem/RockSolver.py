@@ -2,7 +2,7 @@ __author__ = 'patrickemami'
 
 import Solver
 import logging
-import SmartStepper
+import TDStepper
 import numpy as np
 
 class RockSolver(Solver.Solver):
@@ -11,19 +11,9 @@ class RockSolver(Solver.Solver):
         super(RockSolver, self).__init__(model)
         self.model = model
         self.logger = logging.getLogger('Model.Solver.RockSolver')
-        self.generator = SmartStepper.SmartStepper(self.model, self)
+        self.step_generator = TDStepper.TDStepper(self.model)
         self.policy_step_count = 0
-        self.successful_samples = 0
-
-    '''----- Utility function[s] -------'''
-    def traverse_history_sequence(self, seq):
-        """
-        # Generator for accessing each History entry in a history sequence
-        :param seq:
-        :return: History Entry
-        """
-        for entry in seq:
-            yield entry
+        #self.done_exploring = False
 
     ''' ------- Policy generation -------'''
     def generate_policy(self):
@@ -33,17 +23,22 @@ class RockSolver(Solver.Solver):
 
         #return total_reward, self.policy_step_count, self.successful_samples
 
-        return policy, self.policy_step_count, self.successful_samples
+        return policy, self.policy_step_count
 
+    ''' -------- Method for carrying out each episode during a simulation ------------'''
     def generate_episodes(self, n_episodes, root_node):
 
-         # The agent always starts at the same position - however, there will be
+        average_reward = 0
+
+        # The agent always starts at the same position - however, there will be
         # different initial rock configurations. The initial belief is that each rock
         # has equal probability of being Good or Bad
         state = self.model.sample_an_init_state()
 
         print "Initial Belief: ",
         state.print_state()
+
+        # Store the current policy in here
         policy = []
 
         # number of times to extend out from the belief node
@@ -54,23 +49,26 @@ class RockSolver(Solver.Solver):
 
             # create the first entry
             first_entry = seq.add_entry()
-
-            # change to toString
-            #state.position.print_position()
-
             first_entry.register_state(state)
-
-            # adds this History Entry to the root belief node
             first_entry.register_node(root_node)
 
             # limit to episodes of length n for testing
-            status = self.generator.extend_and_backup(seq, self.model.config["maximum_depth"])
+            status = self.step_generator.extend_and_backup(seq, self.model.config["maximum_depth"])
 
             #print "-------------Current best policy -----------"
             reward, policy = self.execute()
             print "Total reward: ", reward
             print "Total step count: ", self.policy_step_count
 
+            # reset the root historical data for the next episode
+            self.policy.reset_root_data()
+            self.model.sampled_rock_yet = False
+            #average_reward = (average_reward + reward)/(idx + 1)
+
+            #if average_reward > 0.9 * self.model.exit_reward:
+            #    self.done_exploring = True
+            #else:
+            #    self.done_exploring = False
             #if reward > 0.5 * self.model.max_val:
             #   print "Scored better than 50% of max value!!!"
             #    self.successful_samples = self.model.number_of_successful_samples
@@ -79,49 +77,7 @@ class RockSolver(Solver.Solver):
             # Display the final status after each episode is generated
             #self.logger.info("Extend and backup status: %s", status)
 
-        self.successful_samples = self.model.number_of_successful_samples
         return policy
-
-    # Back-propagation of the new Q values
-    def update_sequence(self, seq):
-        if seq.__len__() < 1:
-            self.logger.warning("Cannot update sequence of length < 1")
-            return
-
-        discount_factor = self.model.config["discount_factor"]
-        step_size = self.model.config["step_size"]
-
-        # reverse the sequence, since we must back up starting from the end
-        r_seq = list(seq)
-        r_seq.reverse()
-
-        # Since the last history entry has no more actions to take, initialize maximal q to 0
-        maximal_q = 0
-
-        # handle the first entry in the reversed sequence, which won't have a corresponding observation mapping entry
-        first_entry = r_seq[0]
-        action_mapping_entry = first_entry.associated_belief_node.action_map.get_entry(first_entry.action)
-        current_q = action_mapping_entry.mean_q_value
-
-        # update the action mapping entry with the newly calculated maximal q value
-        maximal_q = (discount_factor * (maximal_q - current_q) + first_entry.reward) * step_size
-        action_mapping_entry.update_q_value(maximal_q)
-
-        # traverse the rest of the list, starting with the second history entry
-        for entry in self.traverse_history_sequence(r_seq[1:]):
-
-            action_mapping_entry = entry.associated_belief_node.action_map.get_entry(entry.action)
-
-            current_q = action_mapping_entry.mean_q_value
-
-            maximal_q = (discount_factor * (maximal_q - current_q) + entry.reward) * step_size
-
-            # update the action's Q value and visit count
-            action_mapping_entry.update_q_value(maximal_q)
-
-            # update the observation visit count
-            obs_entry = action_mapping_entry.child_node.observation_map.get_entry(entry.observation)
-            obs_entry.update_visit_count(1)
 
     # Traverse the belief tree and extract the embedded policy
     def execute(self):
@@ -170,7 +126,7 @@ class RockSolver(Solver.Solver):
             #print "Belief: ",
             #belief.print_state()
 
-            policy.append(best_action)
+            policy.append((best_action, belief))
             #yield best_action, total_discounted_reward
 
             # Advance to the next belief node, corresponding to the chosen action

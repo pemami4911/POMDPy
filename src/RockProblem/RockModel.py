@@ -54,7 +54,6 @@ class RockModel(Model.Model):
         # Flag that keeps track of whether the agent currently believes there are still good rocks out there
         self.any_good_rocks = False
 
-        self.number_of_successful_samples = 0
         self.unique_rocks_sampled = {}
         self.num_times_sampled = 0
 
@@ -83,7 +82,9 @@ class RockModel(Model.Model):
 
         # Smart rock data
         self.all_rock_data = []
-        # Number of times the agent tried to sample a rock during simulation
+
+        # Actual rock states
+        self.actual_rock_states  = []
 
         # The environment map in text form.
         self.map_text, dimensions = parser.parse_map(self.config['map_file'])
@@ -136,7 +137,7 @@ class RockModel(Model.Model):
     ''' Sampling '''
     def sample_an_init_state(self):
         self.sampled_rock_yet = False
-        self.number_of_successful_samples = 0
+        self.actual_rock_states = self.sample_rocks()
         return Rs.RockState(self.start_position, self.sample_rocks())
 
     def sample_state_uninformed(self):
@@ -236,8 +237,6 @@ class RockModel(Model.Model):
 
         if action_type == Ra.ActionType.SAMPLE:
             self.num_times_sampled += 1
-            #for rock in self.all_rock_data:
-            #    self.logger.info(rock.to_string())
 
             rock_no = self.get_cell_type(next_position)
             next_state_rock_states[rock_no] = False
@@ -249,24 +248,41 @@ class RockModel(Model.Model):
         assert isinstance(next_state, Rs.RockState)
 
         # generate new observation if not checking or sampling a rock
-        if action.action_type < Ra.ActionType.CHECK:
+        if action.action_type < Ra.ActionType.SAMPLE:
             # Defaults to empty cell and Bad Rock
             obs = Ro.RockObservation()
             # self.logger.info("Created Rock Observation - is_good: %s", str(obs.is_good))
             return obs
+        elif action.action_type == Ra.ActionType.SAMPLE:
+            # The cell is not empty since it contains a rock, and the rock is now "Bad"
+            obs = Ro.RockObservation(False, False)
+            return obs
+
+        observation = self.actual_rock_states[action.rock_no]
 
         # if checking a rock...
         dist = next_state.position.euclidean_distance(self.rock_positions[action.rock_no])
 
+        # NOISY OBSERVATION
+
         # bernoulli distribution is a binomial distribution with n = 1
-        obs_matches = np.random.binomial(1.0, self.get_sensor_correctness_probability(dist))
-        # RockObservation(is_good) -> if the rock in question is believed to be bad and the
-        # sensor correctness is 0 (False), create the next observation as believing the rock is good
 
-        # if the rock is believed to be good, it will have a non-zero value, so set tmp to 1
-        tmp = (0, 1)[next_state.rock_states[action.rock_no] != 0]
+        # if half efficiency distance is 20, and distance to rock is 20, correct has a 50/50
+        # chance of being True. If distance is 0, correct has a 100% chance of being True.
+        correct = np.random.binomial(1.0, self.get_sensor_correctness_probability(dist))
 
-        return Ro.RockObservation(tmp == obs_matches, False)
+        if not correct:
+            # Return the incorrect state if the sensors malfunctioned
+            observation = not observation
+
+        # If I now believe that a rock, previously bad, is now good, change that here
+        if observation and not next_state.rock_states[action.rock_no]:
+            next_state.rock_states[action.rock_no] = True
+        # Likewise, if I now believe a rock, previously good, is now bad, change that here
+        elif not observation and next_state.rock_states[action.rock_no]:
+            next_state.rock_states[action.rock_no] = False
+
+        return Ro.RockObservation(observation, False)
 
     def make_reward(self, state, action, next_state, is_legal):
         assert isinstance(action, Ra.RockAction)
@@ -285,20 +301,29 @@ class RockModel(Model.Model):
                 return self.exit_reward
 
         if action.action_type is Ra.ActionType.SAMPLE:
+
             pos = state.position.copy()
+
             rock_no = self.get_cell_type(pos)
             if 0 <= rock_no < self.n_rocks:
+
+                ''' statistics stuff'''
                 # Tried to sample a rock - GOOD
                 self.sampled_rock_yet = True
 
-                if state.rock_states[rock_no]:
-                    self.number_of_successful_samples += 1
-                    if not rock_no in self.unique_rocks_sampled:
+                if not rock_no in self.unique_rocks_sampled:
                         self.unique_rocks_sampled.__setitem__(rock_no, rock_no)
+                ''' end statistics stuff '''
+
+                # If the rock ACTUALLY is good, AND I currently believe it to be good, I get rewarded
+                if self.actual_rock_states[rock_no] and state.rock_states[rock_no]:
                     # IMPORTANT - After sampling, the rock is marked as
                     # bad to show that it is has been dealt with
+                    # "next states".rock_states[rock_no] is set to False in make_next_state
                     state.rock_states[rock_no] = False
                     return self.good_rock_reward
+                # otherwise, I either sampled a bad rock I thought was good, sampled a good rock I thought was bad,
+                # or sampled a bad rock I thought was bad. All bad behavior!!!
                 else:
                     return -self.bad_rock_penalty
             else:

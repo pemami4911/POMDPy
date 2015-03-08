@@ -28,8 +28,10 @@ class RockActionPool(Ap.EnumeratedActionPool):
 
         data = belief_node.data     # historical data
 
-        bins = data.generate_suggested_actions()
-        shuffle(bins)
+        # update the current set of actions that are legal / not legal
+        #data.update()
+
+        bins = data.legal_actions()
 
         return bins
 
