@@ -19,16 +19,18 @@ class RockSolver(Solver.Solver):
     def generate_policy(self):
 
         # populate the root node with a set of history entries and then extend and backup each new sequence
-        policy = self.generate_episodes(self.model.config["num_episodes"], self.policy.root)
+        #reward, policy = self.generate_episodes(self.model.config["num_episodes"], self.policy.root)
+        #return reward, policy
+
+        for policy in self.generate_episodes(self.model.config["num_episodes"], self.policy.root):
+            yield policy
 
         #return total_reward, self.policy_step_count, self.successful_samples
-
-        return policy, self.policy_step_count
+        #return policy, self.policy_step_count
 
     ''' -------- Method for carrying out each episode during a simulation ------------'''
     def generate_episodes(self, n_episodes, root_node):
 
-        average_reward = 0
 
         # The agent always starts at the same position - however, there will be
         # different initial rock configurations. The initial belief is that each rock
@@ -40,6 +42,7 @@ class RockSolver(Solver.Solver):
 
         # Store the current policy in here
         policy = []
+        reward = 0
 
         # number of times to extend out from the belief node
         for idx in range(0, n_episodes):
@@ -57,8 +60,9 @@ class RockSolver(Solver.Solver):
 
             #print "-------------Current best policy -----------"
             reward, policy = self.execute()
-            print "Total reward: ", reward
-            print "Total step count: ", self.policy_step_count
+            yield policy
+            #print "Total reward: ", reward
+            #print "Total step count: ", self.policy_step_count
 
             # reset the root historical data for the next episode
             self.policy.reset_root_data()
@@ -77,7 +81,7 @@ class RockSolver(Solver.Solver):
             # Display the final status after each episode is generated
             #self.logger.info("Extend and backup status: %s", status)
 
-        return policy
+        #return reward, policy
 
     # Traverse the belief tree and extract the embedded policy
     def execute(self):
@@ -126,7 +130,7 @@ class RockSolver(Solver.Solver):
             #print "Belief: ",
             #belief.print_state()
 
-            policy.append((best_action, belief))
+            policy.append((belief, best_action))
             #yield best_action, total_discounted_reward
 
             # Advance to the next belief node, corresponding to the chosen action

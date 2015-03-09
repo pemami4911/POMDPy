@@ -78,3 +78,13 @@ class RockState(Ds.DiscreteState):
             else:
                 state_list.append(False)
         return state_list
+
+    def separate_rocks(self):
+        good_rocks = []
+        bad_rocks = []
+        for i in range(0, self.rock_states.__len__()):
+            if self.rock_states[i]:
+                good_rocks.append(i)
+            else:
+                bad_rocks.append(i)
+        return good_rocks, bad_rocks
