@@ -2,7 +2,6 @@ __author__ = 'patrickemami'
 
 # PyGame
 import pygame
-import time
 from RockModel import RSCellType
 
 # multi-threading
@@ -126,9 +125,9 @@ class Policy(threading.Thread):
             global AGENT_POS
             global GOOD_ROCKS_LIST
 
-            for policy in self.solver.generate_policy():
+            for policy, total_reward, num_reused_nodes in self.solver.generate_policy():
                 print " # -------------- RESET ----------------- # "
-                for belief, action in policy:
+                for belief, action, reward in policy:
 
                     if action.action_type == 4:
                         print "###############"
@@ -141,6 +140,7 @@ class Policy(threading.Thread):
 
                     print "Belief state: Good Rocks: ", good_rocks
                     print "Belief state: Bad Rocks: ", bad_rocks
+                    print "Immediate reward: ", reward
 
                     AGENT_LOCK.acquire()
                     AGENT_POS = (belief.position.i, belief.position.j)
@@ -151,8 +151,9 @@ class Policy(threading.Thread):
                     GOOD_ROCKS_LOCK.release()
 
                     pygame.time.wait(100)
-
-
+                print "Total accumulated reward: ", total_reward
+                print "Number of reused belief nodes: ", num_reused_nodes
+                pygame.time.wait(1000)
 if __name__ == '__main__':
     import RockSolver
     import RockModel

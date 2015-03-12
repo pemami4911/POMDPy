@@ -1,7 +1,6 @@
 __author__ = 'patrickemami'
 
 import itertools
-
 import DiscreteState as Ds
 
 """
@@ -23,10 +22,11 @@ class RockState(Ds.DiscreteState):
 
     def distance_to(self, other_rock_state):
         """
-        Manhattan distance between the other rock state position and this objects position
+        Distance is measured between beliefs by the sum of the num of different rocks
         """
         assert isinstance(other_rock_state, RockState)
-        distance = self.position.manhattan_distance(other_rock_state.position)
+        distance = 0
+        # distance = self.position.manhattan_distance(other_rock_state.position)
         for i,j in itertools.izip(self.rock_states, other_rock_state.rock_states):
             if i != j:
                 distance += 1

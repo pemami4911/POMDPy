@@ -33,6 +33,7 @@ class ActionNode(object):
         child_node = self.get_child(obs)
         added = False
         if child_node is None:
+            # Create the new child belief node
             child_node = self.observation_map.create_belief(obs)
             added = True
         return child_node, added

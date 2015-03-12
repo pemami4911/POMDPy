@@ -1,6 +1,9 @@
 __author__ = 'patrickemami'
 
 # see search_interface.hpp for basic-search-strategy, which I need to customize
+import numpy as np
+
+BIG_NUM = 100000
 
 class BeliefNode:
     """
@@ -27,12 +30,17 @@ class BeliefNode:
             self.id = id
 
         self.solver = solver
-
         self.data = None    # The smart history-based data, to be used for history-based policies.
         self.particles = []     # The set of particles belonging to this node.
         self.depth = -1
         self.n_starting_sequences = 0
         self.action_map = None
+
+        # Nearest Neighbor heuristic
+        self.max_nn_distance = self.solver.model.config["max_nn_distance"]
+        self.max_n_comparisons = self.solver.model.config["max_n_comparisons"]
+        # The closest neighbor found so far for this node
+        self.neighbor = None
 
         if parent_entry is not None:
             self.parent_entry = parent_entry
@@ -45,6 +53,39 @@ class BeliefNode:
         # Add this node to the index in the tree.
         self.solver.policy.add_node(self)
 
+    def copy(self, id=None, parent_entry=None):
+        return BeliefNode(self.solver, id, parent_entry)
+
+
+    def distance(self, other_belief_node):
+        """
+        Distance metric defined on belief nodes to estimate the relative "distance" between each other
+        for a nearest-neighbor search heuristic
+        :param other_belief_node:
+        :return: average_dist (double)
+        """
+        non_trans_action = self.solver.model.config["non-transferable-action"]
+
+        dist = 0.0
+        for entry1 in self.particles:
+            for entry2 in other_belief_node.particles:
+                # Have to have the same position
+                if not entry2.state.position.equals(entry1.state.position):
+                    dist = BIG_NUM
+                    break
+
+                # For the RockProblem, Sampling a rock is non-transferable, since it is
+                # illegal in all states except those in which the grid contains a rock
+                if entry2.action.action_type == non_trans_action:
+                    dist = BIG_NUM
+                    break
+
+                # L1 norm between states
+                dist += entry1.state.distance_to(entry2.state)
+
+        average_dist = dist / (self.particles.__len__() + other_belief_node.particles.__len__())
+        assert average_dist >= 0
+        return average_dist
 
     def get_number_of_particles(self):
         return self.particles.__len__()
@@ -88,11 +129,7 @@ class BeliefNode:
         else:
             return None
 
-    # ----------- Value estimation and action selection -------------- #
-
-    # def get_recommended_action
-
-    # ----------- Core Method -------------- #
+    # ----------- Core Methods -------------- #
 
     def create_or_get_child(self, action, obs):
         """
@@ -103,7 +140,7 @@ class BeliefNode:
         this is done by the BeliefNode constructor.
         :param action:
         :param obs:
-        :return:
+        :return: belief node
         """
         action_node = self.action_map.get_action_node(action)
         if action_node is None:
@@ -115,10 +152,13 @@ class BeliefNode:
             if self.data is not None:
                 child_node.data = self.data.create_child(action, obs)
             child_node.action_map = self.solver.action_pool.create_action_mapping(child_node)
-        #else:
+        else:
             # Update the current action mapping to reflect the state of the simulation
             # child_node.action_map.update()
-        return child_node
+            self.solver.model.num_reused_nodes += 1
+            # Update the re-used child belief node's data
+            child_node.data.update(child_node.get_parent_belief())
+        return child_node, added
 
     def add_particle(self, new_history_entry):
         self.particles.append(new_history_entry)
@@ -130,5 +170,51 @@ class BeliefNode:
         if hist_entry.id is 0:
             self.n_starting_sequences -= 1
 
+    def nearest_neighbor_probability(self):
+        """
+        Determines whether the nearest neighbor heuristic should be used
+        :return:
+        """
+        return 1/(1 + np.exp(-self.solver.sigmoid_steepness *
+                               (self.solver.current_episode - (self.solver.n_episodes/2))))
 
+    def find_neighbor(self):
+        """
+        Finds an approximate nearest neighbor for the given belief node
+        :param belief:
+        :return:
+        """
+        if self.nearest_neighbor_probability() < np.random.uniform(0, 1):
+            return None
+
+        # This function is disabled
+        if self.max_nn_distance < 0:
+            return None
+
+        min_dist = np.inf
+        if self.neighbor is not None:
+            min_dist = self.distance(self.neighbor)
+
+        num_tried = 0
+        nearest_belief = None
+        for other_belief in self.solver.policy.all_nodes:
+            # Ignore this belief
+            if self == other_belief:
+                continue
+
+            # Couldn't find a NN
+            if num_tried >= self.max_n_comparisons:
+                break
+            else:
+                dist = self.distance(other_belief)
+                if dist < min_dist:
+                    min_dist = dist
+                    nearest_belief = other_belief
+                num_tried += 1
+
+        if min_dist > self.max_nn_distance:
+            return None
+
+        self.neighbor = nearest_belief
+        return nearest_belief
 

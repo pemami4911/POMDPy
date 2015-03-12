@@ -2,6 +2,10 @@ __author__ = 'patrickemami'
 
 import numpy as np
 import logging
+import parser, json
+
+config = json.load(open(parser.cfg_file, "r"))
+epsilon = config["epsilon"]
 
 def expand_belief_node(current_node):
     """
@@ -20,34 +24,6 @@ def expand_belief_node(current_node):
         return None
     else:
         return q_action(current_node)
-
-'''
-    while True:
-        result = model.generate_step(state, action)
-
-        # update the visit count for the action you just tried
-        mapping.update_entry_visit_count(action, 1)
-
-        current_entry.reward = result.reward
-        current_entry.action = result.action
-        current_entry.observation = result.observation
-        current_entry.register_node(current_node)
-        # register this history entry as having the same state as all of the other
-        # entries being generated
-        current_entry.register_state(state)
-
-        # Create the child belief node
-        new_belief_node = current_node.create_or_get_child(current_entry.action, current_entry.observation)
-
-        # Actions that have been tried are removed from the mapping's bin sequence
-        action = mapping.get_next_action_to_try()
-
-        if action is None:
-            return
-        else:
-            # create a new history entry
-            current_entry = seq.add_entry()
-'''
 
 # UCB1 action selection algorithm
 def ucb_action(current_node, ucb_coefficient):
@@ -75,8 +51,6 @@ def ucb_action(current_node, ucb_coefficient):
                 max_ucb_value = tmp_value
                 # get the action corresponding to this mapping entry
                 arm_to_play = entry.get_action()
-                if arm_to_play.action_type == 4:
-                    print "Sample"
 
     if arm_to_play is None:
         logger.warning("Couldn't find any action to take.. in ucb_action")
@@ -99,7 +73,7 @@ def q_action(current_node):
     for entry in mapping.get_all_entries():
 
         # act randomly with decreasing probability 1/n, where n is the total visit count of the current action mapping
-        if mapping.total_visit_count > 0 and (1 / mapping.total_visit_count) < np.random.uniform(0, 1):
+        if mapping.total_visit_count > 0 and epsilon > np.random.uniform(0, 1):
             all_entries = mapping.get_all_entries()
             np.random.shuffle(all_entries)
             while True:
@@ -108,7 +82,6 @@ def q_action(current_node):
                     break
                 random_action_mapping_entry = all_entries[0]
                 if random_action_mapping_entry.is_legal:
-                    logger.info("Acted randomly!")
                     return random_action_mapping_entry.get_action()
                 else:
                     all_entries = all_entries[1:]

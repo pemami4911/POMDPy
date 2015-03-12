@@ -35,6 +35,22 @@ class DiscreteActionMapping(Am.ActionMapping):
             #self.entries.get(preferred_actions[i]).preferred_action = True
             self.entries.get(i).total_q_value = 0.0
 
+    def copy(self):
+        action_map_copy = DiscreteActionMapping(self.owner, self.pool, list(self.bin_sequence), [])
+        action_map_copy.number_of_children = self.number_of_bins
+        action_map_copy.entries = self.entries.copy()
+        action_map_copy.number_of_children = self.number_of_children
+        action_map_copy.total_visit_count = self.total_visit_count
+        return action_map_copy
+
+    def update_legality(self):
+        for entry in self.entries.values():
+            entry.is_legal = False
+
+         # Only entries in the sequence are legal
+        for bin_number in self.bin_sequence:
+            self.entries.get(bin_number).is_legal = True
+
     def get_action_node(self, discrete_action):
         bin_number = discrete_action.get_bin_number()
         return self.entries.get(bin_number).child_node

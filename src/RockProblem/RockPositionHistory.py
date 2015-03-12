@@ -53,12 +53,15 @@ class PositionAndRockData(Hd.HistoricalData):
     def copy(self):
         return PositionAndRockData(self.model, self.grid_position.copy(), self.all_rock_data, self.solver)
 
-    def update(self):
-        if hasattr(self.solver, 'done_exploring') and self.solver.done_exploring:
-            self.legal_actions = self.generate_sampling_actions
-            print 'Sampling actions now'
-        else:
-            self.legal_actions = self.generate_exploratory_actions
+    def update(self, other_belief):
+        self.all_rock_data = other_belief.data.all_rock_data
+
+    def any_good_rocks(self):
+        any_good_rocks = False
+        for rock_data in self.all_rock_data:
+            if rock_data.goodness_number > 0:
+                any_good_rocks = True
+        return any_good_rocks
 
     def create_child(self, rock_action, rock_observation):
         next_data = self.copy()
@@ -108,6 +111,7 @@ class PositionAndRockData(Hd.HistoricalData):
         return legal_actions
 
     def generate_smart_actions(self):
+
         smart_actions = []
 
         n_rocks = self.model.n_rocks
@@ -134,8 +138,10 @@ class PositionAndRockData(Hd.HistoricalData):
         # doing nothing
         for i in range(0, n_rocks):
             #Once an interesting rock is found, break out of the for loop
-            #if worth_while_rock_found:
-            #    break
+
+            if worth_while_rock_found:
+                break
+
             rock_data = self.all_rock_data[i]
             if rock_data.chance_good != 0.0 and rock_data.goodness_number >= 0:
                 worth_while_rock_found = True
@@ -153,6 +159,7 @@ class PositionAndRockData(Hd.HistoricalData):
         # If no worth while rocks were found, just head east
         if not worth_while_rock_found:
             smart_actions.append(Ra.ActionType.EAST)
+            print 'No worth while rocks found'
             return smart_actions
 
 
@@ -169,6 +176,7 @@ class PositionAndRockData(Hd.HistoricalData):
         for i in range(0, n_rocks):
             rock_data = self.all_rock_data[i]
             if rock_data.chance_good != 0.0 and rock_data.chance_good != 1.0 and np.abs(rock_data.goodness_number) < 2:
+
                 smart_actions.append(Ra.ActionType.CHECK + i)
 
         return smart_actions

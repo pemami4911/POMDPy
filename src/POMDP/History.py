@@ -37,6 +37,9 @@ class HistoryEntry:
         if state is not None:
             self.state = state
 
+    def register_entry(self, current_entry, node, state):
+        current_entry.register_state(state)
+        current_entry.register_node(node)
 
 class HistorySequence:
     """
@@ -63,6 +66,10 @@ class HistorySequence:
         new_entry = HistoryEntry(self, self.entry_sequence.__len__())
         self.entry_sequence.append(new_entry)
         return new_entry
+
+    def remove_entry(self, history_entry):
+        print "Deleted entry from sequence"
+        del self.entry_sequence[history_entry.id]
 
 class Histories(object):
     """

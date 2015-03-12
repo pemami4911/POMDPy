@@ -13,7 +13,12 @@ class RockSolver(Solver.Solver):
         self.logger = logging.getLogger('Model.Solver.RockSolver')
         self.step_generator = TDStepper.TDStepper(self.model)
         self.policy_step_count = 0
-        #self.done_exploring = False
+        self.sigmoid_steepness = 0
+        self.n_episodes = self.model.config["num_episodes"]
+
+        # ------------ data collection ------------- #
+        self.total_accumulated_rewards = []
+
 
     ''' ------- Policy generation -------'''
     def generate_policy(self):
@@ -22,8 +27,8 @@ class RockSolver(Solver.Solver):
         #reward, policy = self.generate_episodes(self.model.config["num_episodes"], self.policy.root)
         #return reward, policy
 
-        for policy in self.generate_episodes(self.model.config["num_episodes"], self.policy.root):
-            yield policy
+        for policy, total_reward in self.generate_episodes(self.n_episodes, self.policy.root):
+            yield policy, total_reward, self.model.num_reused_nodes
 
         #return total_reward, self.policy_step_count, self.successful_samples
         #return policy, self.policy_step_count
@@ -31,22 +36,20 @@ class RockSolver(Solver.Solver):
     ''' -------- Method for carrying out each episode during a simulation ------------'''
     def generate_episodes(self, n_episodes, root_node):
 
+        # Calculate the steepness of the sigmoid curve used to decide the probability of using the NN heuristic
+        # Least squares best fit curve for {(10, 1), (100, 0.1), (1000, 0.01)}
+        self.sigmoid_steepness = 1.29155 * np.exp(-0.0255843 * n_episodes)
 
         # The agent always starts at the same position - however, there will be
         # different initial rock configurations. The initial belief is that each rock
         # has equal probability of being Good or Bad
         state = self.model.sample_an_init_state()
 
-        print "Initial Belief: ",
-        state.print_state()
-
-        # Store the current policy in here
-        policy = []
-        reward = 0
+        #print "Initial Belief: ",
+        #state.print_state()
 
         # number of times to extend out from the belief node
-        for idx in range(0, n_episodes):
-
+        for self.current_episode in range(0, n_episodes):
             # create a new sequence
             seq = self.histories.create_sequence()
 
@@ -58,30 +61,28 @@ class RockSolver(Solver.Solver):
             # limit to episodes of length n for testing
             status = self.step_generator.extend_and_backup(seq, self.model.config["maximum_depth"])
 
-            #print "-------------Current best policy -----------"
-            reward, policy = self.execute()
-            yield policy
-            #print "Total reward: ", reward
-            #print "Total step count: ", self.policy_step_count
+            total_reward, policy = self.execute_most_recent_policy(seq)
+            self.total_accumulated_rewards.append(total_reward)
+            yield policy, total_reward
 
             # reset the root historical data for the next episode
             self.policy.reset_root_data()
             self.model.sampled_rock_yet = False
+            self.model.num_reused_nodes = 0
             #average_reward = (average_reward + reward)/(idx + 1)
-
-            #if average_reward > 0.9 * self.model.exit_reward:
-            #    self.done_exploring = True
-            #else:
-            #    self.done_exploring = False
-            #if reward > 0.5 * self.model.max_val:
-            #   print "Scored better than 50% of max value!!!"
-            #    self.successful_samples = self.model.number_of_successful_samples
-            #    return policy
 
             # Display the final status after each episode is generated
             #self.logger.info("Extend and backup status: %s", status)
 
         #return reward, policy
+
+    def execute_most_recent_policy(self, seq):
+        policy = []
+        total_reward = 0
+        for entry in seq.entry_sequence:
+            policy.append((entry.state, entry.action, entry.reward))
+            total_reward += entry.reward
+        return total_reward, policy
 
     # Traverse the belief tree and extract the embedded policy
     def execute(self):
@@ -125,12 +126,7 @@ class RockSolver(Solver.Solver):
             total_discounted_reward += immediate_reward
             self.policy_step_count += 1
 
-            #current_node.data.grid_position.print_position()
-            #print "Best Q Value: ", q_value
-            #print "Belief: ",
-            #belief.print_state()
-
-            policy.append((belief, best_action))
+            policy.append((belief, best_action, immediate_reward))
             #yield best_action, total_discounted_reward
 
             # Advance to the next belief node, corresponding to the chosen action

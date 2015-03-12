@@ -47,6 +47,7 @@ class TDStepper(Sg.StepGenerator):
             return Sg.SearchStatus.ERROR
 
         self.status = Sg.SearchStatus.INITIAL
+        added = False
 
         while True:
             # Step the episode forward
@@ -64,33 +65,52 @@ class TDStepper(Sg.StepGenerator):
             current_entry.action = result.action
             current_entry.observation = result.observation
 
-            if current_entry.action.action_type == RockAction.ActionType.SAMPLE:
-                self.logger.info("Sampled a rock")
-
-             # If a goal state or you did an illegal action and blew up, you are done
+            # If a goal state or you did an illegal action and blew up or ran out of steps you are done
             if result.is_terminal:
                 self.status = Sg.SearchStatus.CLEAN_FINISH
                 break
             elif not is_legal:
                 self.status = Sg.SearchStatus.TERMINATED
                 break
-
-            if current_node.depth >= maximum_depth:
-                # We've hit the depth limit
+            elif current_node.depth >= maximum_depth:
                 self.status = Sg.SearchStatus.OUT_OF_STEPS
                 break
 
-            # Create the child belief node, and set the current node to be that node.
-            next_node = current_node.create_or_get_child(current_entry.action, current_entry.observation)
-
+            # Create a new child belief node, and set the current node to be that node.
+            next_node, added = current_node.create_or_get_child(current_entry.action, current_entry.observation)
             current_node = next_node
 
-            # Create a new history entry and step the history forward
-            # current_entry is a reference to this new history entry
             current_entry = seq.add_entry()
 
-            current_entry.register_state(result.next_state)
-            current_entry.register_node(current_node)
+            # Create a new history entry and step the history forward
+            current_entry.register_entry(current_entry, current_node, result.next_state)
+
+            if added:
+                # If the current belief node was added (i.e. it didn't already exist within the belief tree),
+                # Try to find a nearest neighbor of its parent belief node and see if it can be replaced by the
+                # nearest neighbor in the belief tree. This encourages the reuse of belief nodes, which
+                # encourages learning
+                # Try to find the NN of the current node.
+                nearest_belief_node = current_node.find_neighbor()
+
+                if nearest_belief_node is not None:
+
+                    print "NN found"
+
+                    # Copy the old bin sequence, which contains the set of legal actions
+                    old_bin_sequence = list(current_node.action_map.bin_sequence)
+
+                    # Copy over the action map from the NN belief node
+                    current_node.action_map = nearest_belief_node.action_map.copy()
+
+                    # Reassign the old bin sequence
+                    current_node.action_map.bin_sequence = old_bin_sequence
+
+                    # Update the legality of the new action mapping entries with the old bin sequence
+                    current_node.action_map.update_legality()
+
+                    # Set the owner of the action map to be the current node
+                    current_node.action_map.owner = current_node
 
         # If ya done run out of steps
         if self.status is Sg.SearchStatus.OUT_OF_STEPS:
@@ -138,7 +158,6 @@ class TDStepper(Sg.StepGenerator):
             # all actions have been attempted
             if action is None:
 
-                self.logger.info("All actions have been attempted, using UCB chooser")
                 action = ActionSelectors.ucb_action(current_node, self.ucb_coefficient)
 
                 if action is None:
@@ -198,6 +217,8 @@ class TDStepper(Sg.StepGenerator):
 
             # update the observation visit count
             obs_entry = action_mapping_entry.child_node.observation_map.get_entry(entry.observation)
+            if obs_entry is None:
+                print 'BREAK'
             obs_entry.update_visit_count(1)
 
 

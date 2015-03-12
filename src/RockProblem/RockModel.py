@@ -24,14 +24,12 @@ class RSCellType(object):
 class RockModel(Model.Model):
 
     def __init__(self, problem_name):
-        # logging utility
         super(RockModel, self).__init__(problem_name)
+        # logging utility
         self.logger = logging.getLogger('Model.RockModel')
-
-        # model options
-        #self.options = parser.parse()
-
         self.config = json.load(open(parser.cfg_file, "r"))
+
+        # -------- Model configurations -------- #
 
         # The reward for sampling a good rock
         self.good_rock_reward = self.config['good_rock_reward']
@@ -41,21 +39,22 @@ class RockModel(Model.Model):
         self.exit_reward = self.config['exit_reward']
         # The penalty for an illegal move.
         self.illegal_move_penalty = self.config['illegal_move_penalty']
-
         # penalty for finishing without sampling a rock
         self.finishing_empty_handed = self.config['finishing_empty_handed']
-
         self.half_efficiency_distance = self.config['half_efficiency_distance']
-
         self.preferred_action = self.config["preferred_action"]
+        self.checking_penalty = self.config["checking_penalty"]
 
+        # ------------- Flags --------------- #
         # Flag that checks whether the agent has yet to successfully sample a rock
         self.sampled_rock_yet = False
         # Flag that keeps track of whether the agent currently believes there are still good rocks out there
         self.any_good_rocks = False
 
+        # ------------- Data Collection ---------- #
         self.unique_rocks_sampled = {}
         self.num_times_sampled = 0
+        self.num_reused_nodes = 0
 
         # The number of rows in the map.
         self.n_rows = 0
@@ -66,7 +65,6 @@ class RockModel(Model.Model):
 
         self.start_position = Gp.GridPosition()
 
-        self.current_position = Gp.GridPosition()
         # The coordinates of the rocks.
         self.rock_positions = []
         # The coordinates of the goal squares.
@@ -91,6 +89,7 @@ class RockModel(Model.Model):
         self.n_rows = int(dimensions[0])
         self.n_cols = int(dimensions[1])
         self.initialize()
+
         self.min_val = -self.illegal_move_penalty / (1 - self.config['discount_factor'])
         self.max_val = self.good_rock_reward * self.n_rocks + self.exit_reward
 
@@ -121,9 +120,6 @@ class RockModel(Model.Model):
 
             self.env_map.append(tmp)
 
-        for i in range(0, self.n_rocks):
-            self.all_rock_data.append(Rph.RockData())
-
     ''' Utility functions '''
     # returns the RSCellType at the specified position
     def get_cell_type(self, pos):
@@ -132,7 +128,7 @@ class RockModel(Model.Model):
 
     def get_sensor_correctness_probability(self, distance):
         assert self.half_efficiency_distance is not 0, self.logger.warning("Tried to divide by 0! Naughty naughty!")
-        return float(np.power(2.0, -distance / self.half_efficiency_distance))
+        return (1 + np.power(2.0, -distance / self.half_efficiency_distance)) * 0.5
 
     ''' Sampling '''
     def sample_an_init_state(self):
@@ -264,9 +260,7 @@ class RockModel(Model.Model):
         dist = next_state.position.euclidean_distance(self.rock_positions[action.rock_no])
 
         # NOISY OBSERVATION
-
         # bernoulli distribution is a binomial distribution with n = 1
-
         # if half efficiency distance is 20, and distance to rock is 20, correct has a 50/50
         # chance of being True. If distance is 0, correct has a 100% chance of being True.
         correct = np.random.binomial(1.0, self.get_sensor_correctness_probability(dist))
@@ -329,6 +323,10 @@ class RockModel(Model.Model):
             else:
                 self.logger.warning("Invalid sample action on non-existent rock while making reward!")
                 return -self.illegal_move_penalty
+
+        if action.action_type >= Ra.ActionType.CHECK:
+            return -self.checking_penalty
+
         return 0
 
     def generate_reward(self, state, action):
@@ -454,7 +452,13 @@ class RockModel(Model.Model):
         return Rap.RockActionPool(self)
 
     def create_root_historical_data(self, solver):
-            return Rph.PositionAndRockData(self, self.start_position.copy(), self.all_rock_data, solver)
+        self.create_new_rock_data()
+        return Rph.PositionAndRockData(self, self.start_position.copy(), self.all_rock_data, solver)
+
+    def create_new_rock_data(self):
+        self.all_rock_data = []
+        for i in range(0, self.n_rocks):
+            self.all_rock_data.append(Rph.RockData())
 
     def get_all_observations_in_order(self):
         return [Ro.RockObservation(False, True), Ro.RockObservation(True, False), Ro.RockObservation(False, False)]
