@@ -180,13 +180,13 @@ class DiscreteActionMappingEntry(Am.ActionMappingEntry):
 
         # Update the mean Q
         old_mean_q = self.mean_q_value
-        if self.visit_count <= 0:
-            self.mean_q_value = -np.inf
-        else:
+        #if self.visit_count <= 0:
+        #    self.mean_q_value = -np.inf
+        #else:
 
-            # Average the Q value by taking the Total Q value of this entry divided by the
-            # number of times this action has been tried
-            self.mean_q_value = self.total_q_value / self.map.total_visit_count
+        # Average the Q value by taking the Total Q value of this entry divided by the
+        # number of times this action has been tried
+        self.mean_q_value = self.total_q_value / self.map.total_visit_count
 
         return self.mean_q_value != old_mean_q
 

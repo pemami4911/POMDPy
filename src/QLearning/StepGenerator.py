@@ -31,12 +31,10 @@ class StepGenerator(object):
         """
 
     @abc.abstractmethod
-    def get_step(self, history_entry, state):
+    def get_step(self, history_entry):
         """
         Generates new steps in a history sequence, one step at a time
         :param history_entry:
-        :param state:
-        :param historical_data:
         :return: Model.StepResult()
         """
 

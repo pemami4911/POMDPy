@@ -1,6 +1,5 @@
 __author__ = 'patrickemami'
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 '''
@@ -36,6 +35,7 @@ for i in range(RUNS):
         #print "Actual rock states: ", my_model.actual_rock_states
     print "Finished calculating policy: ", i+1
     print my_solver.policy.q_table
+    print my_solver.policy.visit_frequency_table
 
 total_rewards_series = my_solver.total_accumulated_rewards
 

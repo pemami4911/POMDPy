@@ -1,5 +1,5 @@
 {
-"map_file":"map-7-3.txt",
+"map_file":"map-7-8.txt",
 "discount_factor":0.95,
 "step_size":0.1,
 "ucb_coefficient":5.0,
@@ -16,7 +16,7 @@
 "non-transferable-action":4,
 "finishing_empty_handed":50.0,
 "min_particle_count":100,
-"num_episodes":3000,
+"num_episodes":1000,
 "maximum_depth":50,
-"algorithm":"TD"
+"algorithm":"UCB"
 }

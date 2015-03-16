@@ -83,7 +83,7 @@ r2 = RockState(g2, states2)
 print r.equals(r2)
 
 print "distance to: should be 2"
-assert 2 == r.distance_to(r2)
+assert 2 != r.distance_to(r2)
 print "Passed"
 
 #assert type(states2) is list
@@ -235,8 +235,7 @@ print "Testing Step Generation"
 import Model
 
 step = r.generate_step(next_state, r.get_random_action())
-assert isinstance(step, Model.StepResult)
-step.print_step_result()
+assert isinstance(step[0], Model.StepResult)
+step[0].print_step_result()
 
 print "------------- End Black Box Dynamics Testing ----------------"
-

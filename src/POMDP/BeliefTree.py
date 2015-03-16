@@ -19,6 +19,7 @@ class BeliefTree:
         self.all_nodes = {}
         # Preallocate a table of size A * 2^(n_rocks)
         self.q_table = None
+        self.visit_frequency_table = None
 
     def get_node(self, id):
         node = self.all_nodes.get(id)
@@ -62,6 +63,7 @@ class BeliefTree:
     def initialize_root(self):
         # Multidimensional array of  -> A * 2^(n_rocks)
         self.q_table = [[None for x in range(self.solver.action_pool.get_number_of_bins())] for x in range(pow(2, self.solver.model.n_rocks))]
+        self.visit_frequency_table = [[0 for x in range(self.solver.action_pool.get_number_of_bins())] for x in range(pow(2, self.solver.model.n_rocks))]
         self.reset_root_data()
         self.root.action_map = self.solver.action_pool.create_action_mapping(self.root)
 

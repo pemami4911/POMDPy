@@ -1,7 +1,7 @@
 __author__ = 'patrickemami'
 
 import Model
-import parser
+import config_parser
 import GridPosition as Gp
 import RockState as Rs
 import numpy as np
@@ -9,7 +9,8 @@ import RockAction as Ra
 import RockObservation as Ro
 import RockActionPool as Rap
 import RockPositionHistory as Rph
-import logging, json
+import logging
+import json
 
 class RSCellType(object):
     """
@@ -27,7 +28,7 @@ class RockModel(Model.Model):
         super(RockModel, self).__init__(problem_name)
         # logging utility
         self.logger = logging.getLogger('Model.RockModel')
-        self.config = json.load(open(parser.cfg_file, "r"))
+        self.config = json.load(open(config_parser.cfg_file, "r"))
 
         # -------- Model configurations -------- #
 
@@ -85,7 +86,7 @@ class RockModel(Model.Model):
         self.actual_rock_states  = []
 
         # The environment map in text form.
-        self.map_text, dimensions = parser.parse_map(self.config['map_file'])
+        self.map_text, dimensions = config_parser.parse_map(self.config['map_file'])
         self.n_rows = int(dimensions[0])
         self.n_cols = int(dimensions[1])
         self.initialize()
@@ -275,6 +276,10 @@ class RockModel(Model.Model):
         # Likewise, if I now believe a rock, previously good, is now bad, change that here
         elif not observation and next_state.rock_states[action.rock_no]:
             next_state.rock_states[action.rock_no] = False
+
+        # Normalize the observation
+        if observation > 1:
+            observation = True
 
         return Ro.RockObservation(observation, False)
 

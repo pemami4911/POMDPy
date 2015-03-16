@@ -41,8 +41,8 @@ class RockSolver(Solver.Solver):
 
         # Calculate the steepness of the sigmoid curve used to decide the probability of using the NN heuristic
         # Least squares best fit curve for {(10, 1), (100, 0.1), (1000, 0.01)}
-        #self.sigmoid_steepness = -1/(self.n_episodes**2)*self.current_episode**2 + 1
-        self.sigmoid_steepness = 1.3 * np.exp(-0.026 * self.current_episode)
+        # self.sigmoid_steepness = -1/(self.n_episodes**2)*self.current_episode**2 + 1
+        # self.sigmoid_steepness = 1.3 * np.exp(-0.026 * self.current_episode)
 
         # The agent always starts at the same position - however, there will be
         # different initial rock configurations. The initial belief is that each rock

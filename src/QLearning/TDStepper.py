@@ -4,7 +4,6 @@ import StepGenerator as Sg
 import logging
 import ActionSelectors
 
-
 class TDStepper(Sg.StepGenerator):
     """
     This class implements the methods extend_and_backup, update_sequence, and get_step
@@ -58,7 +57,7 @@ class TDStepper(Sg.StepGenerator):
 
         while True:
             # Step the episode forward
-            result, is_legal = self.get_step(current_entry, current_entry.state)
+            result, is_legal = self.get_step(current_entry)
 
             # stop the search
             if result is None:
@@ -139,7 +138,7 @@ class TDStepper(Sg.StepGenerator):
 
         return self.status
 
-    def get_step(self, history_entry, state):
+    def get_step(self, history_entry):
         """
         :param history_entry:
         :param state:
@@ -147,6 +146,7 @@ class TDStepper(Sg.StepGenerator):
         :return:
         """
         current_node = history_entry.associated_belief_node
+        state = history_entry.state
 
         # The action to use when querying the black box model for the next step
         action = None
@@ -155,12 +155,12 @@ class TDStepper(Sg.StepGenerator):
         if self.algorithm == "UCB":
 
             # Try all of the actions from the current belief
-            action = ActionSelectors.expand_belief_node(current_node)
+            action = ActionSelectors.expand_belief_node(current_node, history_entry)
 
             # all actions have been attempted
             if action is None:
 
-                action = ActionSelectors.ucb_action(current_node, self.ucb_coefficient)
+                action = ActionSelectors.ucb_action(current_node, history_entry, self.ucb_coefficient)
 
                 if action is None:
                     self.logger.warning("Node has no actions? Returning empty Step Result")
@@ -176,6 +176,7 @@ class TDStepper(Sg.StepGenerator):
             self.status = Sg.SearchStatus.ERROR
 
         # update the visit count for the action you just took
+        self.solver.policy.visit_frequency_table[state.hash()][action.hash()] += 1
         current_node.action_map.update_entry_visit_count(action, 1)
 
         return self.model.generate_step(state, action)
@@ -221,10 +222,11 @@ class TDStepper(Sg.StepGenerator):
 
             self.solver.policy.q_table[entry.state.hash()][entry.action.hash()] = action_mapping_entry.mean_q_value
 
+            '''
             # update the observation visit count
             obs_entry = action_mapping_entry.child_node.observation_map.get_entry(entry.observation)
             if obs_entry is None:
                 print 'BREAK'
             obs_entry.update_visit_count(1)
-
+            '''
 
