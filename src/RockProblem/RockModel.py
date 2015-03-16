@@ -325,7 +325,11 @@ class RockModel(Model.Model):
                 return -self.illegal_move_penalty
 
         if action.action_type >= Ra.ActionType.CHECK:
-            return -self.checking_penalty
+            if state.position.euclidean_distance(self.rock_positions[action.rock_no]) > self.half_efficiency_distance:
+                return -self.checking_penalty
+            else:
+                # reward for checking close to rocks
+                return 3 * self.checking_penalty
 
         return 0
 

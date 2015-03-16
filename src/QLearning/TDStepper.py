@@ -3,20 +3,27 @@ __author__ = 'patrickemami'
 import StepGenerator as Sg
 import logging
 import ActionSelectors
-import RockAction
 
 
 class TDStepper(Sg.StepGenerator):
     """
     This class implements the methods extend_and_backup, update_sequence, and get_step
     """
-    def __init__(self, model):
+    def __init__(self, model, solver):
         self.model = model
+        self.solver = solver
         self.logger = logging.getLogger('Model.TDStepper')
         self.ucb_coefficient = self.model.config["ucb_coefficient"]
         self.step_size = self.model.config["step_size"]
         self.algorithm = self.model.config["algorithm"]
         self.status = None
+
+    # try to initialize the q values based on the table
+    def set_q_values(self, state, belief_node):
+        action_mapping_entries = belief_node.action_map.entries
+        for entry in action_mapping_entries.values():
+            if self.solver.policy.q_table[state.hash()][entry.bin_number] is not None:
+                entry.mean_q_value = self.solver.policy.q_table[state.hash()][entry.bin_number]
 
     def extend_and_backup(self, seq, maximum_depth):
         """
@@ -47,7 +54,7 @@ class TDStepper(Sg.StepGenerator):
             return Sg.SearchStatus.ERROR
 
         self.status = Sg.SearchStatus.INITIAL
-        added = False
+        #added = False
 
         while True:
             # Step the episode forward
@@ -85,6 +92,10 @@ class TDStepper(Sg.StepGenerator):
             # Create a new history entry and step the history forward
             current_entry.register_entry(current_entry, current_node, result.next_state)
 
+            # Initialize the q values of the new belief node's action mapping entries with the Q table
+            self.set_q_values(result.next_state, current_node)
+
+            '''
             if added:
                 # If the current belief node was added (i.e. it didn't already exist within the belief tree),
                 # Try to find a nearest neighbor of its parent belief node and see if it can be replaced by the
@@ -97,21 +108,12 @@ class TDStepper(Sg.StepGenerator):
 
                     print "NN found"
 
-                    # Copy the old bin sequence, which contains the set of legal actions
-                    old_bin_sequence = list(current_node.action_map.bin_sequence)
-
                     # Copy over the action map from the NN belief node
-                    current_node.action_map = nearest_belief_node.action_map.copy()
-
-                    # Reassign the old bin sequence
-                    current_node.action_map.bin_sequence = old_bin_sequence
-
-                    # Update the legality of the new action mapping entries with the old bin sequence
-                    current_node.action_map.update_legality()
+                    current_node.action_map = nearest_belief_node.action_map.get_all_entries_q_values(current_node.action_map)
 
                     # Set the owner of the action map to be the current node
                     current_node.action_map.owner = current_node
-
+            '''
         # If ya done run out of steps
         if self.status is Sg.SearchStatus.OUT_OF_STEPS:
 
@@ -203,6 +205,8 @@ class TDStepper(Sg.StepGenerator):
         maximal_q = ((discount_factor * maximal_q) - current_q + first_entry.reward) * step_size
         action_mapping_entry.update_q_value(maximal_q)
 
+        self.solver.policy.q_table[first_entry.state.hash()][first_entry.action.hash()] = action_mapping_entry.mean_q_value
+
         # traverse the rest of the list, starting with the second history entry
         for entry in r_seq[1:]:
 
@@ -214,6 +218,8 @@ class TDStepper(Sg.StepGenerator):
 
             # update the action's Q value and visit count
             action_mapping_entry.update_q_value(maximal_q)
+
+            self.solver.policy.q_table[entry.state.hash()][entry.action.hash()] = action_mapping_entry.mean_q_value
 
             # update the observation visit count
             obs_entry = action_mapping_entry.child_node.observation_map.get_entry(entry.observation)

@@ -5,7 +5,7 @@ import ActionPool as Ap
 import ActionNode as An
 import numpy as np
 import BeliefNode as Bn
-
+import itertools
 
 class DiscreteActionMapping(Am.ActionMapping):
     def __init__(self, belief_node_owner, discrete_action_pool, bin_sequence, preferred_actions):
@@ -42,6 +42,15 @@ class DiscreteActionMapping(Am.ActionMapping):
         action_map_copy.number_of_children = self.number_of_children
         action_map_copy.total_visit_count = self.total_visit_count
         return action_map_copy
+
+    def get_all_entries_q_values(self, action_map):
+        assert action_map.entries.values().__len__() == self.entries.values().__len__()
+        for entry1, entry2 in itertools.izip(self.entries.values(), action_map.entries.values()):
+            entry2.mean_q_value = entry1.mean_q_value
+            entry2.total_q_value = entry1.total_q_value
+            entry2.visit_count = entry1.visit_count
+        action_map.total_visit_count = self.total_visit_count
+        return action_map
 
     def update_legality(self):
         for entry in self.entries.values():

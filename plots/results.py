@@ -22,7 +22,7 @@ import RockModel
 my_model = RockModel.RockModel("RockProblem")
 my_solver = RockSolver.RockSolver(my_model)
 
-RUNS = 5
+RUNS = 1
 
 for i in range(RUNS):
     for policy, total_reward, num_reused_nodes in my_solver.generate_policy():
@@ -34,7 +34,8 @@ for i in range(RUNS):
             continue
         #print "Unique rocks sampled: ", my_model.unique_rocks_sampled.values()
         #print "Actual rock states: ", my_model.actual_rock_states
-    print "Finished calculating policy: ", i
+    print "Finished calculating policy: ", i+1
+    print my_solver.policy.q_table
 
 total_rewards_series = my_solver.total_accumulated_rewards
 

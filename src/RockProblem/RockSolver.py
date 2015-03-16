@@ -6,18 +6,21 @@ import TDStepper
 import numpy as np
 
 class RockSolver(Solver.Solver):
-
+        
     def __init__(self, model):
         super(RockSolver, self).__init__(model)
         self.model = model
         self.logger = logging.getLogger('Model.Solver.RockSolver')
-        self.step_generator = TDStepper.TDStepper(self.model)
+        self.step_generator = TDStepper.TDStepper(self.model, self)
         self.policy_step_count = 0
         self.sigmoid_steepness = 0
+        self.epsilon = self.model.config["epsilon"]
         self.n_episodes = self.model.config["num_episodes"]
+        self.current_episode = 0
 
         # ------------ data collection ------------- #
         self.total_accumulated_rewards = []
+        self.current_episode = 0
 
 
     ''' ------- Policy generation -------'''
@@ -38,18 +41,18 @@ class RockSolver(Solver.Solver):
 
         # Calculate the steepness of the sigmoid curve used to decide the probability of using the NN heuristic
         # Least squares best fit curve for {(10, 1), (100, 0.1), (1000, 0.01)}
-        self.sigmoid_steepness = 1.29155 * np.exp(-0.0255843 * n_episodes)
+        #self.sigmoid_steepness = -1/(self.n_episodes**2)*self.current_episode**2 + 1
+        self.sigmoid_steepness = 1.3 * np.exp(-0.026 * self.current_episode)
 
         # The agent always starts at the same position - however, there will be
         # different initial rock configurations. The initial belief is that each rock
         # has equal probability of being Good or Bad
         state = self.model.sample_an_init_state()
 
-        #print "Initial Belief: ",
-        #state.print_state()
-
         # number of times to extend out from the belief node
         for self.current_episode in range(0, n_episodes):
+            print "Episode ", (self.current_episode + 1)
+
             # create a new sequence
             seq = self.histories.create_sequence()
 
@@ -69,12 +72,6 @@ class RockSolver(Solver.Solver):
             self.policy.reset_root_data()
             self.model.sampled_rock_yet = False
             self.model.num_reused_nodes = 0
-            #average_reward = (average_reward + reward)/(idx + 1)
-
-            # Display the final status after each episode is generated
-            #self.logger.info("Extend and backup status: %s", status)
-
-        #return reward, policy
 
     def execute_most_recent_policy(self, seq):
         policy = []

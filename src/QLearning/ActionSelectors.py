@@ -5,6 +5,10 @@ import logging
 import parser, json
 
 config = json.load(open(parser.cfg_file, "r"))
+
+
+# controls the randomness of the action selection for TD- learning.
+# Used for epsilon-greedy learning
 epsilon = config["epsilon"]
 
 def expand_belief_node(current_node):
@@ -55,6 +59,7 @@ def ucb_action(current_node, ucb_coefficient):
     if arm_to_play is None:
         logger.warning("Couldn't find any action to take.. in ucb_action")
 
+
     return arm_to_play
 
 # TD-Q-Learning - grabs the action that has the highest expected q-value
@@ -66,26 +71,28 @@ def q_action(current_node):
     logger = logging.getLogger("Model.q_action")
     max_q = -np.inf
     arm_to_play = None
+    global epsilon
 
     mapping = current_node.action_map
 
+    # act randomly with decreasing probability 1/n, where n is the total visit count of the current action mapping
+    if mapping.total_visit_count > 0 and epsilon > np.random.uniform(0, 1):
+        all_entries = mapping.get_all_entries()
+        np.random.shuffle(all_entries)
+        while True:
+            if all_entries.__len__() == 0:
+                logger.warning("No legal entries found when randomly trying an action. Death awaits")
+                break
+            random_action_mapping_entry = all_entries[0]
+            if random_action_mapping_entry.is_legal:
+                print "Acted randomly"
+                return random_action_mapping_entry.get_action()
+            else:
+                all_entries = all_entries[1:]
+
+
     # Find the action from the set of all legal actions with the maximal Q value
     for entry in mapping.get_all_entries():
-
-        # act randomly with decreasing probability 1/n, where n is the total visit count of the current action mapping
-        if mapping.total_visit_count > 0 and epsilon > np.random.uniform(0, 1):
-            all_entries = mapping.get_all_entries()
-            np.random.shuffle(all_entries)
-            while True:
-                if all_entries.__len__() == 0:
-                    logger.warning("No legal entries found when randomly trying an action. Death awaits")
-                    break
-                random_action_mapping_entry = all_entries[0]
-                if random_action_mapping_entry.is_legal:
-                    return random_action_mapping_entry.get_action()
-                else:
-                    all_entries = all_entries[1:]
-
 
         # Ignore illegal actions
         if entry.is_legal:
@@ -96,4 +103,5 @@ def q_action(current_node):
                 max_q = tmp_value
                 arm_to_play = entry.get_action()
 
+    epsilon *= 0.9999
     return arm_to_play

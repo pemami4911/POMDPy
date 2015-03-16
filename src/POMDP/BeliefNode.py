@@ -51,7 +51,7 @@ class BeliefNode:
             self.depth = 0
 
         # Add this node to the index in the tree.
-        self.solver.policy.add_node(self)
+        #self.solver.policy.add_node(self)
 
     def copy(self, id=None, parent_entry=None):
         return BeliefNode(self.solver, id, parent_entry)
@@ -175,6 +175,7 @@ class BeliefNode:
         Determines whether the nearest neighbor heuristic should be used
         :return:
         """
+        #return 1.0 /(self.solver.n_episodes**2)*self.solver.current_episode**2
         return 1/(1 + np.exp(-self.solver.sigmoid_steepness *
                                (self.solver.current_episode - (self.solver.n_episodes/2))))
 
@@ -197,7 +198,7 @@ class BeliefNode:
 
         num_tried = 0
         nearest_belief = None
-        for other_belief in self.solver.policy.all_nodes:
+        for other_belief in self.solver.policy.all_nodes.values():
             # Ignore this belief
             if self == other_belief:
                 continue

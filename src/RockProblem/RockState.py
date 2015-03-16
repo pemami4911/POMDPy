@@ -40,10 +40,20 @@ class RockState(Ds.DiscreteState):
 
     def hash(self):
         """
-        Remains to be implemented
+        Returns a decimal value representing the binary state string
         :return:
         """
-        pass
+        return int(self.to_string(), 2)
+
+    def to_string(self):
+        state_string = ""
+
+        for i in self.rock_states:
+            if i:
+                state_string += "1"
+            else:
+                state_string += "0"
+        return state_string
 
     def print_state(self):
         """

@@ -159,7 +159,6 @@ class PositionAndRockData(Hd.HistoricalData):
         # If no worth while rocks were found, just head east
         if not worth_while_rock_found:
             smart_actions.append(Ra.ActionType.EAST)
-            print 'No worth while rocks found'
             return smart_actions
 
 
@@ -176,7 +175,6 @@ class PositionAndRockData(Hd.HistoricalData):
         for i in range(0, n_rocks):
             rock_data = self.all_rock_data[i]
             if rock_data.chance_good != 0.0 and rock_data.chance_good != 1.0 and np.abs(rock_data.goodness_number) < 2:
-
                 smart_actions.append(Ra.ActionType.CHECK + i)
 
         return smart_actions
