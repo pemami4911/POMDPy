@@ -25,7 +25,7 @@ class Model(object):
     def __init__(self, problem_name):
         self.problem_name = problem_name
         self.format = "%(asctime)s - %(name)s - %(message)s"
-        logging.basicConfig(filename='POMDPy.log', level=logging.DEBUG, format=self.format)
+        logging.basicConfig(filename='TD_12_12_100.log', level=logging.DEBUG, format=self.format)
         self.logger = logging.getLogger('Model')
 
     @abc.abstractmethod

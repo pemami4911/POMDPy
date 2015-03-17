@@ -1,5 +1,5 @@
 {
-"map_file":"map-7-8.txt",
+"map_file":"map-12-12.txt",
 "discount_factor":0.95,
 "step_size":0.1,
 "ucb_coefficient":5.0,
@@ -7,16 +7,16 @@
 "bad_rock_penalty":10.0,
 "exit_reward":10.0,
 "illegal_move_penalty":100.0,
-"checking_penalty":3.50,
-"epsilon":0.05,
+"checking_penalty":0,
+"delta_epsilon_k":0.5,
 "max_nn_distance":0.0,
 "max_n_comparisons":10000.0,
-"half_efficiency_distance":5.0,
+"half_efficiency_distance":6.0,
 "preferred_action":"NONE",
 "non-transferable-action":4,
 "finishing_empty_handed":50.0,
 "min_particle_count":100,
-"num_episodes":1000,
-"maximum_depth":50,
-"algorithm":"UCB"
+"num_episodes":100,
+"maximum_depth":100,
+"algorithm":"UCBcd "
 }

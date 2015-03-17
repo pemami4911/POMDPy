@@ -119,7 +119,6 @@ class TDStepper(Sg.StepGenerator):
             # Currently, the immediate reward is simply set to 0
             # Potentially find a way to get a better heuristic
             current_entry.reward = 0
-            self.logger.warning("Ran out of steps!")
             self.status = Sg.SearchStatus.TERMINATED
 
         if self.status is Sg.SearchStatus.CLEAN_FINISH or self.status is Sg.SearchStatus.TERMINATED:

@@ -11,6 +11,13 @@ config = json.load(open(config_parser.cfg_file, "r"))
 # Used for epsilon-greedy learning
 epsilon = 1
 k = 1
+delta_k = config["delta_epsilon_k"]
+
+def reset():
+    global epsilon
+    global k
+    epsilon = 1
+    k = 1
 
 def expand_belief_node(belief_node, history_entry):
     """
@@ -75,6 +82,7 @@ def q_action(current_node):
     arm_to_play = None
     global epsilon
     global k
+    global delta_k
 
     mapping = current_node.action_map
 
@@ -106,7 +114,7 @@ def q_action(current_node):
                     arm_to_play = entry.get_action()
 
     # Decrease epsilon at a rate of 1/k
-    k += .3
+    k += delta_k
     epsilon = 1/k
 
     return arm_to_play

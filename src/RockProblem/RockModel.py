@@ -54,9 +54,14 @@ class RockModel(Model.Model):
 
         # ------------- Data Collection ---------- #
         self.unique_rocks_sampled = {}
-        self.num_times_sampled = 0
+        self.num_times_sampled = 0.0
+        self.good_samples = 0.0
         self.num_reused_nodes = 0
+        self.num_bad_rocks_sampled = 0
+        self.num_good_checks = 0
+        self.num_bad_checks = 0
 
+        # -------------- Map data ---------------- #
         # The number of rows in the map.
         self.n_rows = 0
         # The number of columns in the map
@@ -233,7 +238,7 @@ class RockModel(Model.Model):
                 self.any_good_rocks = True
 
         if action_type == Ra.ActionType.SAMPLE:
-            self.num_times_sampled += 1
+            self.num_times_sampled += 1.0
 
             rock_no = self.get_cell_type(next_position)
             next_state_rock_states[rock_no] = False
@@ -300,9 +305,7 @@ class RockModel(Model.Model):
                 return self.exit_reward
 
         if action.action_type is Ra.ActionType.SAMPLE:
-
             pos = state.position.copy()
-
             rock_no = self.get_cell_type(pos)
             if 0 <= rock_no < self.n_rocks:
 
@@ -320,20 +323,25 @@ class RockModel(Model.Model):
                     # bad to show that it is has been dealt with
                     # "next states".rock_states[rock_no] is set to False in make_next_state
                     state.rock_states[rock_no] = False
+                    self.good_samples += 1.0
                     return self.good_rock_reward
                 # otherwise, I either sampled a bad rock I thought was good, sampled a good rock I thought was bad,
                 # or sampled a bad rock I thought was bad. All bad behavior!!!
                 else:
+                    #self.logger.info("Bad rock penalty - %s", str(-self.bad_rock_penalty))
+                    self.num_bad_rocks_sampled += 1.0
                     return -self.bad_rock_penalty
             else:
-                self.logger.warning("Invalid sample action on non-existent rock while making reward!")
+                #self.logger.warning("Invalid sample action on non-existent rock while making reward!")
                 return -self.illegal_move_penalty
 
         if action.action_type >= Ra.ActionType.CHECK:
             if state.position.euclidean_distance(self.rock_positions[action.rock_no]) > self.half_efficiency_distance:
+                self.num_bad_checks += 1
                 return -self.checking_penalty
             else:
                 # reward for checking close to rocks
+                self.num_good_checks += 1
                 return 3 * self.checking_penalty
 
         return 0

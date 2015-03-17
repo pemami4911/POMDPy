@@ -2,7 +2,7 @@ __author__ = 'patrickemami'
 
 import Solver
 import logging
-import TDStepper
+import TDStepper, ActionSelectors
 import numpy as np
 
 class RockSolver(Solver.Solver):
@@ -14,27 +14,22 @@ class RockSolver(Solver.Solver):
         self.step_generator = TDStepper.TDStepper(self.model, self)
         self.policy_step_count = 0
         self.sigmoid_steepness = 0
-        self.epsilon = self.model.config["epsilon"]
         self.n_episodes = self.model.config["num_episodes"]
         self.current_episode = 0
 
         # ------------ data collection ------------- #
-        self.total_accumulated_rewards = []
         self.current_episode = 0
-
 
     ''' ------- Policy generation -------'''
     def generate_policy(self):
 
-        # populate the root node with a set of history entries and then extend and backup each new sequence
-        #reward, policy = self.generate_episodes(self.model.config["num_episodes"], self.policy.root)
-        #return reward, policy
+        # Initialize data structures
+        self.initialize_empty()
+        ActionSelectors.reset()
 
+        # populate the root node with a set of history entries and then extend and backup each new sequence
         for policy, total_reward in self.generate_episodes(self.n_episodes, self.policy.root):
             yield policy, total_reward, self.model.num_reused_nodes
-
-        #return total_reward, self.policy_step_count, self.successful_samples
-        #return policy, self.policy_step_count
 
     ''' -------- Method for carrying out each episode during a simulation ------------'''
     def generate_episodes(self, n_episodes, root_node):
@@ -52,6 +47,7 @@ class RockSolver(Solver.Solver):
         # number of times to extend out from the belief node
         for self.current_episode in range(0, n_episodes):
             print "Episode ", (self.current_episode + 1)
+            #self.logger.info("Episode %s", str(self.current_episode + 1))
 
             # create a new sequence
             seq = self.histories.create_sequence()
@@ -65,13 +61,19 @@ class RockSolver(Solver.Solver):
             status = self.step_generator.extend_and_backup(seq, self.model.config["maximum_depth"])
 
             total_reward, policy = self.execute_most_recent_policy(seq)
-            self.total_accumulated_rewards.append(total_reward)
+            #self.logger.info("Total accumulated reward %s", str(total_reward))
+
             yield policy, total_reward
 
             # reset the root historical data for the next episode
             self.policy.reset_root_data()
             self.model.sampled_rock_yet = False
+            self.model.num_times_sampled = 0.0
+            self.model.good_samples = 0.0
             self.model.num_reused_nodes = 0
+            self.model.num_bad_rocks_sampled = 0
+            self.model.num_bad_checks = 0
+            self.model.num_good_checks = 0
 
     def execute_most_recent_policy(self, seq):
         policy = []

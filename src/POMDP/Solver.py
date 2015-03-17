@@ -28,8 +28,6 @@ class Solver(object):
         self.estimation_strategy = None
         self.logger = logging.getLogger('Model.Solver')
 
-        self.initialize_empty()
-
     def initialize_empty(self):
         # basic initialization
         self.initialize()
