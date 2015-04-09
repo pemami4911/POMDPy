@@ -25,14 +25,10 @@ class RockActionPool(Ap.EnumeratedActionPool):
 
     def create_bin_sequence(self, belief_node):
         assert isinstance(belief_node, Bn.BeliefNode)
-
         data = belief_node.data     # historical data
-
         # update the current set of actions that are legal / not legal
         #data.update()
-
         bins = data.legal_actions()
-
         return bins
 
     def create_action_mapping(self, belief_node):

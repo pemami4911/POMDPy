@@ -153,18 +153,8 @@ class TDStepper(Sg.StepGenerator):
         # UCB1 action-selection
         if self.algorithm == "UCB":
 
-            # Try all of the actions from the current belief
-            action = ActionSelectors.expand_belief_node(current_node, history_entry)
-
-            # all actions have been attempted
-            if action is None:
-
-                action = ActionSelectors.ucb_action(current_node, history_entry, self.ucb_coefficient)
-
-                if action is None:
-                    self.logger.warning("Node has no actions? Returning empty Step Result")
-                    self.status = Sg.SearchStatus.ERROR
-                    return None
+            # TODO
+            pass
 
         # Standard TD-Q-Learning
         elif self.algorithm == "TD":

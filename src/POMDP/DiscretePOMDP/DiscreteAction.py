@@ -13,6 +13,12 @@ class DiscreteAction(Pt.Point):
         return self.get_bin_number() == other_discrete_action.get_bin_number()
 
     @abc.abstractmethod
+    def print_action(self):
+        """
+        :return:
+        """
+
+    @abc.abstractmethod
     def copy(self):
         """
         :return:

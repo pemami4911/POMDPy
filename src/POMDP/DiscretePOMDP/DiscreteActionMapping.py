@@ -31,9 +31,10 @@ class DiscreteActionMapping(Am.ActionMapping):
         for bin_number in self.bin_sequence:
             self.entries.get(bin_number).is_legal = True
 
-        for i in preferred_actions:
-            #self.entries.get(preferred_actions[i]).preferred_action = True
-            self.entries.get(i).total_q_value = 0.0
+        if preferred_actions is not None:
+            for i in preferred_actions:
+                #self.entries.get(preferred_actions[i]).preferred_action = True
+                self.entries.get(i).total_q_value = 0.0
 
     def copy(self):
         action_map_copy = DiscreteActionMapping(self.owner, self.pool, list(self.bin_sequence), [])
@@ -60,13 +61,11 @@ class DiscreteActionMapping(Am.ActionMapping):
         for bin_number in self.bin_sequence:
             self.entries.get(bin_number).is_legal = True
 
-    def get_action_node(self, discrete_action):
-        bin_number = discrete_action.get_bin_number()
-        return self.entries.get(bin_number).child_node
+    def get_action_node(self, action):
+        return self.entries.get(action.get_bin_number()).child_node
 
-    def create_action_node(self, discrete_action):
-        bin_number = discrete_action.get_bin_number()
-        entry = self.entries.get(bin_number)
+    def create_action_node(self, action):
+        entry = self.entries.get(action.get_bin_number())
         # the child of this entry
         # the parent of this action node is the entry
         entry.child_node = An.ActionNode(entry)
@@ -99,8 +98,8 @@ class DiscreteActionMapping(Am.ActionMapping):
         np.random.shuffle(all_actions)
         return all_actions
 
-    def get_entry(self, d_action):
-        return self.entries.get(d_action.get_bin_number())
+    def get_entry(self, action_bin_number):
+        return self.entries.get(action_bin_number)
 
     # No more bins to try -> no action to try
     # Otherwise we sample a new action using the first bin to be tried

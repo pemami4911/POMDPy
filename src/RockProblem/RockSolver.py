@@ -1,9 +1,13 @@
 __author__ = 'patrickemami'
 
-import Solver
 import logging
-import TDStepper, ActionSelectors
+
 import numpy as np
+
+from Solvers import Solver
+import TDStepper
+import ActionSelectors
+
 
 class RockSolver(Solver.Solver):
         
@@ -74,6 +78,7 @@ class RockSolver(Solver.Solver):
             self.model.num_bad_rocks_sampled = 0
             self.model.num_bad_checks = 0
             self.model.num_good_checks = 0
+            self.model.unique_rocks_sampled = {}
 
     def execute_most_recent_policy(self, seq):
         policy = []

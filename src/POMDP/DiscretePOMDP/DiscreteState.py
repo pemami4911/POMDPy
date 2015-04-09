@@ -33,6 +33,10 @@ class DiscreteState(Pt.Point):
         :return:
         """
 
+    @abc.abstractmethod
+    def print_state(self):
+        """
+        """
 
     """
     By default simply checks for equivalency between the two lists

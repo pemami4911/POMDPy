@@ -2,12 +2,9 @@ __author__ = 'patrickemami'
 
 import HistoricalData as Hd
 import RockAction as Ra
-import RockActionPool as Rap
-import RockObservation as Ro
 import GridPosition as Gp
 import logging
 import numpy as np
-import RockSolver
 
 class RockData:
     """
@@ -64,6 +61,9 @@ class PositionAndRockData(Hd.HistoricalData):
         return any_good_rocks
 
     def create_child(self, rock_action, rock_observation):
+        if not isinstance(rock_action, Ra.RockAction):
+            rock_action = Ra.RockAction(rock_action)
+
         next_data = self.copy()
         next_position, is_legal = self.model.make_next_position(self.grid_position.copy(), rock_action.action_type)
         next_data.grid_position = next_position

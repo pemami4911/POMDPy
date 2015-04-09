@@ -71,6 +71,17 @@ class HistorySequence:
         print "Deleted entry from sequence"
         del self.entry_sequence[history_entry.id]
 
+    def show(self):
+        for entry in self.entry_sequence:
+            print "=============="
+            print "id: ", entry.id
+            print "action: ", entry.action.print_action()
+            print "observation: "
+            entry.observation.print_observation()
+            print "next state: "
+            entry.state.print_state()
+            print "reward: ", entry.reward
+            print "=============="
 class Histories(object):
     """
     Owns a collection of history sequences.

@@ -1,11 +1,19 @@
 __author__ = 'patrickemami'
 
-import numpy as np
+import random
 import logging
-import config_parser
 import json
 
-config = json.load(open(config_parser.cfg_file, "r"))
+import numpy as np
+
+import config_parser
+
+
+config = json.load(open(config_parser.sys_cfg, "r"))
+
+''' ------------ GLOBAL VARS -------------'''
+use_rave = False
+rave_constant = 0.0
 
 # controls the randomness of the action selection for TD- learning.
 # Used for epsilon-greedy learning
@@ -13,62 +21,12 @@ epsilon = 1
 k = 1
 delta_k = config["delta_epsilon_k"]
 
+''' ------------------ TD- Q-Learning ------------------ '''
 def reset():
     global epsilon
     global k
     epsilon = 1
     k = 1
-
-def expand_belief_node(belief_node, history_entry):
-    """
-    Expand all of the actions from a belief node using regular Q-Learning. Once all of the actions have been tried,
-    use UCB1
-    :param current_entry:
-    :param state:
-    :param model:
-    :return:
-    """
-
-    # Actions that have been tried are removed from the mapping's bin sequence
-    # get_next_action_to_try returns a random untried action
-    if np.count_nonzero(belief_node.solver.policy.visit_frequency_table[history_entry.state.hash()][:]) !=\
-            belief_node.action_map.number_of_bins:
-        return q_action(belief_node)
-    else:
-        return None
-
-# UCB1 action selection algorithm
-def ucb_action(current_node, history_entry, ucb_coefficient):
-    """
-    :param current_node:
-    :param ucb_coefficient:
-    :return: action
-    """
-    logger = logging.getLogger("Model.ucb_action")
-    max_ucb_value = -np.inf
-    mapping = current_node.action_map
-    arm_to_play = None
-
-    for entry in mapping.get_all_entries():
-
-        # Ignore illegal actions
-        if entry.is_legal:
-            tmp_value = entry.mean_q_value + ucb_coefficient \
-                * np.sqrt(2.0 * np.log(np.sum(current_node.solver.policy.visit_frequency_table[history_entry.state.hash()][:]))
-                / current_node.solver.policy.visit_frequency_table[history_entry.state.hash()][entry.bin_number])
-
-            if not np.isfinite(tmp_value):
-                logger.warning("Infinite/NaN value when calculating ucb action")
-
-            if max_ucb_value < tmp_value:
-                max_ucb_value = tmp_value
-                # get the action corresponding to this mapping entry
-                arm_to_play = entry.get_action()
-
-    if arm_to_play is None:
-        logger.warning("Couldn't find any action to take.. in ucb_action")
-
-    return arm_to_play
 
 # TD-Q-Learning - grabs the action that has the highest expected q-value
 # Default is epsilon-greedy
@@ -95,7 +53,6 @@ def q_action(current_node):
                 logger.warning("No legal entries found when randomly trying an action. Death awaits")
                 break
             if all_entries[0].is_legal:
-                print "Acted randomly"
                 arm_to_play = all_entries[0].get_action()
                 break
             else:
@@ -118,3 +75,49 @@ def q_action(current_node):
     epsilon = 1/k
 
     return arm_to_play
+
+''' Multi-Armed Bandit '''
+
+# UCB1 action selection algorithm
+def ucb_action(mcts, current_node, greedy):
+    best_actions = []
+    best_q_value = -np.inf
+    mapping = current_node.action_map
+
+    N = mapping.total_visit_count
+    log_n = np.log(N + 1)
+
+    actions = mapping.get_all_entries()
+    for action_entry in actions:
+
+        # Skip illegal actions
+        if not action_entry.is_legal:
+            continue
+
+        current_q = action_entry.mean_q_value
+
+        # TODO RAVE stuff
+        # if use_rave and action.visit_count > 0.0:
+
+        # if has_alpha ...
+
+        # TODO epsilon-greedy? Act randomly with probability 1/epsilon?
+        # If the UCB coefficient is 0, this is just pure Q learning
+        if not greedy:
+            current_q += mcts.find_fast_ucb(N, action_entry.visit_count, log_n)
+
+        if current_q >= best_q_value:
+            if current_q > best_q_value:
+                best_actions = []
+            best_q_value = current_q
+            # best actions is a list of Discrete Actions
+            best_actions.append(action_entry.get_action())
+
+    assert best_actions.__len__() is not 0
+
+    return random.choice(best_actions)
+
+
+
+
+

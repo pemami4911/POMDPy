@@ -37,6 +37,7 @@ average_reward_per_episode = [0 for _ in x]
 average_good_checks_per_episode = [0 for _ in x]
 average_bad_checks_per_episode = [0 for _ in x]
 average_percent_good_rocks_sampled_per_episode = [0 for _ in x]
+average_score = [0 for _ in x]
 total_num_times_sampled = [0 for _ in x]
 
 # Data points
@@ -46,6 +47,7 @@ num_good_checks = []
 num_bad_checks = []
 percent_good_rocks_sampled = []
 total_accumulated_rewards = []
+score = []
 
 RUNS = 100
 
@@ -57,6 +59,7 @@ for i in range(1, RUNS+1):
     num_bad_checks.append([])
     percent_good_rocks_sampled.append([])
     total_accumulated_rewards.append([])
+    score.append([])
 
     for policy, total_reward, num_reused_nodes in my_solver.generate_policy():
         for belief, action, reward in policy:
@@ -74,6 +77,7 @@ for i in range(1, RUNS+1):
         total_accumulated_rewards[i-1].append(total_reward)
         percent_good_rocks_sampled[i-1].append(my_model.good_samples)
         num_times_sampled[i-1].append(my_model.num_times_sampled)
+        score[i-1].append(float(my_model.unique_rocks_sampled.__len__())/float(sum(x > 0 for x in my_model.actual_rock_states)))
         logger.info("#GoodChecks: %s #BadChecks: %s #TotalReward: %s #NumGoodRocksSampled: %s",
                     str(my_model.num_good_checks), str(my_model.num_bad_checks), str(total_reward),
                     str(my_model.good_samples))
@@ -82,7 +86,7 @@ for i in range(1, RUNS+1):
     print my_solver.policy.q_table
     print my_solver.policy.visit_frequency_table
     '''
-    # Generate averages
+    # Accumulate data points
     for i_ in x:
         average_reward_per_episode[i_] += total_accumulated_rewards[i-1][i_]
         average_bad_checks_per_episode[i_] += num_bad_checks[i-1][i_]
@@ -106,6 +110,9 @@ for i in x:
     average_good_checks_per_episode[i] /= float(RUNS)
     average_bad_checks_per_episode[i] /= float(RUNS)
 
+for j in range(RUNS):
+    for i in x:
+        average_score[i] = np.mean(score[j][i])
 
 [plt.scatter(j, total_accumulated_rewards[i][j]) for j in x for i in range(RUNS)]
 average_reward = plt.plot(average_reward_per_episode, color='orange', lw=3)
@@ -119,6 +126,11 @@ plt.title('Frequency of Good/Bad use of Noisy Sensor over 100 Runs')
 plt.xlabel('Episode #')
 plt.show()
 
+ave_score_plot = plt.bar(x, average_score, color='blue')
+plt.title('Percent of Good Rocks sampled per Episode')
+plt.xlabel('Episode #')
+plt.ylabel('# of Unique, Good rocks sampled/Actual # of Good Rocks')
+plt.show()
 '''
 action_freq_plot = plt.bar(np.arange(my_solver.action_pool.get_number_of_bins()), action_frequency)
 plt.title('Frequency of each action')

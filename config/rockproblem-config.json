@@ -1,0 +1,10 @@
+{
+"map_file":"map-7-2.txt",
+"good_rock_reward":10.0,
+"bad_rock_penalty":10.0,
+"exit_reward":10.0,
+"illegal_move_penalty":100.0,
+"checking_penalty":0,
+"half_efficiency_distance":20.0,
+"finishing_empty_handed":100.0
+}

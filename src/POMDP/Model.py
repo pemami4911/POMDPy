@@ -1,9 +1,12 @@
 __author__ = 'patrickemami'
 
 import abc
+import logging
+import json
 import numpy as np
 import ObservationPool as Op
-import logging
+import config_parser
+import random
 
 class Model(object):
     """
@@ -25,8 +28,9 @@ class Model(object):
     def __init__(self, problem_name):
         self.problem_name = problem_name
         self.format = "%(asctime)s - %(name)s - %(message)s"
-        logging.basicConfig(filename='TD_12_12_100.log', level=logging.DEBUG, format=self.format)
+        logging.basicConfig(filename='POMDPy.log', level=logging.DEBUG, format=self.format)
         self.logger = logging.getLogger('Model')
+        self.sys_cfg = json.load(open(config_parser.sys_cfg, "r"))
 
     @abc.abstractmethod
     def generate_step(self, state, action):
@@ -63,6 +67,12 @@ class Model(object):
         """
 
     @abc.abstractmethod
+    def get_legal_actions(self):
+        """
+        :return: list of legal actions
+        """
+
+    @abc.abstractmethod
     def is_terminal(self, state):
         """
         Returns true iff the given state is terminal.
@@ -78,6 +88,19 @@ class Model(object):
         :return:
         """
 
+    @abc.abstractmethod
+    def create_action_pool(self):
+        """
+        :param solver:
+        :return:
+        """
+
+    @abc.abstractmethod
+    def get_random_action(self):
+        """
+        :return: a random legal action
+        """
+
     def generate_particles(self, previous_belief, action, obs, n_particles, prev_particles):
         """
         Generates new state particles based on the state particles of the previous node,
@@ -89,7 +112,7 @@ class Model(object):
         :param action:
         :param obs:
         :param n_particles:
-        :return:
+        :return: list of particles
         """
         particles = []
         obs_map = previous_belief.action_map.get_action_node(action).observation_map
@@ -97,13 +120,12 @@ class Model(object):
 
         while particles.__len__() < n_particles:
             # sample a random particle
-            index = np.random.random_integers(0, prev_particles.__len__() - 1)
-            state = prev_particles[index]
+            state = random.choice(prev_particles)
 
             # Now generate a step in the model, and compare the observation to the actual observation.
             # Note that this comparison is done implicitly via the observation mapping, to ensure
             # that approximate observations are treated cleanly.
-            result = self.generate_step(state, action)
+            result, is_legal = self.generate_step(state, action)
             if obs_map.get_belief(result.observation) is child_node:
                 particles.append(result.next_state)
         return particles
@@ -128,7 +150,7 @@ class Model(object):
             # Now generate a step in the model, and compare the observation to the actual observation.
             # Note that this comparison is done implicitly via the observation mapping, to ensure
             # that approximate observations are treated cleanly.
-            result = self.generate_step(state, action)
+            result, is_legal = self.generate_step(state, action)
             if obs_map.get_belief(result.observation) is child_node:
                 particles.append(result.next_state)
         return particles
@@ -136,13 +158,7 @@ class Model(object):
     def create_observation_pool(self, solver):
         return Op.DiscreteObservationPool(solver)
 
-    @abc.abstractmethod
-    def create_action_pool(self):
-        """
-        :param solver:
-        :return:
-        """
-    # put my algorithm here (step generator)
+
     def create_search_strategy(self, solver):
         pass
 

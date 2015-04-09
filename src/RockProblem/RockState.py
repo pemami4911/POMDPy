@@ -16,7 +16,8 @@ class RockState(Ds.DiscreteState):
     """
 
     def __init__(self, grid_position, rock_states):
-        assert rock_states.__len__() is not 0
+        if rock_states is not None:
+            assert rock_states.__len__() is not 0
         self.position = grid_position
         self.rock_states = rock_states  # list
 
@@ -60,6 +61,8 @@ class RockState(Ds.DiscreteState):
         Pretty printing
         :return:
         """
+        self.position.print_position()
+
         print 'Good: {',
         good_rocks = []
         bad_rocks = []

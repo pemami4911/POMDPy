@@ -2,7 +2,9 @@ __author__ = 'patrickemami'
 
 # see search_interface.hpp for basic-search-strategy, which I need to customize
 import numpy as np
+import random
 
+''' ------- global variables ------- '''
 BIG_NUM = 100000
 
 class BeliefNode:
@@ -31,14 +33,16 @@ class BeliefNode:
 
         self.solver = solver
         self.data = None    # The smart history-based data, to be used for history-based policies.
-        self.particles = []     # The set of particles belonging to this node.
+        self.particles = []     # The set of history entries belonging to this node.
         self.depth = -1
         self.n_starting_sequences = 0
         self.action_map = None
+        self.state_particles = []   # The set of states that comprise the belief distribution of this belief node
+
 
         # Nearest Neighbor heuristic
-        self.max_nn_distance = self.solver.model.config["max_nn_distance"]
-        self.max_n_comparisons = self.solver.model.config["max_n_comparisons"]
+        self.max_nn_distance = self.solver.model.sys_cfg["max_nn_distance"]
+        self.max_n_comparisons = self.solver.model.sys_cfg["max_n_comparisons"]
         # The closest neighbor found so far for this node
         self.neighbor = None
 
@@ -55,7 +59,6 @@ class BeliefNode:
 
     def copy(self, id=None, parent_entry=None):
         return BeliefNode(self.solver, id, parent_entry)
-
 
     def distance(self, other_belief_node):
         """
@@ -87,14 +90,9 @@ class BeliefNode:
         assert average_dist >= 0
         return average_dist
 
-    def get_number_of_particles(self):
-        return self.particles.__len__()
-
-    def get_states(self):
-        states = []
-        for entry in self.particles:
-            states.append(entry.get_state())
-        return states
+    # Randomly select a History Entry
+    def sample_particle(self):
+        return random.choice(self.state_particles)
 
     # -------------------- Tree-related getters  ---------------------- #
     def get_parent_action_node(self):
@@ -156,6 +154,7 @@ class BeliefNode:
             # Update the current action mapping to reflect the state of the simulation
             # child_node.action_map.update()
             self.solver.model.num_reused_nodes += 1
+
             # Update the re-used child belief node's data
             child_node.data.update(child_node.get_parent_belief())
         return child_node, added
