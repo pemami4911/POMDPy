@@ -6,7 +6,6 @@ import MCTS
 import Statistic
 import History
 from console import *
-import objgraph
 
 module = "Solver"
 
@@ -101,6 +100,8 @@ class Solver(object):
         console(2, module + ".run", "num of particles generated = " + str(mcts.policy.root.state_particles.__len__()))
 
         for i in range(num_steps):
+            # Reset the Simulator
+            self.model.reset()
             # action will be of type Discrete Action
             action = mcts.select_action()
             step_result, is_legal = self.model.generate_step(state, action)
@@ -128,10 +129,7 @@ class Solver(object):
                 print "Terminated"
                 break
 
-            #objgraph.show_growth(limit=20)
             out_of_particles = mcts.update(step_result)
-            #print "\nAfter Update\n"
-            #objgraph.show_growth(limit=20)
 
             print "num of particles generated = ", mcts.policy.root.state_particles.__len__()
 

@@ -7,8 +7,7 @@ import Statistic
 import BeliefNode
 from console import *
 from memory_profiler import profile
-
-import objgraph
+import time
 
 module = "MCTS"
 disable_tree = False
@@ -24,7 +23,6 @@ class MCTS(object):
     UCB_n = 100
 
     def __init__(self, solver, model):
-        self.policy = None
         self.solver = solver
         self.model = model
         self.policy = BT.BeliefTree(solver) # Search Tree
@@ -77,7 +75,16 @@ class MCTS(object):
         else:
             return self.model.sys_cfg["ucb_coefficient"] * np.sqrt(log_n/action_map_entry_visit_count)
 
+    @profile
+    def select_action(self):
+        if disable_tree:
+            self.rollout_search()
+        else:
+            self.UCT_search()
+        return ActionSelectors.ucb_action(self, self.policy.root, True)
+
     # TODO for abstraction purposes, Discrete Actions should be dealt with as integers, not as a specific Action Type
+    @profile
     def update(self, step_result):
         new_root = BeliefNode.BeliefNode(self.solver)
         new_root.data = self.policy.root.data.create_child(step_result.action, step_result.observation)
@@ -106,15 +113,13 @@ class MCTS(object):
 
             num_to_add = self.model.sys_cfg["max_particle_count"] - new_root.state_particles.__len__()
             # Generate particles for the new root node
-            more_particles = self.model.generate_particles(self.policy.root, step_result.action,
+            new_root.state_particles += self.model.generate_particles(self.policy.root, step_result.action,
                                             step_result.observation, num_to_add,
                                             self.policy.root.state_particles)
 
-            new_root.state_particles.append(more_particles)
-
             # If that failed, attempt to create a new state particle set
             if new_root.state_particles.__len__() == 0:
-                new_root.state_particles = self.model.generate_particles_uninformed(self.policy.root, step_result.action,
+                new_root.state_particles += self.model.generate_particles_uninformed(self.policy.root, step_result.action,
                                                                                     step_result.observation,
                                                                                     self.model.sys_cfg["min_particle_count"])
 
@@ -124,17 +129,14 @@ class MCTS(object):
             return True
 
         # delete old tree and set the new root
-        self.policy.root = None
+        # ~ 0.2 s spent here
+        start_time = time.time()
+        self.policy.prune_tree(self.policy)
+        elapsed = time.time() - start_time
+        print "Time spent pruning = ", str(elapsed)
         self.policy.root = new_root
 
         return False
-
-    def select_action(self):
-        if disable_tree:
-            self.rollout_search()
-        else:
-            self.UCT_search()
-        return ActionSelectors.ucb_action(self, self.policy.root, True)
 
     ''' --------------- Rollout Search --------------'''
     def rollout_search(self):
@@ -205,15 +207,19 @@ class MCTS(object):
         return total_reward
 
     ''' --------------- Multi-Armed Bandit Search -------------- '''
+    @profile
     def UCT_search(self):
         """
         Expands the root node via random simulations
         :return:
         """
         self.clear_stats()
-        history_length = self.history.entry_sequence.__len__()
+        #history_length = self.history.entry_sequence.__len__()
 
         for i in range(self.model.sys_cfg["num_sims"]):
+            # Reset the root node's data for the simulation
+            self.policy.reset_root_data()
+
             state = self.policy.root.sample_particle()
             assert self.model.is_valid(state)
 
@@ -225,11 +231,7 @@ class MCTS(object):
             console_no_print(3, state.print_state)
 
             # initiate
-            print "\nBefore Recursion\n"
-            objgraph.show_growth(limit=20)
             total_reward = self.simulate_node(state, self.policy.root, tree_depth)
-            print "\nAfter Recursion\n"
-            objgraph.show_growth()
 
             self.total_reward_stats.add(total_reward)
             self.tree_depth_stats.add(self.peak_tree_depth)
@@ -237,7 +239,7 @@ class MCTS(object):
             console(3, module + ".UCT_search", "Total reward = " + str(total_reward))
 
             # Truncate history
-            self.history.entry_sequence = self.history.entry_sequence[:history_length]
+            #self.history.entry_sequence = self.history.entry_sequence[:history_length]
 
         console_no_print(3, self.tree_depth_stats.show)
         console_no_print(3, self.rollout_depth_stats.show)
@@ -250,12 +252,12 @@ class MCTS(object):
         self.peak_tree_depth = tree_depth
 
         # Search horizon reached
-        if tree_depth > self.model.sys_cfg["maximum_depth"]:
+        if tree_depth >= self.model.sys_cfg["maximum_depth"]:
             console(4, module + ".simulate_node", "Search horizon reached, getting tf outta here")
             return 0
 
         if tree_depth == 1:
-            belief_node.state_particles.append(state)
+            belief_node.state_particles += [state]
 
         total_reward = self.step_node(belief_node, state, action, tree_depth)
         # Add RAVE ?
@@ -266,12 +268,13 @@ class MCTS(object):
         delayed_reward = 0
 
         step_result, is_legal = self.model.generate_step(state, action)
+        '''
         new_hist_entry = self.history.add_entry()
         new_hist_entry.reward = step_result.reward
         new_hist_entry.action = step_result.action
         new_hist_entry.observation = step_result.observation
         new_hist_entry.register_entry(new_hist_entry, None, step_result.next_state)
-
+        '''
         console(3, module + ".step_node", "Step Result.Action = ")
         console_no_print(3, step_result.action.print_action)
         console(3, module + ".step_node", "Step Result.Observation = ")

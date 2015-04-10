@@ -12,8 +12,6 @@ import RockObservation as Ro
 import RockActionPool as Rap
 import RockPositionHistory as Rph
 
-import objgraph
-
 class RSCellType(object):
     """
     Rocks are enumerated 0, 1, 2, ...
@@ -144,6 +142,16 @@ class RockModel(Model.Model):
         assert self.half_efficiency_distance is not 0, self.logger.warning("Tried to divide by 0! Naughty naughty!")
         return (1 + np.power(2.0, -distance / self.half_efficiency_distance)) * 0.5
 
+    def reset(self):
+        self.sampled_rock_yet = False
+        self.num_times_sampled = 0.0
+        self.good_samples = 0.0
+        self.num_reused_nodes = 0
+        self.num_bad_rocks_sampled = 0
+        self.num_bad_checks = 0
+        self.num_good_checks = 0
+        self.unique_rocks_sampled = {}
+
     ''' Sampling '''
     def sample_an_init_state(self):
         self.sampled_rock_yet = False
@@ -184,6 +192,8 @@ class RockModel(Model.Model):
         return self.get_cell_type(rock_state.position) is RSCellType.GOAL
 
     def is_valid(self, rock_state):
+        if not isinstance(rock_state, Rs.RockState):
+            return
         pos = rock_state.position
         assert isinstance(pos, Gp.GridPosition)
         return 0 <= pos.i < self.n_rows and 0 <= pos.j < self.n_cols and \

@@ -2,7 +2,7 @@ __author__ = 'patrickemami'
 
 import RockModel
 import Solver
-import objgraph
+import mem
 
 simulator = RockModel.RockModel("Rock Problem")
 

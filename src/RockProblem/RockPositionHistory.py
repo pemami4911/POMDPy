@@ -45,7 +45,7 @@ class PositionAndRockData(Hd.HistoricalData):
         self.logger = logging.getLogger("Model.RockModel.PositionAndRockData")
 
         # Holds reference to the function for generating legal actions
-        self.legal_actions = self.generate_smart_actions
+        self.legal_actions = self.generate_legal_actions
 
     def copy(self):
         return PositionAndRockData(self.model, self.grid_position.copy(), self.all_rock_data, self.solver)
@@ -97,6 +97,8 @@ class PositionAndRockData(Hd.HistoricalData):
                 rock_data.goodness_number -= 1
                 likelihood_good *= probability_incorrect
                 likelihood_bad *= probability_correct
+
+            assert likelihood_good + likelihood_bad is not 0
 
             rock_data.chance_good = likelihood_good / (likelihood_good + likelihood_bad)
 

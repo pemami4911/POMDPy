@@ -19,17 +19,38 @@ class BeliefTree(BeliefStructure.BeliefStructure):
         self.solver = solver
         self.root = None
 
-    def prune_tree(self):
+    def prune_tree(self, belief_tree):
         """
         Clears out the tree. This is difficult, because every node has a reference to its owner and child.
         :return:
         """
+        self.prune_node(belief_tree.root)
+        belief_tree.root = None
 
+    def prune_node(self, belief_node):
+        if belief_node is None:
+            return
 
+        belief_node.parent_entry = None
+        belief_node.action_map.owner = None
+        self.solver.action_pool.remove_mapping(belief_node.data, belief_node.action_map)
+        action_mapping_entries = belief_node.action_map.get_child_entries()
+        for entry in action_mapping_entries:
+            # Action Node
+            entry.child_node.parent_entry = None
+            entry.map = None
+            entry.child_node.observation_map.owner = None
+            for observation_entry in entry.child_node.observation_map.child_map.values():
+                self.prune_node(observation_entry.child_node)
+                observation_entry.map = None
+                observation_entry.child_node = None
+            entry.child_node.observation_map = None
+            entry.child_node = None
+        belief_node.action_map = None
 
     # --------- TREE MODIFICATION ------- #
     def reset(self):
-        self.prune_tree()
+        self.prune_tree(self)
         self.root = BeliefNode.BeliefNode(self.solver, None, None)
         return self.root
 

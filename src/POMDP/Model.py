@@ -33,6 +33,13 @@ class Model(object):
         self.sys_cfg = json.load(open(config_parser.sys_cfg, "r"))
 
     @abc.abstractmethod
+    def reset(self):
+        """
+        The Simulator (Model) should be reset before each simulation
+        :return:
+        """
+
+    @abc.abstractmethod
     def generate_step(self, state, action):
         """
         Generates a full StepResult, including the next state, an observation, and the reward

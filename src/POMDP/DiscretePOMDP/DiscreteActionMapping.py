@@ -164,11 +164,14 @@ class DiscreteActionMappingEntry(Am.ActionMappingEntry):
 
         return self.visit_count
 
-    def update_q_value(self, delta_total_q):
+    def update_q_value(self, delta_total_q, delta_n_visits=0):
         if delta_total_q == 0:
             return False
 
         assert np.isfinite(delta_total_q)
+
+        if delta_n_visits != 0:
+            self.update_visit_count(delta_n_visits)
 
         # Ensure that preferred actions never have negative Q values to favor them
         if self.preferred_action and delta_total_q < 0:

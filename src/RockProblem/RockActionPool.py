@@ -42,7 +42,8 @@ class RockActionPool(Ap.EnumeratedActionPool):
             self.mappings.__setitem__(grid_position, set())
         self.mappings.get(grid_position).add(disc_action_map)
 
-    def remove_mapping(self, grid_position, disc_action_map):
+    def remove_mapping(self, data, disc_action_map):
+        grid_position = data.grid_position
         if grid_position in self.mappings:
             self.mappings.get(grid_position).remove(disc_action_map)
 

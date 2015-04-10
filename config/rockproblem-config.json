@@ -5,6 +5,6 @@
 "exit_reward":10.0,
 "illegal_move_penalty":100.0,
 "checking_penalty":0,
-"half_efficiency_distance":20.0,
+"half_efficiency_distance":10.0,
 "finishing_empty_handed":100.0
 }
