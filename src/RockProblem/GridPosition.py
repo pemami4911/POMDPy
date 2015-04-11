@@ -22,6 +22,9 @@ class GridPosition():
         print self.j,
         print ')'
 
+    def to_string(self):
+        return '(' + str(self.i) + ',' + str(self.j) + ')'
+
     def copy(self):
         return GridPosition(self.i, self.j)
 

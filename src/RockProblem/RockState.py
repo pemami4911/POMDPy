@@ -47,13 +47,14 @@ class RockState(Ds.DiscreteState):
         return int(self.to_string(), 2)
 
     def to_string(self):
-        state_string = ""
+        state_string = self.position.to_string()
+        state_string += " - "
 
         for i in self.rock_states:
             if i:
-                state_string += "1"
+                state_string += "1 "
             else:
-                state_string += "0"
+                state_string += "0 "
         return state_string
 
     def print_state(self):

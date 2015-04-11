@@ -34,6 +34,17 @@ class RockObservation(Do.DiscreteObservation):
         else:
             print self.is_good
 
+    def to_string(self):
+        if self.is_empty:
+            obs = "EMPTY"
+        elif self.is_good == 1:
+            obs = "Good"
+        elif self.is_good == 2:
+            obs = "Bad"
+        else:
+            obs = str(self.is_good)
+        return obs
+
     def get_bin_number(self):
         if self.is_empty:
             return 0

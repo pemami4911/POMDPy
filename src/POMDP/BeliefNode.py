@@ -156,7 +156,7 @@ class BeliefNode:
             self.solver.model.num_reused_nodes += 1
 
             # Update the re-used child belief node's data
-            #child_node.data.update(child_node.get_parent_belief())
+            child_node.data.update(child_node.get_parent_belief())
         return child_node, added
 
     def add_particle(self, new_history_entry):

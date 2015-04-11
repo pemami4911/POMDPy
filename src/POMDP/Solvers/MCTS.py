@@ -1,13 +1,15 @@
 __author__ = 'patrickemami'
 
 import numpy as np
+import random
 import BeliefTree as BT
 import ActionSelectors
 import Statistic
 import BeliefNode
 from console import *
-from memory_profiler import profile
 import time
+
+import GridPosition
 
 module = "MCTS"
 disable_tree = False
@@ -75,7 +77,6 @@ class MCTS(object):
         else:
             return self.model.sys_cfg["ucb_coefficient"] * np.sqrt(log_n/action_map_entry_visit_count)
 
-    @profile
     def select_action(self):
         if disable_tree:
             self.rollout_search()
@@ -84,8 +85,10 @@ class MCTS(object):
         return ActionSelectors.ucb_action(self, self.policy.root, True)
 
     # TODO for abstraction purposes, Discrete Actions should be dealt with as integers, not as a specific Action Type
-    @profile
     def update(self, step_result):
+        if step_result.action.get_bin_number() > 4:
+            print 'Stop'
+
         new_root = BeliefNode.BeliefNode(self.solver)
         new_root.data = self.policy.root.data.create_child(step_result.action, step_result.observation)
         new_root.action_map = self.solver.action_pool.create_action_mapping(new_root)
@@ -105,6 +108,7 @@ class MCTS(object):
             # particles
             for i in child_belief_node.state_particles:
                 new_root.state_particles.append(i.copy())
+
         else:
             console(2, module + ".update", "No matching node found")
 
@@ -188,13 +192,10 @@ class MCTS(object):
             step_result, is_legal = self.model.generate_step(state, rand_action)
             is_terminal = step_result.is_terminal
 
-            console(3, module + ".rollout", "Step Result.Action = ")
-            console_no_print(3, step_result.action.print_action)
-            console(3, module + ".rollout", "Step Result.Observation = ")
-            console_no_print(3, step_result.observation.print_observation)
-            console(3, module + ".rollout", "Step Result.Next_State = ")
-            console_no_print(3, step_result.next_state.print_state)
-            console(3, module + ".rollout", "Step Result.Reward = " + str(step_result.reward))
+            console(4, module + ".rollout", "Step Result.Action = " + step_result.action.to_string())
+            console(4, module + ".rollout", "Step Result.Observation = " + step_result.observation.to_string())
+            console(4, module + ".rollout", "Step Result.Next_State = " + step_result.next_state.to_string())
+            console(4, module + ".rollout", "Step Result.Reward = " + str(step_result.reward))
 
             total_reward += step_result.reward * discount
             discount *= self.model.sys_cfg["discount"]
@@ -207,18 +208,24 @@ class MCTS(object):
         return total_reward
 
     ''' --------------- Multi-Armed Bandit Search -------------- '''
-    @profile
     def UCT_search(self):
         """
         Expands the root node via random simulations
         :return:
         """
+
         self.clear_stats()
-        #history_length = self.history.entry_sequence.__len__()
+        # Create a snapshot of the current information state
+        initial_root_data = self.policy.root.data.shallow_copy()
+
 
         for i in range(self.model.sys_cfg["num_sims"]):
-            # Reset the root node's data for the simulation
-            self.policy.reset_root_data()
+            # Reset the Simulator
+            self.model.reset()
+
+            # Reset the root node to the information state at the beginning of the UCT Search
+            # After each simulation
+            self.policy.root.data = initial_root_data.shallow_copy()
 
             state = self.policy.root.sample_particle()
             assert self.model.is_valid(state)
@@ -227,8 +234,10 @@ class MCTS(object):
             tree_depth = 0
             self.peak_tree_depth = 0
 
-            console(3, module + ".UCT_search", "Starting simulation at state:")
-            console_no_print(3, state.print_state)
+            console(3, module + ".UCT_search", "Starting simulation at random state = " + state.to_string())
+
+            if state.position.equals(GridPosition.GridPosition(4, 2)):
+                print 'BREAK'
 
             # initiate
             total_reward = self.simulate_node(state, self.policy.root, tree_depth)
@@ -237,9 +246,10 @@ class MCTS(object):
             self.tree_depth_stats.add(self.peak_tree_depth)
 
             console(3, module + ".UCT_search", "Total reward = " + str(total_reward))
+            console(3, module + ".UCT_search", "Unique Rocks Sampled = " + str(self.model.unique_rocks_sampled))
 
-            # Truncate history
-            #self.history.entry_sequence = self.history.entry_sequence[:history_length]
+        # Reset the information state back to the state it was in before the simulations occurred for consistency
+        self.policy.root.data = initial_root_data
 
         console_no_print(3, self.tree_depth_stats.show)
         console_no_print(3, self.rollout_depth_stats.show)
@@ -257,8 +267,11 @@ class MCTS(object):
             return 0
 
         if tree_depth == 1:
-            belief_node.state_particles += [state]
+            # Add a state particle with the new state
+            if belief_node.state_particles.__len__() < self.model.sys_cfg["max_particle_count"]:
+                belief_node.state_particles += [state]
 
+        # Q value
         total_reward = self.step_node(belief_node, state, action, tree_depth)
         # Add RAVE ?
         return total_reward
@@ -268,20 +281,11 @@ class MCTS(object):
         delayed_reward = 0
 
         step_result, is_legal = self.model.generate_step(state, action)
-        '''
-        new_hist_entry = self.history.add_entry()
-        new_hist_entry.reward = step_result.reward
-        new_hist_entry.action = step_result.action
-        new_hist_entry.observation = step_result.observation
-        new_hist_entry.register_entry(new_hist_entry, None, step_result.next_state)
-        '''
-        console(3, module + ".step_node", "Step Result.Action = ")
-        console_no_print(3, step_result.action.print_action)
-        console(3, module + ".step_node", "Step Result.Observation = ")
-        console_no_print(3, step_result.observation.print_observation)
-        console(3, module + ".step_node", "Step Result.Next_State = ")
-        console_no_print(3, step_result.next_state.print_state)
-        console(3, module + ".step_node", "Step Result.Reward = " + str(step_result.reward))
+
+        console(4, module + ".step_node", "Step Result.Action = " + step_result.action.to_string())
+        console(4, module + ".step_node", "Step Result.Observation = " + step_result.observation.to_string())
+        console(4, module + ".step_node", "Step Result.Next_State = " + step_result.next_state.to_string())
+        console(4, module + ".step_node", "Step Result.Reward = " + str(step_result.reward))
 
         child_belief_node, added = belief_node.create_or_get_child(action, step_result.observation)
 
@@ -292,12 +296,15 @@ class MCTS(object):
             else:
                 delayed_reward = self.rollout(state)
             tree_depth -= 1
+        else:
+            console(3, module + ".step_node", "Reached terminal state.")
 
         # TODO try subtracting out current Q value for variance-control purposes
-        total_reward = (step_result.reward + self.model.sys_cfg["discount"] * delayed_reward) * self.step_size
+        # delayed_reward is "Q maximal"
+        Q_value = (step_result.reward + self.model.sys_cfg["discount"] * delayed_reward) * self.step_size
 
         belief_node.action_map.get_entry(action.get_bin_number()).update_visit_count(1)
-        belief_node.action_map.get_entry(action.get_bin_number()).update_q_value(total_reward)
+        belief_node.action_map.get_entry(action.get_bin_number()).update_q_value(Q_value)
 
-        return total_reward
+        return Q_value
 

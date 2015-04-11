@@ -3,8 +3,6 @@ __author__ = 'patrickemami'
 import unittest
 import RockModel
 import Solver
-
-
 model = RockModel.RockModel("UnitTest")
 solver = Solver.Solver(model)
 
@@ -48,7 +46,6 @@ class MCTSTestCase(unittest.TestCase):
                 mcts.policy.root.action_map.entries.get(i).update_visit_count(100 + i)
             mcts.policy.root.action_map.entries.get(i).mean_q_value = 0.0
         self.assertEqual(ActionSelectors.ucb_action(mcts, mcts.policy.root, False).get_bin_number(), lowest_count_action)
-
 
 if __name__ == '__main__':
     unittest.main()

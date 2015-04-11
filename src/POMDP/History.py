@@ -75,13 +75,12 @@ class HistorySequence:
         for entry in self.entry_sequence:
             print "=============="
             print "id: ", entry.id
-            print "action: ", entry.action.print_action()
-            print "observation: "
-            entry.observation.print_observation()
-            print "next state: "
-            entry.state.print_state()
+            print "action: ", entry.action.to_string()
+            print "observation: ", entry.observation.to_string()
+            print "next state: ", entry.state.to_string()
             print "reward: ", entry.reward
             print "=============="
+
 class Histories(object):
     """
     Owns a collection of history sequences.

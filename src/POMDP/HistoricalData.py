@@ -15,7 +15,12 @@ class HistoricalData(object):
         """
         :return: HistoricalData
         """
+    @abc.abstractmethod
+    def reset(self, old_data):
+        """
 
+        :return:
+        """
     @abc.abstractmethod
     def create_child(self, action, observation):
         """

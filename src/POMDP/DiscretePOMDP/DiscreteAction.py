@@ -15,9 +15,16 @@ class DiscreteAction(Pt.Point):
     @abc.abstractmethod
     def print_action(self):
         """
+        Pretty prints the action type
         :return:
         """
 
+    @abc.abstractmethod
+    def to_string(self):
+        """
+        Returns a String version of the action type
+        :return:
+        """
     @abc.abstractmethod
     def copy(self):
         """

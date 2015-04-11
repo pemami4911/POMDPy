@@ -1,8 +1,5 @@
 __author__ = 'patrickemami'
 
-# Parse the configuration parameters from config/rockproblem-config.json
-
-# needed for creating the path to access the config file
 import os
 
 # file directory and name

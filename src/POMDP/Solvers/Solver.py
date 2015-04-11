@@ -79,11 +79,13 @@ class Solver(object):
                 print " seconds"
                 break
 
-    def run(self):
+    def run(self, num_steps=None):
 
         start_time = time.time()
         discount = 1.0
-        num_steps = self.model.sys_cfg["num_steps"]
+
+        if num_steps is None:
+            num_steps = self.model.sys_cfg["num_steps"]
 
         # Reset the running total for each statistic for this run
         self.results.reset_running_totals()
@@ -91,8 +93,7 @@ class Solver(object):
         # Monte-Carlo start state
         state = self.model.sample_an_init_state()
 
-        console(2, module + ".run", "Initial state: ")
-        console_no_print(2, state.print_state)
+        console(2, module + ".run", "Initial search state: " + state.to_string())
 
         # Create a new MCTS solver
         mcts = MCTS.MCTS(self, self.model)
@@ -100,8 +101,6 @@ class Solver(object):
         console(2, module + ".run", "num of particles generated = " + str(mcts.policy.root.state_particles.__len__()))
 
         for i in range(num_steps):
-            # Reset the Simulator
-            self.model.reset()
             # action will be of type Discrete Action
             action = mcts.select_action()
             step_result, is_legal = self.model.generate_step(state, action)
@@ -109,15 +108,14 @@ class Solver(object):
             self.results.reward.add(step_result.reward)
             self.results.undiscounted_return.running_total += step_result.reward
             self.results.discounted_return.running_total += (step_result.reward * discount)
+
             discount *= self.model.sys_cfg["discount"]
             state = step_result.next_state
 
-            console(2, module + ".run", "Step Result.Action = ")
-            console_no_print(2, step_result.action.print_action)
-            console(2, module + ".run", "Step Result.Observation = ")
-            console_no_print(2, step_result.observation.print_observation)
-            console(2, module + ".run", "Step Result.Next_State = ")
-            console_no_print(2, step_result.next_state.print_state)
+            print "======================================================"
+            console(2, module + ".run", "Step Result.Action = " + step_result.action.to_string())
+            console(2, module + ".run", "Step Result.Observation = " + step_result.observation.to_string())
+            console(2, module + ".run", "Step Result.Next_State = " + step_result.next_state.to_string())
             console(2, module + ".run", "Step Result.Reward = " + str(step_result.reward))
 
             if step_result.is_terminal:
@@ -126,12 +124,12 @@ class Solver(object):
                 new_hist_entry.action = step_result.action
                 new_hist_entry.observation = step_result.observation
                 new_hist_entry.register_entry(new_hist_entry, None, step_result.next_state)
-                print "Terminated"
+                print "Terminated after episode step " + str(i)
                 break
 
             out_of_particles = mcts.update(step_result)
 
-            print "num of particles generated = ", mcts.policy.root.state_particles.__len__()
+            print "num of particles pushed over to new root = ", mcts.policy.root.state_particles.__len__()
 
             if out_of_particles:
                 print "Out of particles, finishing episode with random actions"
@@ -145,12 +143,9 @@ class Solver(object):
                     discount *= self.model.sys_cfg["discount"]
                     state = step_result.next_state
 
-                    console(2, module + ".run", "Step Result.Action = ")
-                    console_no_print(2, step_result.action.print_action)
-                    console(2, module + ".run", "Step Result.Observation = ")
-                    console_no_print(2, step_result.observation.print_observation)
-                    console(2, module + ".run", "Step Result.Next_State = ")
-                    console_no_print(2, step_result.next_state.print_state)
+                    console(2, module + ".run", "Step Result.Action = " + step_result.action.to_string())
+                    console(2, module + ".run", "Step Result.Observation = " + step_result.observation.to_string())
+                    console(2, module + ".run", "Step Result.Next_State = " + step_result.next_state.to_string())
                     console(2, module + ".run", "Step Result.Reward = " + str(step_result.reward))
 
                     if step_result.is_terminal:
@@ -166,6 +161,7 @@ class Solver(object):
                 break
 
             elapsed_time = time.time() - start_time
+            print "MCTS Step Forward took ", elapsed_time
             if elapsed_time > self.model.sys_cfg["time_out"]:
                 print "Timed out after ", i,
                 print " runs in ", elapsed_time,

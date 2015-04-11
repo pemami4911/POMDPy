@@ -122,7 +122,12 @@ class Model(object):
         :return: list of particles
         """
         particles = []
-        obs_map = previous_belief.action_map.get_action_node(action).observation_map
+        action_node = previous_belief.action_map.get_action_node(action)
+        if action_node is None:
+            print 'UGH'
+            obs_map = None
+        else:
+            obs_map = action_node.observation_map
         child_node = obs_map.get_belief(obs)
 
         while particles.__len__() < n_particles:

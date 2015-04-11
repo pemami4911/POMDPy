@@ -3,11 +3,8 @@ __author__ = 'patrickemami'
 import random
 import logging
 import json
-
-import numpy as np
-
 import config_parser
-
+import numpy as np
 
 config = json.load(open(config_parser.sys_cfg, "r"))
 

@@ -38,3 +38,10 @@ class DiscreteObservation(Pt.Point):
         pretty printing
         :return:
         """
+
+    @abc.abstractmethod
+    def to_string(self):
+        """
+        Returns a String version of the observation
+        :return:
+        """

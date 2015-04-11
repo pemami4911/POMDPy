@@ -50,6 +50,23 @@ class RockAction(Da.DiscreteAction):
         else:
             print "UNDEFINED ACTION"
 
+    def to_string(self):
+        if self.action_type >= ActionType.CHECK:
+            action = "CHECK"
+        elif self.action_type is ActionType.NORTH:
+            action = "NORTH"
+        elif self.action_type is ActionType.EAST:
+            action = "EAST"
+        elif self.action_type is ActionType.SOUTH:
+            action = "SOUTH"
+        elif self.action_type is ActionType.WEST:
+            action = "WEST"
+        elif self.action_type is ActionType.SAMPLE:
+            action = "SAMPLE"
+        else:
+            action = "UNDEFINED ACTION"
+        return action
+
     # Override
     def get_bin_number(self):
         return self.action_type

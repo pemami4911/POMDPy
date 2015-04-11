@@ -5,7 +5,10 @@ import RockAction as Ra
 import GridPosition as Gp
 import logging
 import numpy as np
+import math
+import itertools
 
+# Utility function
 class RockData:
     """
     Stores data about each rock
@@ -47,8 +50,21 @@ class PositionAndRockData(Hd.HistoricalData):
         # Holds reference to the function for generating legal actions
         self.legal_actions = self.generate_legal_actions
 
-    def copy(self):
+    def copy_rock_data(self, other_data):
+        new_rock_data = []
+        [new_rock_data.append(RockData()) for _ in other_data]
+        for i, j in itertools.izip(other_data, new_rock_data):
+            j.check_count = i.check_count
+            j.chance_good = i.chance_good
+            j.goodness_number = i.goodness_number
+        return new_rock_data
+
+    def deep_copy(self):
         return PositionAndRockData(self.model, self.grid_position.copy(), self.all_rock_data, self.solver)
+
+    def shallow_copy(self):
+        new_rock_data = self.copy_rock_data(self.all_rock_data)
+        return PositionAndRockData(self.model, self.grid_position.copy(), new_rock_data, self.solver)
 
     def update(self, other_belief):
         self.all_rock_data = other_belief.data.all_rock_data
@@ -64,7 +80,7 @@ class PositionAndRockData(Hd.HistoricalData):
         if not isinstance(rock_action, Ra.RockAction):
             rock_action = Ra.RockAction(rock_action)
 
-        next_data = self.copy()
+        next_data = self.deep_copy()
         next_position, is_legal = self.model.make_next_position(self.grid_position.copy(), rock_action.action_type)
         next_data.grid_position = next_position
         if not is_legal:
@@ -86,6 +102,7 @@ class PositionAndRockData(Hd.HistoricalData):
 
             rock_data = next_data.all_rock_data[rock_no]
             rock_data.check_count += 1
+
             likelihood_good = rock_data.chance_good
             likelihood_bad = 1 - likelihood_good
 
@@ -98,9 +115,15 @@ class PositionAndRockData(Hd.HistoricalData):
                 likelihood_good *= probability_incorrect
                 likelihood_bad *= probability_correct
 
-            assert likelihood_good + likelihood_bad is not 0
+            if np.abs(likelihood_good) < 0.01 and np.abs(likelihood_bad) < 0.01:
+                # No idea whether good or bad. reset data
+                # print "Had to reset RockData"
+                rock_data = RockData()
+            else:
+                rock_data.chance_good = likelihood_good / (likelihood_good + likelihood_bad)
 
-            rock_data.chance_good = likelihood_good / (likelihood_good + likelihood_bad)
+            if math.isnan(rock_data.chance_good):
+                print 'Bad value'
 
         return next_data
 
@@ -141,9 +164,8 @@ class PositionAndRockData(Hd.HistoricalData):
         for i in range(0, n_rocks):
             #Once an interesting rock is found, break out of the for loop
 
-            if worth_while_rock_found:
-                break
-
+            #if worth_while_rock_found:
+            #    break
             rock_data = self.all_rock_data[i]
             if rock_data.chance_good != 0.0 and rock_data.goodness_number >= 0:
                 worth_while_rock_found = True

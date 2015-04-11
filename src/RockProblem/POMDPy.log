@@ -1,13 +1,108 @@
-2015-04-10 02:05:19,634 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
-2015-04-10 02:20:04,510 - Model.Solver - 100	        1.0		10.0	                0.0		                1.49890254049	        0.0		        884.855869055
-2015-04-10 02:36:56,894 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+2015-04-11 00:31:58,243 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+2015-04-11 00:40:12,516 - Model.Solver - 1000	        2.0		20.0	                0.0		                8.58385672528	    0.832299112226		247.120000005
+2015-04-11 00:42:22,683 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+2015-04-11 00:42:30,098 - Model.Solver - 2	            2.0		10.0	                0.0		                7.54436414062	    0.136786437015		3.69400000572
+2015-04-11 00:43:33,069 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+2015-04-11 00:43:40,325 - Model.Solver - 2	            2.0		10.0	                0.0		                7.16714593359       0.129947115164		3.61400008202
+2015-04-11 00:45:16,690 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
 
-2015-04-10 02:39:04,532 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+2015-04-11 00:46:21,729 - Model.Solver - 2000	1.0		10.0	0.0		7.35091890625	0.0		65.0260000229
+2015-04-11 00:46:38,904 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
 
-2015-04-10 02:39:52,545 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+2015-04-11 00:46:53,536 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
 
-2015-04-10 02:41:09,667 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+2015-04-11 00:49:16,802 - Model.Solver - 2000	1.0		10.0	0.0		0.0562450275932	0.0		143.243999958
+2015-04-11 00:49:33,176 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
 
-2015-04-10 02:41:29,979 - Model.Solver - 100	1.0		10.0	0.0		5.40360087663	0.0		20.2925341129
-2015-04-10 02:42:51,793 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+2015-04-11 00:53:50,700 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 00:54:15,591 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 00:57:39,538 - Model.Solver - 2000	2.0		10.0	0.0		4.14780067381	2.2649466231		101.958999991
+2015-04-11 00:59:59,388 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 01:01:59,971 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 01:03:45,400 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 01:06:23,941 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 01:07:38,842 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 01:08:05,664 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 01:10:47,483 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 01:13:11,015 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 01:46:40,019 - Model.Solver - 2500	10.0		10.0	0.0		5.93821387748	0.117095869109		200.887399983
+2015-04-11 10:23:45,427 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 10:24:25,128 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 10:42:23,040 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 10:42:35,068 - Model.Solver - 100	1.0		10.0	0.0		5.68800092276	0.0		12.010999918
+2015-04-11 10:43:19,078 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 10:56:56,871 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 10:57:00,609 - Model.Solver - 100	1.0		10.0	0.0		7.35091890625	0.0		3.72599983215
+2015-04-11 10:57:36,197 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 10:57:41,029 - Model.Solver - 1000	1.0		10.0	0.0		7.737809375	0.0		4.81999993324
+2015-04-11 10:58:30,913 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 10:58:35,959 - Model.Solver - 1000	1.0		10.0	0.0		7.737809375	0.0		5.03299999237
+2015-04-11 10:59:19,611 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 10:59:23,365 - Model.Solver - 1	1.0		10.0	0.0		7.35091890625	0.0		3.74000000954
+2015-04-11 11:00:05,302 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:00:09,009 - Model.Solver - 1	1.0		10.0	0.0		7.35091890625	0.0		3.6930000782
+2015-04-11 11:01:35,167 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:01:41,901 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:08:50,012 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:08:53,789 - Model.Solver - 1	1.0		10.0	0.0		7.35091890625	0.0		3.76300001144
+2015-04-11 11:13:04,631 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:15:42,579 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:17:08,226 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:22:53,282 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:24:00,108 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:24:04,384 - Model.Solver - 1	1.0		30.0	0.0		12.6110795109	0.0		4.25800013542
+2015-04-11 11:28:09,430 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:30:00,144 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:30:15,118 - Model.Solver - 1	2.0		40.0	0.0		2.82642448254	0.840230093659		7.46899998188
+2015-04-11 11:37:47,645 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:38:17,644 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 11:43:42,690 - Model.Solver - 1000	2.0		10.0	0.0		4.32514290825	0.390044967449		162.509499907
+2015-04-11 11:47:39,473 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 12:25:35,838 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 12:57:48,795 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 13:08:35,864 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 13:36:14,312 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 13:44:49,888 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 13:44:56,305 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 13:49:50,732 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-04-11 14:11:31,257 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
 

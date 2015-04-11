@@ -55,7 +55,21 @@ class BeliefTree(BeliefStructure.BeliefStructure):
         return self.root
 
     def reset_root_data(self):
+        """
+        Completely resets the root data
+        :return:
+        """
         self.root.data = self.solver.model.create_root_historical_data(self.solver)
+
+    def reset_data(self, root_data=None):
+        """
+        Keeps information from the root
+        :return:
+        """
+        if root_data is not None:
+            self.root.data.reset(root_data)
+        else:
+            self.root.data.reset()
 
     def initialize(self):
         self.reset_root_data()

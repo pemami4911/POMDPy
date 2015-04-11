@@ -131,6 +131,8 @@ class RockModel(Model.Model):
         self.num_states = pow(2, self.n_rocks)
         self.min_val = -self.illegal_move_penalty / (1 - self.sys_cfg['discount'])
         self.max_val = self.good_rock_reward * self.n_rocks + self.exit_reward
+        self.actual_rock_states = self.sample_rocks()
+        print "Actual rock states = ", self.actual_rock_states
 
     ''' Utility functions '''
     # returns the RSCellType at the specified position
@@ -155,7 +157,6 @@ class RockModel(Model.Model):
     ''' Sampling '''
     def sample_an_init_state(self):
         self.sampled_rock_yet = False
-        self.actual_rock_states = self.sample_rocks()
         return Rs.RockState(self.start_position, self.sample_rocks())
 
     def sample_state_uninformed(self):
@@ -318,10 +319,10 @@ class RockModel(Model.Model):
 
             # if the agent never sampled any rocks and yet the agent believes there are still good rocks out there,
             # penalize the agent for trying to escape to the exit !!!
-            if not self.sampled_rock_yet and self.any_good_rocks:
-                return -self.finishing_empty_handed
-            else:
-                return self.exit_reward
+            #if not self.sampled_rock_yet and self.any_good_rocks:
+            #    return -self.finishing_empty_handed
+            #else:
+            return self.exit_reward
 
         if action.action_type is Ra.ActionType.SAMPLE:
             pos = state.position.copy()
@@ -346,11 +347,11 @@ class RockModel(Model.Model):
                 # otherwise, I either sampled a bad rock I thought was good, sampled a good rock I thought was bad,
                 # or sampled a bad rock I thought was bad. All bad behavior!!!
                 else:
-                    #self.logger.info("Bad rock penalty - %s", str(-self.bad_rock_penalty))
+                    # self.logger.info("Bad rock penalty - %s", str(-self.bad_rock_penalty))
                     self.num_bad_rocks_sampled += 1.0
                     return -self.bad_rock_penalty
             else:
-                #self.logger.warning("Invalid sample action on non-existent rock while making reward!")
+                # self.logger.warning("Invalid sample action on non-existent rock while making reward!")
                 return -self.illegal_move_penalty
 
         if action.action_type >= Ra.ActionType.CHECK:
@@ -376,8 +377,8 @@ class RockModel(Model.Model):
             self.logger.warning("Tried to generate a step with a null action")
             return None
 
-        #if 0 <= action <= 4 + self.n_rocks and not isinstance(action, Ra.RockAction):
-         #   action = Ra.RockAction(action)
+        # if 0 <= action <= 4 + self.n_rocks and not isinstance(action, Ra.RockAction):
+        #   action = Ra.RockAction(action)
 
         assert isinstance(action, Ra.RockAction)
         assert isinstance(state, Rs.RockState)
