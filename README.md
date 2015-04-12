@@ -1,23 +1,20 @@
-Q-Learning and Multi-Armed Bandit Approach to Solving POMDPs
-=======================================================
+This open-source project contains a framework for implementing discrete or continuous POMDPs in Python. The organization of the code was inspired by [TAPIR](http://robotics.itee.uq.edu.au/~hannakur/dokuwiki/doku.php?id=wiki:tapir) and the [POMCP](http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html) algorithm.
 
-This project will contain the Python code that I am writing to implement my altered version of the Q-Learning 
-Stochastic Approximation algorithm and the benchmark problem that I am going to be testing it on. 
+This is project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments or suggestions, feel free to send me a pull request or send me an email at pemami@ufl.edu.  
 
-Notes
-=====
+## Belief Tree structure ##
 
-Belief Tree structure
----------------------
-BeliefNode -> ActionMapping -> ActionMappingEntry -> ActionNode -> ObservationMap -> ObservationMappingEntry -> BeliefNode
+Parent BeliefNode -> ActionMapping -> ActionMappingEntry -> ActionNode -> ObservationMap -> ObservationMappingEntry -> Child BeliefNode
 
-If the Sampling action doesn't do the agent good early on, it will be mostly ignored because its Q is getting flattened
+## Dependencies ##
 
-An exploring agent needs landmarks to localize --> SLAM
-Otherwise it becomes too challenging for it to obtain a good representation of the environment just by
-using random action sampling to find its way around
+This project uses:
+* Python 2.7.9
+* numpy 1.9.2
+* matplotlib 1.4.3
+* pytest 2.7.0
 
--> TD Q Learning acts randomly with a decreasing rate : epsilon-greedy. 
-
--> Need to set up a knowledge base module, where the programmer specifies the rules that govern the action available 
-to the agent at each time step
+## TODO ##
+* Unit Test coverage is currently minimal, so this area is going to be expanded upon soon
+* The only current "working" test-problem is RockSample. More test problems are being worked on 
+* An extension for GPU-MCTS is being planned. The NumbaPro Python module seems to be a good bet for this
