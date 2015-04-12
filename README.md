@@ -7,12 +7,8 @@ From the root directory of the project, run
     `python setup.py install`
 
 ## Running a sample ##
-After tweaking the configuration files found in the config package, run the RockSample Problem with 
-    `python src/run_pomd.py`
-    
-## Belief Tree structure ##
-
-Parent BeliefNode -> ActionMapping -> ActionMappingEntry -> ActionNode -> ObservationMap -> ObservationMappingEntry -> Child BeliefNode
+After tweaking the configuration files found in the config package <optional>, run the RockSample Problem with 
+    `python src/run_pomdp.py`
 
 ## Dependencies ##
 
