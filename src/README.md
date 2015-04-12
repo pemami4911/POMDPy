@@ -17,3 +17,7 @@ Continuous POMDPs are not yet supported.
  
 Point.py, ActionMapping.py, ActionPool.py, ObservationPool.py,
 ObservationMapping.py, etc. in the POMDP package can all be extended to support a continuous POMDP.
+
+## Belief Tree structure ##
+
+Parent BeliefNode -> ActionMapping -> ActionMappingEntry -> ActionNode -> ObservationMap -> ObservationMappingEntry -> Child BeliefNode
