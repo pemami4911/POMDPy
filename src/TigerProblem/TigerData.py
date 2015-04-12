@@ -28,7 +28,7 @@ class TigerData(Hd.HistoricalData):
     def create_child(self, action, observation):
         next_data = self.copy()
 
-        if action.action_type > 1:
+        if action.bin_number > 1:
             ''' for open door actions, the belief distribution over possible states isn't changed '''
             return next_data
         else:

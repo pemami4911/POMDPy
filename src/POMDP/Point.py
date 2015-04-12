@@ -16,20 +16,6 @@ class Point(object):
         """
 
     @abc.abstractmethod
-    def hash(self):
-        """
-        Returns a hash value for this Action, should be consistent with 'equals'
-        :return:
-        """
-
-    @abc.abstractmethod
-    def equals(self, other_point):
-        """
-        Returns true iff the action is equal to the other action
-        :return:
-        """
-
-    @abc.abstractmethod
     def distance_to(self, other_point):
         """
         Returns the distance from this point to another point

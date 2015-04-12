@@ -12,7 +12,7 @@ class ActionNode(object):
         if parent_entry is not None:
             self.parent_entry = parent_entry
         else:
-            parent_entry = None
+            self.parent_entry = None
         self.observation_map = None
 
     def get_parent_belief(self):
@@ -25,12 +25,11 @@ class ActionNode(object):
 
     # setter for Tree methods
     def set_mapping(self, obs_mapping):
-        assert isinstance(obs_mapping, Om.ObservationMapping)
         self.observation_map = obs_mapping
 
     # returns belief node, boolean
     def create_or_get_child(self, obs):
-        child_node = self.get_child(obs)
+        child_node = self.observation_map.get_belief(obs)
         added = False
         if child_node is None:
             # Create the new child belief node

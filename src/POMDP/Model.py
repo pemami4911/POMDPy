@@ -38,6 +38,13 @@ class Model(object):
         The Simulator (Model) should be reset before each simulation
         :return:
         """
+    @abc.abstractmethod
+    def update(self, sim_data):
+        """
+        Update the state of the simulator with sim_data
+        :param sim_data:
+        :return:
+        """
 
     @abc.abstractmethod
     def generate_step(self, state, action):
@@ -63,13 +70,6 @@ class Model(object):
         """
         Samples a state from a poorly-informed prior. This is used by the provided default
         implementation of the second generateParticles() method.
-        :return:
-        """
-
-    @abc.abstractmethod
-    def get_legal_action(self, data):
-        """
-        :param data:
         :return:
         """
 
@@ -124,8 +124,7 @@ class Model(object):
         particles = []
         action_node = previous_belief.action_map.get_action_node(action)
         if action_node is None:
-            print 'UGH'
-            obs_map = None
+            return particles
         else:
             obs_map = action_node.observation_map
         child_node = obs_map.get_belief(obs)
@@ -169,13 +168,6 @@ class Model(object):
 
     def create_observation_pool(self, solver):
         return Op.DiscreteObservationPool(solver)
-
-
-    def create_search_strategy(self, solver):
-        pass
-
-    def create_estimation_strategy(self, solver):
-        pass
 
 class StepResult:
     """

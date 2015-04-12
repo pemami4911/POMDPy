@@ -53,7 +53,7 @@ class RockModel(Model.Model):
         self.any_good_rocks = False
 
         # ------------- Data Collection ---------- #
-        self.unique_rocks_sampled = {}
+        self.unique_rocks_sampled = []
         self.num_times_sampled = 0.0
         self.good_samples = 0.0
         self.num_reused_nodes = 0
@@ -137,26 +137,16 @@ class RockModel(Model.Model):
     ''' Utility functions '''
     # returns the RSCellType at the specified position
     def get_cell_type(self, pos):
-        assert isinstance(pos, Gp.GridPosition)
         return self.env_map[pos.i][pos.j]
 
     def get_sensor_correctness_probability(self, distance):
         assert self.half_efficiency_distance is not 0, self.logger.warning("Tried to divide by 0! Naughty naughty!")
         return (1 + np.power(2.0, -distance / self.half_efficiency_distance)) * 0.5
 
-    def reset(self):
-        self.sampled_rock_yet = False
-        self.num_times_sampled = 0.0
-        self.good_samples = 0.0
-        self.num_reused_nodes = 0
-        self.num_bad_rocks_sampled = 0
-        self.num_bad_checks = 0
-        self.num_good_checks = 0
-        self.unique_rocks_sampled = {}
-
     ''' Sampling '''
     def sample_an_init_state(self):
         self.sampled_rock_yet = False
+        self.unique_rocks_sampled = []
         return Rs.RockState(self.start_position, self.sample_rocks())
 
     def sample_state_uninformed(self):
@@ -189,21 +179,27 @@ class RockModel(Model.Model):
 
     ''' ---------------Implementation of abstract Model class ---------------'''
     def is_terminal(self, rock_state):
-        assert isinstance(rock_state, Rs.RockState)
         return self.get_cell_type(rock_state.position) is RSCellType.GOAL
 
-    def is_valid(self, rock_state):
-        if not isinstance(rock_state, Rs.RockState):
-            return
+    def is_valid(self, state):
+        if isinstance(state, Rs.RockState):
+            return self.is_valid_state(state)
+        elif isinstance(state, Gp.GridPosition):
+            return self.is_valid_pos(state)
+        else:
+            return False
+
+    def is_valid_state(self, rock_state):
         pos = rock_state.position
-        assert isinstance(pos, Gp.GridPosition)
+        return 0 <= pos.i < self.n_rows and 0 <= pos.j < self.n_cols and \
+            self.get_cell_type(pos) is not RSCellType.OBSTACLE
+
+    def is_valid_pos(self, pos):
         return 0 <= pos.i < self.n_rows and 0 <= pos.j < self.n_cols and \
             self.get_cell_type(pos) is not RSCellType.OBSTACLE
 
     ''' --------------- get next position and state ---------------'''
     def make_adjacent_position(self, pos, action_type):
-        assert isinstance(pos, Gp.GridPosition)
-
         if action_type is Ra.ActionType.NORTH:
             pos.i -= 1
         elif action_type is Ra.ActionType.EAST:
@@ -215,8 +211,6 @@ class RockModel(Model.Model):
         return pos
 
     def make_next_position(self, pos, action_type):
-        assert isinstance(pos, Gp.GridPosition)
-
         is_legal = True
 
         if action_type >= Ra.ActionType.CHECK:
@@ -225,24 +219,23 @@ class RockModel(Model.Model):
         elif action_type is Ra.ActionType.SAMPLE:
             # if you took an illegal action and are in an invalid position
             # sampling is not a legal action to take
-            if not self.is_valid(Rs.RockState(pos, None)):
+            if not self.is_valid_pos(pos):
                 is_legal = False
             else:
                 rock_no = self.get_cell_type(pos)
                 if 0 > rock_no or rock_no >= self.n_rocks:
-                    #self.logger.warning("Tried to sample a non-existent rock... naughty naughty!")
                     is_legal = False
         else:
             old_position = pos.copy()
             pos = self.make_adjacent_position(pos, action_type)
-            if not self.is_valid(Rs.RockState(pos, None)):
+            if not self.is_valid_pos(pos):
                 pos = old_position
                 is_legal = False
         return pos, is_legal
 
     ''' --------------- Black Box Dynamics stuff --------------'''
     def make_next_state(self, state, action):
-        action_type = action.action_type
+        action_type = action.bin_number
         next_position, is_legal = self.make_next_position(state.position.copy(), action_type)
 
         if not is_legal:
@@ -257,7 +250,7 @@ class RockModel(Model.Model):
             if rock:
                 self.any_good_rocks = True
 
-        if action_type == Ra.ActionType.SAMPLE:
+        if action_type is Ra.ActionType.SAMPLE:
             self.num_times_sampled += 1.0
 
             rock_no = self.get_cell_type(next_position)
@@ -266,19 +259,20 @@ class RockModel(Model.Model):
         return Rs.RockState(next_position, next_state_rock_states), True
 
     def make_observation(self, action, next_state):
-        assert isinstance(action, Ra.RockAction)
-        assert isinstance(next_state, Rs.RockState)
-
         # generate new observation if not checking or sampling a rock
-        if action.action_type < Ra.ActionType.SAMPLE:
+        if action.bin_number < Ra.ActionType.SAMPLE:
             # Defaults to empty cell and Bad Rock
             obs = Ro.RockObservation()
             # self.logger.info("Created Rock Observation - is_good: %s", str(obs.is_good))
             return obs
-        elif action.action_type == Ra.ActionType.SAMPLE:
+        elif action.bin_number == Ra.ActionType.SAMPLE:
             # The cell is not empty since it contains a rock, and the rock is now "Bad"
             obs = Ro.RockObservation(False, False)
             return obs
+
+        # Already sampled this Rock so it is NO GOOD
+        if action.rock_no in self.unique_rocks_sampled:
+            return Ro.RockObservation(False, False)
 
         observation = self.actual_rock_states[action.rock_no]
 
@@ -309,10 +303,6 @@ class RockModel(Model.Model):
         return Ro.RockObservation(observation, False)
 
     def make_reward(self, state, action, next_state, is_legal):
-        assert isinstance(action, Ra.RockAction)
-        assert isinstance(state, Rs.RockState)
-        assert isinstance(next_state, Rs.RockState)
-
         if not is_legal:
             return -self.illegal_move_penalty
         if self.is_terminal(next_state):
@@ -324,23 +314,15 @@ class RockModel(Model.Model):
             #else:
             return self.exit_reward
 
-        if action.action_type is Ra.ActionType.SAMPLE:
+        if action.bin_number is Ra.ActionType.SAMPLE:
             pos = state.position.copy()
             rock_no = self.get_cell_type(pos)
             if 0 <= rock_no < self.n_rocks:
-
-                ''' statistics stuff'''
-                # Tried to sample a rock - GOOD
-                self.sampled_rock_yet = True
-                ''' end statistics stuff '''
-
                 # If the rock ACTUALLY is good, AND I currently believe it to be good, I get rewarded
                 if self.actual_rock_states[rock_no] and state.rock_states[rock_no]:
                     # IMPORTANT - After sampling, the rock is marked as
                     # bad to show that it is has been dealt with
                     # "next states".rock_states[rock_no] is set to False in make_next_state
-                    if not rock_no in self.unique_rocks_sampled:
-                        self.unique_rocks_sampled.__setitem__(rock_no, rock_no)
                     state.rock_states[rock_no] = False
                     self.good_samples += 1.0
                     return self.good_rock_reward
@@ -354,7 +336,7 @@ class RockModel(Model.Model):
                 # self.logger.warning("Invalid sample action on non-existent rock while making reward!")
                 return -self.illegal_move_penalty
 
-        if action.action_type >= Ra.ActionType.CHECK:
+        if action.bin_number >= Ra.ActionType.CHECK:
             if state.position.euclidean_distance(self.rock_positions[action.rock_no]) > self.half_efficiency_distance:
                 self.num_bad_checks += 1
                 return -self.checking_penalty
@@ -366,22 +348,13 @@ class RockModel(Model.Model):
         return 0
 
     def generate_reward(self, state, action):
-        assert isinstance(action, Ra.RockAction)
-        assert isinstance(state, Rs.RockState)
-
         next_state, is_legal = self.make_next_state(state, action)
         return self.make_reward(state, action, next_state, is_legal)
 
     def generate_step(self, state, action):
         if action is None:
-            self.logger.warning("Tried to generate a step with a null action")
+            print "Tried to generate a step with a null action"
             return None
-
-        # if 0 <= action <= 4 + self.n_rocks and not isinstance(action, Ra.RockAction):
-        #   action = Ra.RockAction(action)
-
-        assert isinstance(action, Ra.RockAction)
-        assert isinstance(state, Rs.RockState)
 
         result = Model.StepResult()
         result.next_state, is_legal = self.make_next_state(state, action)
@@ -402,7 +375,7 @@ class RockModel(Model.Model):
         assert isinstance(obs, Ro.RockObservation)
 
         new_particles = []
-        if action.action_type >= Ra.ActionType.CHECK:
+        if action.bin_number >= Ra.ActionType.CHECK:
             # rock no for the rock being Checked
             rock_no = action.rock_no
             weight_map = {}
@@ -446,16 +419,13 @@ class RockModel(Model.Model):
         return Model.Model.generate_particles(self, previous_belief, action, obs, n_particles, prev_particles)
 
     def generate_particles_uninformed(self, previous_belief, action, obs, n_particles):
-        assert isinstance(action, Ra.RockAction)
-        assert isinstance(obs, Ro.RockObservation)
-
         old_pos = previous_belief.get_states()[0].position
 
         particles = []
         while particles.__len__() < n_particles:
             old_state = Rs.RockState(old_pos, self.sample_rocks())
             result, is_legal = self.generate_step(old_state, action)
-            if obs.equals(result.observation):
+            if obs == result.observation:
                 particles.append(result.next_state)
         return particles
 
@@ -481,10 +451,19 @@ class RockModel(Model.Model):
             print '\n'
 
     ''' --------------- model customizations --------------- '''
-    # Generate a random legal action to take
-    def get_legal_action(self, position_data):
-        actions = position_data.generate_legal_actions()
-        return actions[np.random.random_integers(0, actions.__len__() - 1)]
+    def reset(self):
+        self.good_samples = 0.0
+        self.num_reused_nodes = 0
+        self.num_bad_rocks_sampled = 0
+        self.num_bad_checks = 0
+        self.num_good_checks = 0
+
+    def update(self, step_result):
+        if step_result.action.bin_number == Ra.ActionType.SAMPLE:
+            rock_no = self.get_cell_type(step_result.next_state.position)
+            self.unique_rocks_sampled.append(rock_no)
+            self.num_times_sampled = 0.0
+            self.sampled_rock_yet = True
 
     def get_legal_actions(self):
         pass

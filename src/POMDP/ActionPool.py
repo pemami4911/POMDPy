@@ -39,13 +39,6 @@ class DiscreteActionPool(ActionPool):
      * actions to try, and the order to try them in, will be set.
     """
     @abc.abstractmethod
-    def get_number_of_bins(self):
-        """
-        Returns the number of bins in the action discretization; the bins are enumerated
-        :return:
-        """
-
-    @abc.abstractmethod
     def sample_an_action(self, bin_number):
         """
         :param bin_number:
@@ -70,7 +63,6 @@ class DiscreteActionPool(ActionPool):
         """
 
     def create_action_mapping(self, belief_node):
-        assert isinstance(belief_node, Bn.BeliefNode)
         return Dam.DiscreteActionMapping(belief_node, self, self.create_bin_sequence())
 
 class EnumeratedActionPool(DiscreteActionPool):
@@ -92,9 +84,6 @@ class EnumeratedActionPool(DiscreteActionPool):
         assert type(all_actions) is list
         self.all_actions = all_actions
 
-    def get_number_of_bins(self):
-        return self.all_actions.__len__()
-
     def sample_an_action(self, bin_number):
         return self.all_actions[bin_number]
 
@@ -102,6 +91,6 @@ class EnumeratedActionPool(DiscreteActionPool):
         return self.all_actions[np.random.random_integers(0, self.all_actions.__len__() - 1)]
 
     def create_bin_sequence(self, belief_node):
-        bins = range(0, self.get_number_of_bins())
+        bins = range(0, self.all_actions.__len__())
         shuffle(bins)
         return bins

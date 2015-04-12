@@ -3,6 +3,7 @@ __author__ = 'patrickemami'
 import BeliefNode
 import logging
 import BeliefStructure
+from memory_profiler import profile
 
 class BeliefTree(BeliefStructure.BeliefStructure):
     """
@@ -15,7 +16,6 @@ class BeliefTree(BeliefStructure.BeliefStructure):
 
     def __init__(self, solver):
         super(BeliefTree, self).__init__()
-        self.logger = logging.getLogger('Model.BeliefTree')
         self.solver = solver
         self.root = None
 
@@ -33,7 +33,7 @@ class BeliefTree(BeliefStructure.BeliefStructure):
 
         belief_node.parent_entry = None
         belief_node.action_map.owner = None
-        self.solver.action_pool.remove_mapping(belief_node.data, belief_node.action_map)
+        # self.solver.action_pool.remove_mapping(belief_node.data, belief_node.action_map)
         action_mapping_entries = belief_node.action_map.get_child_entries()
         for entry in action_mapping_entries:
             # Action Node

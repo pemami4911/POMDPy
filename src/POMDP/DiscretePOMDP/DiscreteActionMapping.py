@@ -8,13 +8,10 @@ import BeliefNode as Bn
 import itertools
 
 class DiscreteActionMapping(Am.ActionMapping):
-    def __init__(self, belief_node_owner, discrete_action_pool, bin_sequence, preferred_actions):
-        assert isinstance(belief_node_owner, Bn.BeliefNode)
-        assert isinstance(discrete_action_pool, Ap.DiscreteActionPool)
-
+    def __init__(self, belief_node_owner, discrete_action_pool, bin_sequence):
         super(DiscreteActionMapping, self).__init__(belief_node_owner)
         self.pool = discrete_action_pool
-        self.number_of_bins = self.pool.get_number_of_bins()
+        self.number_of_bins = self.pool.all_actions.__len__()
         self.entries = {}   # Dictionary of DiscreteActionMappingEntry objects
         self.bin_sequence = bin_sequence
         self.number_of_children = 0
@@ -31,13 +28,8 @@ class DiscreteActionMapping(Am.ActionMapping):
         for bin_number in self.bin_sequence:
             self.entries.get(bin_number).is_legal = True
 
-        if preferred_actions is not None:
-            for i in preferred_actions:
-                #self.entries.get(preferred_actions[i]).preferred_action = True
-                self.entries.get(i).total_q_value = 0.0
-
     def copy(self):
-        action_map_copy = DiscreteActionMapping(self.owner, self.pool, list(self.bin_sequence), [])
+        action_map_copy = DiscreteActionMapping(self.owner, self.pool, list(self.bin_sequence))
         action_map_copy.number_of_children = self.number_of_bins
         action_map_copy.entries = self.entries.copy()
         action_map_copy.number_of_children = self.number_of_children
@@ -62,12 +54,10 @@ class DiscreteActionMapping(Am.ActionMapping):
             self.entries.get(bin_number).is_legal = True
 
     def get_action_node(self, action):
-        return self.entries.get(action.get_bin_number()).child_node
+        return self.entries.get(action.bin_number).child_node
 
     def create_action_node(self, action):
-        entry = self.entries.get(action.get_bin_number())
-        # the child of this entry
-        # the parent of this action node is the entry
+        entry = self.entries.get(action.bin_number)
         entry.child_node = An.ActionNode(entry)
         self.number_of_children += 1
         return entry.child_node

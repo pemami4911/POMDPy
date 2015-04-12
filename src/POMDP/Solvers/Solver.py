@@ -7,6 +7,8 @@ import Statistic
 import History
 from console import *
 
+import cProfile
+
 module = "Solver"
 
 class Results():
@@ -20,7 +22,6 @@ class Results():
         Results.reward.running_total = 0.0
         Results.discounted_return.running_total = 0.0
         Results.undiscounted_return.running_total = 0.0
-
 
 class Solver(object):
 
@@ -78,10 +79,8 @@ class Solver(object):
                 print " runs in ", total_time,
                 print " seconds"
                 break
-
     def run(self, num_steps=None):
-
-        start_time = time.time()
+        run_start_time = time.time()
         discount = 1.0
 
         if num_steps is None:
@@ -101,9 +100,22 @@ class Solver(object):
         console(2, module + ".run", "num of particles generated = " + str(mcts.policy.root.state_particles.__len__()))
 
         for i in range(num_steps):
+            start_time = time.time()
             # action will be of type Discrete Action
             action = mcts.select_action()
+
+            '''
+            if state.position in self.model.rock_positions:
+                for entry in mcts.policy.root.action_map.get_all_entries():
+                    print "Action = ", entry.bin_number
+                    print "Visit count = ", entry.visit_count
+                    print "Mean Q Value = ", entry.mean_q_value
+                    print "is legal = ", entry.is_legal
+            '''
             step_result, is_legal = self.model.generate_step(state, action)
+
+            # if step_result.next_state.position in self.model.rock_positions:
+            #    print 'STOP'
 
             self.results.reward.add(step_result.reward)
             self.results.undiscounted_return.running_total += step_result.reward
@@ -168,7 +180,7 @@ class Solver(object):
                 print " seconds"
                 break
 
-        self.results.time.add(time.time() - start_time)
+        self.results.time.add(time.time() - run_start_time)
         self.results.discounted_return.add(self.results.discounted_return.running_total)
         self.results.undiscounted_return.add(self.results.undiscounted_return.running_total)
         print "Discounted Return statistics"

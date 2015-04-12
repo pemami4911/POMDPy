@@ -10,7 +10,6 @@ class ActionMapping(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, belief_node):
-        assert isinstance(belief_node, Bn.BeliefNode)
         self.owner = belief_node
 
     @abc.abstractmethod

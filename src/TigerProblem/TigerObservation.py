@@ -12,6 +12,7 @@ class TigerObservation(Do.DiscreteObservation):
     or vice versa
     """
     def __init__(self, source_of_roar):
+        super(TigerObservation, self).__init__((1, 0)[self.source_of_roar[0]])
         self.source_of_roar = source_of_roar
 
     def copy(self):
@@ -24,15 +25,7 @@ class TigerObservation(Do.DiscreteObservation):
         return (1, 0)[self.source_of_roar == other_observation.source_of_roar]
 
     def hash(self):
-        return self.get_bin_number()
-
-    def get_bin_number(self):
-        """
-        0 <= roaring is heard coming from door 0
-        1 <= heard coming from door 1
-        :return:
-        """
-        return (1, 0)[self.source_of_roar[0]]
+        return self.bin_number
 
     def print_observation(self):
         if self.source_of_roar[0]:

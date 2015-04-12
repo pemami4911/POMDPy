@@ -14,7 +14,6 @@ class ObservationMapping(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, action_node):
-        assert isinstance(action_node, An.ActionNode)
         self.owner = action_node
 
     #  -------------- Access to and management of child nodes. ---------------- #
@@ -32,13 +31,6 @@ class ObservationMapping(object):
         """
         Creates a new belief node for the given observation
         :param observation:
-        :return:
-        """
-
-    @abc.abstractmethod
-    def get_n_children(self):
-        """
-        Returns the number of child nodes associated with this mapping
         :return:
         """
 

@@ -37,16 +37,12 @@ class PositionAndRockData(Hd.HistoricalData):
     explicitly calculated probabilities of goodness for each rock.
     """
     def __init__(self, model, grid_position, all_rock_data, solver):
-        assert isinstance(grid_position, Gp.GridPosition)
         self.model = model
         self.solver = solver
         self.grid_position = grid_position
 
         # List of RockData indexed by the rock number
         self.all_rock_data = all_rock_data
-
-        self.logger = logging.getLogger("Model.RockModel.PositionAndRockData")
-
         # Holds reference to the function for generating legal actions
         self.legal_actions = self.generate_legal_actions
 
@@ -77,22 +73,17 @@ class PositionAndRockData(Hd.HistoricalData):
         return any_good_rocks
 
     def create_child(self, rock_action, rock_observation):
-        if not isinstance(rock_action, Ra.RockAction):
-            rock_action = Ra.RockAction(rock_action)
-
         next_data = self.deep_copy()
-        next_position, is_legal = self.model.make_next_position(self.grid_position.copy(), rock_action.action_type)
+        next_position, is_legal = self.model.make_next_position(self.grid_position.copy(), rock_action.bin_number)
         next_data.grid_position = next_position
-        if not is_legal:
-            self.logger.warning("I tried an illegal action!")
 
-        if rock_action.action_type is Ra.ActionType.SAMPLE:
+        if rock_action.bin_number is Ra.ActionType.SAMPLE:
             rock_no = self.model.get_cell_type(self.grid_position)
             next_data.all_rock_data[rock_no].chance_good = 0.0
             next_data.all_rock_data[rock_no].check_count = 10
             next_data.all_rock_data[rock_no].goodness_number = -10
 
-        elif rock_action.action_type >= Ra.ActionType.CHECK:
+        elif rock_action.bin_number >= Ra.ActionType.CHECK:
             rock_no = rock_action.rock_no
             rock_pos = self.model.rock_positions[rock_no]
 
@@ -122,17 +113,37 @@ class PositionAndRockData(Hd.HistoricalData):
             else:
                 rock_data.chance_good = likelihood_good / (likelihood_good + likelihood_bad)
 
-            if math.isnan(rock_data.chance_good):
-                print 'Bad value'
-
         return next_data
 
     def generate_legal_actions(self):
         legal_actions = []
-        for action in self.model.get_all_actions_in_order():
-            next_position, is_legal = self.model.make_next_position(self.grid_position.copy(), action.action_type)
-            if is_legal:    # if the action is legal
-                legal_actions.append(action.get_bin_number())
+        all_actions = xrange(0, 5 + self.model.n_rocks)
+        new_pos = self.grid_position.copy()
+        i = new_pos.i
+        j = new_pos.j
+
+        for action in all_actions:
+            if action is Ra.ActionType.NORTH:
+                new_pos.i -= 1
+            elif action is Ra.ActionType.EAST:
+                new_pos.j += 1
+            elif action is Ra.ActionType.SOUTH:
+                new_pos.i += 1
+            elif action is Ra.ActionType.WEST:
+                new_pos.j -= 1
+
+            if not self.model.is_valid_pos(new_pos):
+                new_pos.i = i
+                new_pos.j = j
+                continue
+            else:
+                if action is Ra.ActionType.SAMPLE:
+                    rock_no = self.model.get_cell_type(new_pos)
+                    if 0 > rock_no or rock_no >= self.model.n_rocks:
+                        continue
+                new_pos.i = i
+                new_pos.j = j
+                legal_actions.append(action)
         return legal_actions
 
     def generate_smart_actions(self):
@@ -261,7 +272,7 @@ class PositionData(Hd.HistoricalData):
         assert isinstance(rock_action, Ra.RockAction)
         assert isinstance(rock_observation, Ro.RockObservation)
         # self.model.make_next_position(pos,action_type) returns next_position, is_legal
-        next_position, is_legal = self.model.make_next_position(self.grid_position.copy(), rock_action.action_type)
+        next_position, is_legal = self.model.make_next_position(self.grid_position.copy(), rock_action.bin_number)
         if not is_legal:    # test is_legal, should be true
             self.logger.warning("I tried an illegal action!")
         return PositionData(self.model, next_position, self.all_rock_data)   # return new PositionData obj
@@ -270,9 +281,9 @@ class PositionData(Hd.HistoricalData):
         legal_actions = []
         for action in self.model.get_all_actions_in_order():
             pos_to_check = self.grid_position.copy()
-            next_position, is_legal = self.model.make_next_position(pos_to_check, action.action_type)
+            next_position, is_legal = self.model.make_next_position(pos_to_check, action.bin_number)
             if is_legal:    # if the action is legal
-                legal_actions.append(action.get_bin_number())
+                legal_actions.append(action.bin_number)
         return legal_actions
 
     def suggest_actions(self):

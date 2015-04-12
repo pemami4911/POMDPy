@@ -19,54 +19,50 @@ class RockAction(Da.DiscreteAction):
     The Rock sample problem Action class
     -implements get_bin_number() from DiscretizedAction class
 
-    class methods: action_type (Enum) and rock_no
+    class methods: bin_number (Enum) and rock_no
     """
 
-    def __init__(self, action_type):
-        self.action_type = action_type
-        if self.action_type >= ActionType.CHECK:
-            self.rock_no = self.action_type - ActionType.CHECK
+    def __init__(self, bin_number):
+        super(RockAction, self).__init__(bin_number)
+        if self.bin_number >= ActionType.CHECK:
+            self.rock_no = self.bin_number - ActionType.CHECK
         else:
             self.rock_no = 0
 
 
     # Override
     def copy(self):
-        return RockAction(self.action_type)
+        return RockAction(self.bin_number)
 
     def print_action(self):
-        if self.action_type >= ActionType.CHECK:
+        if self.bin_number >= ActionType.CHECK:
             print "CHECK"
-        elif self.action_type is ActionType.NORTH:
+        elif self.bin_number is ActionType.NORTH:
             print "NORTH"
-        elif self.action_type is ActionType.EAST:
+        elif self.bin_number is ActionType.EAST:
             print "EAST"
-        elif self.action_type is ActionType.SOUTH:
+        elif self.bin_number is ActionType.SOUTH:
             print "SOUTH"
-        elif self.action_type is ActionType.WEST:
+        elif self.bin_number is ActionType.WEST:
             print "WEST"
-        elif self.action_type is ActionType.SAMPLE:
+        elif self.bin_number is ActionType.SAMPLE:
             print "SAMPLE"
         else:
             print "UNDEFINED ACTION"
 
     def to_string(self):
-        if self.action_type >= ActionType.CHECK:
+        if self.bin_number >= ActionType.CHECK:
             action = "CHECK"
-        elif self.action_type is ActionType.NORTH:
+        elif self.bin_number is ActionType.NORTH:
             action = "NORTH"
-        elif self.action_type is ActionType.EAST:
+        elif self.bin_number is ActionType.EAST:
             action = "EAST"
-        elif self.action_type is ActionType.SOUTH:
+        elif self.bin_number is ActionType.SOUTH:
             action = "SOUTH"
-        elif self.action_type is ActionType.WEST:
+        elif self.bin_number is ActionType.WEST:
             action = "WEST"
-        elif self.action_type is ActionType.SAMPLE:
+        elif self.bin_number is ActionType.SAMPLE:
             action = "SAMPLE"
         else:
             action = "UNDEFINED ACTION"
         return action
-
-    # Override
-    def get_bin_number(self):
-        return self.action_type

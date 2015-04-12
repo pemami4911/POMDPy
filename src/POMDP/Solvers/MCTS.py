@@ -1,7 +1,7 @@
 __author__ = 'patrickemami'
 
 import numpy as np
-import random
+from memory_profiler import profile
 import BeliefTree as BT
 import ActionSelectors
 import Statistic
@@ -86,11 +86,25 @@ class MCTS(object):
 
     # TODO for abstraction purposes, Discrete Actions should be dealt with as integers, not as a specific Action Type
     def update(self, step_result):
-        if step_result.action.get_bin_number() > 4:
-            print 'Stop'
+
+        # Update the Simulator with the Step Result
+        self.model.update(step_result)
+
+        child_belief_node = self.policy.root.get_child(step_result.action, step_result.observation)
+
+        # If the child_belief_node is None because the step result randomly produced a different observation,
+        # grab any of the beliefs extending from the belief node's action node
+        if child_belief_node is None:
+            obs_mapping_entries = self.policy.root.action_map.get_action_node(step_result.action).\
+                observation_map.child_map.values()
+            for entry in obs_mapping_entries:
+                if entry.child_node is not None:
+                    child_belief_node = entry.child_node
+                    print "Had to grab nearest belief node...uncertainty introduced"
+                    break
 
         new_root = BeliefNode.BeliefNode(self.solver)
-        new_root.data = self.policy.root.data.create_child(step_result.action, step_result.observation)
+        new_root.data = child_belief_node.data.shallow_copy()
         new_root.action_map = self.solver.action_pool.create_action_mapping(new_root)
 
         # Extend the history sequence
@@ -99,8 +113,6 @@ class MCTS(object):
         new_hist_entry.action = step_result.action
         new_hist_entry.observation = step_result.observation
         new_hist_entry.register_entry(new_hist_entry, None, step_result.next_state)
-
-        child_belief_node = self.policy.root.get_child(step_result.action, step_result.observation)
 
         if child_belief_node is not None:
             console(2, module + ".update", "Matched " + str(child_belief_node.state_particles.__len__()) + " states")
@@ -150,8 +162,6 @@ class MCTS(object):
         for i in range(self.model.sys_cfg["num_sims"]):
             action = legal_actions[i%legal_actions.size()]
             state = self.policy.root.sample_particle()
-            assert self.model.is_valid(state)
-
             step_result = self.model.generate_step(state, action)
             new_hist_entry = self.history.add_entry()
             new_hist_entry.reward = step_result.reward
@@ -218,7 +228,6 @@ class MCTS(object):
         # Create a snapshot of the current information state
         initial_root_data = self.policy.root.data.shallow_copy()
 
-
         for i in range(self.model.sys_cfg["num_sims"]):
             # Reset the Simulator
             self.model.reset()
@@ -228,16 +237,11 @@ class MCTS(object):
             self.policy.root.data = initial_root_data.shallow_copy()
 
             state = self.policy.root.sample_particle()
-            assert self.model.is_valid(state)
-
             # Tree depth, which increases with each recursive step
             tree_depth = 0
             self.peak_tree_depth = 0
 
             console(3, module + ".UCT_search", "Starting simulation at random state = " + state.to_string())
-
-            if state.position.equals(GridPosition.GridPosition(4, 2)):
-                print 'BREAK'
 
             # initiate
             total_reward = self.simulate_node(state, self.policy.root, tree_depth)
@@ -246,7 +250,6 @@ class MCTS(object):
             self.tree_depth_stats.add(self.peak_tree_depth)
 
             console(3, module + ".UCT_search", "Total reward = " + str(total_reward))
-            console(3, module + ".UCT_search", "Unique Rocks Sampled = " + str(self.model.unique_rocks_sampled))
 
         # Reset the information state back to the state it was in before the simulations occurred for consistency
         self.policy.root.data = initial_root_data
@@ -303,8 +306,8 @@ class MCTS(object):
         # delayed_reward is "Q maximal"
         Q_value = (step_result.reward + self.model.sys_cfg["discount"] * delayed_reward) * self.step_size
 
-        belief_node.action_map.get_entry(action.get_bin_number()).update_visit_count(1)
-        belief_node.action_map.get_entry(action.get_bin_number()).update_q_value(Q_value)
+        belief_node.action_map.get_entry(action.bin_number).update_visit_count(1)
+        belief_node.action_map.get_entry(action.bin_number).update_q_value(Q_value)
 
         return Q_value
 

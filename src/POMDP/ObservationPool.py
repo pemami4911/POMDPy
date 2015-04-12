@@ -36,5 +36,4 @@ class DiscreteObservationPool(ObservationPool):
         self.solver = solver
 
     def create_observation_mapping(self, action_node):
-        assert isinstance(action_node, An.ActionNode)
         return Dom.DiscreteObservationMap(action_node, self.solver)

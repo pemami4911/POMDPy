@@ -13,7 +13,7 @@ class QTable(BeliefStructure.BeliefStructure):
         self.initialize()
 
     def initialize(self):
-        self.q_table = [[None for _ in range(self.solver.action_pool.get_number_of_bins())]
+        self.q_table = [[None for _ in range(self.solver.action_pool.all_actions.__len__())]
                         for _ in range(self.solver.model.num_states)]
-        self.visit_frequency_table = [[0 for _ in range(self.solver.action_pool.get_number_of_bins())]
+        self.visit_frequency_table = [[0 for _ in range(self.solver.action_pool.all_actions.__len__())]
                                         for _ in range(self.solver.model.num_states)]

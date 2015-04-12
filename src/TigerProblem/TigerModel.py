@@ -37,10 +37,6 @@ class TigerModel(Model.Model):
     def sample_state_uninformed(self):
         pass
 
-    # ????
-    def get_legal_action(self, data):
-        return random.choice(self.get_legal_actions())
-
     def get_legal_actions(self):
         return [ActionType.LISTEN, ActionType.OPEN_DOOR_0, ActionType.OPEN_DOOR_1]
 
@@ -52,9 +48,6 @@ class TigerModel(Model.Model):
         if action is None:
             return None
 
-        assert isinstance(action, TigerAction)
-        assert isinstance(state, TigerState)
-
         result = Model.StepResult()
         result.next_state = self.make_next_state(state, action)
         result.action = action.copy()
@@ -65,10 +58,10 @@ class TigerModel(Model.Model):
         return result
 
     def make_next_state(self, state, action):
-        if action.action_type == ActionType.LISTEN:
+        if action.bin_number == ActionType.LISTEN:
             return state
 
-        if action.action_type > 0:
+        if action.bin_number > 0:
              return TigerState(True, state.door_prizes)
         else:
              print "make_next_state - Illegal action was used"
@@ -81,12 +74,12 @@ class TigerModel(Model.Model):
         :return: reward
         """
 
-        if action.action_type == ActionType.LISTEN:
+        if action.bin_number == ActionType.LISTEN:
             return -1
 
         if self.is_terminal(next_state):
-            assert action.action_type > 0
-            if action.action_type - self.num_doors + 1 == self.tiger_door:
+            assert action.bin_number > 0
+            if action.bin_number - self.num_doors + 1 == self.tiger_door:
                 ''' You chose the door with the tiger :( '''
                 return -20
             else:
@@ -102,7 +95,7 @@ class TigerModel(Model.Model):
         :param next_state:
         :return:
         '''
-        if action.action_type > 0:
+        if action.bin_number > 0:
             '''
             No new information is gained by opening a door
             Since this action leads to a terminal state, we don't care

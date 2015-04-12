@@ -5,12 +5,14 @@ import Point as Pt
 
 class DiscreteObservation(Pt.Point):
 
-    def hash(self):
-        return self.get_bin_number()
+    def __init__(self, bin_number):
+        self.bin_number = bin_number
 
-    def equals(self, other_discrete_observation):
-        assert isinstance(other_discrete_observation, DiscreteObservation)
-        return self.get_bin_number() == other_discrete_observation.get_bin_number()
+    def __hash__(self):
+        return self.bin_number
+
+    def __eq__(self, other_discrete_observation):
+        return self.bin_number == other_discrete_observation.bin_number
 
     @abc.abstractmethod
     def copy(self):
@@ -22,13 +24,6 @@ class DiscreteObservation(Pt.Point):
     def distance_to(self, other_discrete_observation):
         """
         :param other_discrete_observation:
-        :return:
-        """
-
-    @abc.abstractmethod
-    def get_bin_number(self):
-        """
-        Returns the bin number associated with this observation
         :return:
         """
 

@@ -19,11 +19,8 @@ class DiscreteObservationMap(Om.ObservationMapping):
         self.solver = solver
         self.child_map = {}
         self.total_visit_count = 0
-        self.logger = logging.getLogger('Model.DiscreteObservationMapping')
 
     def get_belief(self, disc_observation):
-        assert isinstance(disc_observation, Do.DiscreteObservation)
-
         entry = self.get_entry(disc_observation)
         if entry is None:
             return None
@@ -31,22 +28,14 @@ class DiscreteObservationMap(Om.ObservationMapping):
             return entry.child_node
 
     def create_belief(self, disc_observation):
-        assert isinstance(disc_observation, Do.DiscreteObservation)
-
         entry = DiscreteObservationMapEntry()
         entry.map = self
         entry.observation = disc_observation
         entry.child_node = Bn.BeliefNode(self.solver, None, entry)
-
         self.child_map.__setitem__(entry.observation, entry)
         return entry.child_node
 
-    def get_n_children(self):
-        return self.child_map.__len__()
-
     def delete_child(self, obs_mapping_entry):
-        assert isinstance(obs_mapping_entry, DiscreteObservationMapEntry)
-
         self.total_visit_count -= obs_mapping_entry.visit_count
         del self.child_map[obs_mapping_entry.observation]
 
@@ -57,9 +46,8 @@ class DiscreteObservationMap(Om.ObservationMapping):
         return return_entries
 
     def get_entry(self, obs):
-        entries = self.child_map.values()
-        for i in entries:
-            if obs.equals(i.observation):
+        for i in self.child_map.values():
+            if obs == i.observation:
                 return i
         return None
 

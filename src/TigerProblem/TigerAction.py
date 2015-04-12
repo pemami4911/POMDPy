@@ -14,20 +14,21 @@ class ActionType(object):
 class TigerAction(Da.DiscreteAction):
 
     def __init__(self, action_type):
-        self.action_type = action_type
+        super(TigerAction, self).__init__(action_type)
+        self.bin_number = action_type
 
     def copy(self):
-        return TigerAction(self.action_type)
+        return TigerAction(self.bin_number)
 
     def get_bin_number(self):
-        return self.action_type
+        return self.bin_number
 
     def print_action(self):
-        if self.action_type is ActionType.LISTEN:
+        if self.bin_number is ActionType.LISTEN:
             print "Listening"
-        elif self.action_type is ActionType.OPEN_DOOR_0:
+        elif self.bin_number is ActionType.OPEN_DOOR_0:
             print "Opening door 1"
-        elif self.action_type is ActionType.OPEN_DOOR_1:
+        elif self.bin_number is ActionType.OPEN_DOOR_1:
             print "Opening door 2"
         else:
             print "Unknown action type"

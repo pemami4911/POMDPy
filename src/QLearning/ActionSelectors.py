@@ -84,7 +84,8 @@ def ucb_action(mcts, current_node, greedy):
     N = mapping.total_visit_count
     log_n = np.log(N + 1)
 
-    actions = mapping.get_all_entries()
+    actions = mapping.entries.values()
+    random.shuffle(actions)
     for action_entry in actions:
 
         # Skip illegal actions

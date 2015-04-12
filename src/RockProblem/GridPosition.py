@@ -2,7 +2,7 @@ __author__ = 'patrickemami'
 
 import numpy as np
 
-class GridPosition():
+class GridPosition(object):
 
     '''
     Supported Constructors - GripPosition(i,j) or GridPosition() - defaults to 0,0
@@ -14,6 +14,9 @@ class GridPosition():
         else:
             self.i = i
             self.j = j
+
+    def __eq__(self, other):
+        return self.i == other.i and self.j == other.j
 
     def print_position(self):
         print '(',
@@ -28,17 +31,11 @@ class GridPosition():
     def copy(self):
         return GridPosition(self.i, self.j)
 
-    def equals(self, other_position):
-        assert isinstance(other_position, GridPosition)
-        return self.i == other_position.i and self.j == other_position.j
-
     def as_list(self):
         return [self.i, self.j]
 
     def manhattan_distance(self, other_position):
-        assert isinstance(other_position, GridPosition)
         return np.linalg.norm(np.subtract(self.as_list(), other_position.as_list()), 1)
 
     def euclidean_distance(self, other_position):
-        assert isinstance(other_position, GridPosition)
         return np.sqrt(np.power(other_position.j - self.j, 2.0) + np.power(other_position.i - self.i, 2.0))

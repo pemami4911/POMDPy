@@ -28,7 +28,7 @@ class MCTSTestCase(unittest.TestCase):
         global mcts
         maximal = random.choice(mcts.policy.root.action_map.bin_sequence)
         mcts.policy.root.action_map.entries.get(maximal).update_q_value(1.0, 1)
-        self.assertEqual(ActionSelectors.ucb_action(mcts, mcts.policy.root, True).get_bin_number(), maximal)
+        self.assertEqual(ActionSelectors.ucb_action(mcts, mcts.policy.root, True).bin_number, maximal)
 
     def test_ucb_search(self):
         """
@@ -45,7 +45,7 @@ class MCTSTestCase(unittest.TestCase):
             else:
                 mcts.policy.root.action_map.entries.get(i).update_visit_count(100 + i)
             mcts.policy.root.action_map.entries.get(i).mean_q_value = 0.0
-        self.assertEqual(ActionSelectors.ucb_action(mcts, mcts.policy.root, False).get_bin_number(), lowest_count_action)
+        self.assertEqual(ActionSelectors.ucb_action(mcts, mcts.policy.root, False).bin_number, lowest_count_action)
 
 if __name__ == '__main__':
     unittest.main()

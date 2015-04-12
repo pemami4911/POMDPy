@@ -25,13 +25,6 @@ class DiscreteState(Pt.Point):
         """
 
     @abc.abstractmethod
-    def hash(self):
-        """
-        Returns a hash value for this state, should be consistent with 'equals'
-        :return:
-        """
-
-    @abc.abstractmethod
     def print_state(self):
         """
         Pretty prints the state
@@ -44,7 +37,7 @@ class DiscreteState(Pt.Point):
         :return: String
         """
 
-    def equals(self, other_state_as_list):
+    def __eq__(self, other_state_as_list):
         """
         By default simply checks for equivalency between the two state lists
         """

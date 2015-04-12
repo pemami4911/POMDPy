@@ -34,12 +34,12 @@ class RockState(Ds.DiscreteState):
         return distance
 
     def equals(self, other_rock_state):
-        return self.position.equals(other_rock_state.position) and self.rock_states is other_rock_state.rock_states
+        return self.position == other_rock_state.position and self.rock_states is other_rock_state.rock_states
 
     def copy(self):
         return RockState(self.position, self.rock_states)
 
-    def hash(self):
+    def __hash__(self):
         """
         Returns a decimal value representing the binary state string
         :return:

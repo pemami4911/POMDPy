@@ -1,23 +1,5 @@
 __author__ = 'patrickemami'
 
-'''
-import Belief
-
-b1 = Belief.BeliefNode(1, None) # root
-b1.addBelief(Belief.BeliefNode(2, b1))
-b1.addBelief(Belief.BeliefNode(3, b1))
-
-b = Belief.BeliefTree(b1)
-
-def traverse(node):
-    yield node
-    for child in node.children:
-        for n in traverse(child):
-            yield n
-
-for node in traverse(b.getRoot()):
-    node.print_data()
-'''
 import abc
 
 class A():
@@ -239,3 +221,16 @@ assert isinstance(step[0], Model.StepResult)
 step[0].print_step_result()
 
 print "------------- End Black Box Dynamics Testing ----------------"
+
+g = GridPosition(1, 2)
+h = [GridPosition(1, 2)]
+
+if g in h:
+    print "SUCCESS"
+else:
+    print "FAILURE"
+
+if g == GridPosition(1, 2):
+    print "SUCCESS"
+else:
+    print "FAILURE"

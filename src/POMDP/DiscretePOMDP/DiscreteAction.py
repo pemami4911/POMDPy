@@ -5,12 +5,14 @@ import Point as Pt
 
 class DiscreteAction(Pt.Point):
 
-    def hash(self):
-        return self.get_bin_number()
+    def __init__(self, bin_number):
+        self.bin_number = bin_number
+
+    def __hash__(self):
+        return self.bin_number
 
     def equals(self, other_discrete_action):
-        assert isinstance(other_discrete_action, DiscreteAction)
-        return self.get_bin_number() == other_discrete_action.get_bin_number()
+        return self.bin_number == other_discrete_action.bin_number
 
     @abc.abstractmethod
     def print_action(self):
@@ -30,13 +32,5 @@ class DiscreteAction(Pt.Point):
         """
         :return:
         """
-
-    @abc.abstractmethod
-    def get_bin_number(self):
-        """
-        Returns the bin number associated with this action
-        :return:
-        """
-
     def distance_to(self, other_discrete_action):
         pass

@@ -129,7 +129,7 @@ class Policy(threading.Thread):
                 print " # -------------- RESET ----------------- # "
                 for belief, action, reward in policy:
 
-                    if action.action_type == 4:
+                    if action.bin_number == 4:
                         print "###############"
                         action.print_action()
                         print "###############"

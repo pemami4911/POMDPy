@@ -33,18 +33,18 @@ class BeliefNode:
 
         self.solver = solver
         self.data = None    # The smart history-based data, to be used for history-based policies.
-        self.particles = []     # The set of history entries belonging to this node.
+        #self.particles = []     # The set of history entries belonging to this node.
         self.depth = -1
-        self.n_starting_sequences = 0
+        #self.n_starting_sequences = 0
         self.action_map = None
         self.state_particles = []   # The set of states that comprise the belief distribution of this belief node
 
 
         # Nearest Neighbor heuristic
-        self.max_nn_distance = self.solver.model.sys_cfg["max_nn_distance"]
-        self.max_n_comparisons = self.solver.model.sys_cfg["max_n_comparisons"]
+        # self.max_nn_distance = self.solver.model.sys_cfg["max_nn_distance"]
+        # self.max_n_comparisons = self.solver.model.sys_cfg["max_n_comparisons"]
         # The closest neighbor found so far for this node
-        self.neighbor = None
+        # self.neighbor = None
 
         if parent_entry is not None:
             self.parent_entry = parent_entry
@@ -59,7 +59,7 @@ class BeliefNode:
 
     def copy(self, id=None, parent_entry=None):
         return BeliefNode(self.solver, id, parent_entry)
-
+    '''
     def distance(self, other_belief_node):
         """
         Distance metric defined on belief nodes to estimate the relative "distance" between each other
@@ -79,7 +79,7 @@ class BeliefNode:
 
                 # For the RockProblem, Sampling a rock is non-transferable, since it is
                 # illegal in all states except those in which the grid contains a rock
-                if entry2.action.action_type == non_trans_action:
+                if entry2.action.bin_number == non_trans_action:
                     dist = BIG_NUM
                     break
 
@@ -89,7 +89,7 @@ class BeliefNode:
         average_dist = dist / (self.particles.__len__() + other_belief_node.particles.__len__())
         assert average_dist >= 0
         return average_dist
-
+    '''
     # Randomly select a History Entry
     def sample_particle(self):
         return random.choice(self.state_particles)
@@ -158,7 +158,7 @@ class BeliefNode:
             # Update the re-used child belief node's data
             child_node.data.update(child_node.get_parent_belief())
         return child_node, added
-
+    '''
     def add_particle(self, new_history_entry):
         self.particles.append(new_history_entry)
         if new_history_entry.id is 0:
@@ -217,4 +217,4 @@ class BeliefNode:
 
         self.neighbor = nearest_belief
         return nearest_belief
-
+    '''
