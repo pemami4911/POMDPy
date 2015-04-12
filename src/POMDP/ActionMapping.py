@@ -77,8 +77,7 @@ class ActionMappingEntry(object):
 
     There are two core pieces of functionality - a number of getter methods returning various
     properties of this edge, as well as, more importantly
-    update_visit_count(), update_q_value(), which updates the visit count and/or Q-value for this edge, and
-    setLegal(), which allows this edge to be made legal or illegal.
+    update_visit_count(), update_q_value(), which updates the visit count and/or Q-value for this edge
     """
     __metaclass__ = abc.ABCMeta
 
@@ -107,6 +106,8 @@ class ActionMappingEntry(object):
         In and of itself, making this action illegal will not delete previous histories that have
         already taken this action. In order to achieve this the associated history entries also
         need to be marked for updating via the model-changing interface.
+
+        This feature is currently not used
         :return:
         """
 

@@ -3,7 +3,9 @@ __author__ = 'patrickemami'
 import BeliefStructure
 
 class QTable(BeliefStructure.BeliefStructure):
-
+    """
+    Creates a Q table and visit frequency table for quick and dirty Q learning
+    """
     def __init__(self, solver):
         self.solver = solver
         self.q_table = None

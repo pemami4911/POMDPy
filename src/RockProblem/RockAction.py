@@ -15,11 +15,9 @@ class ActionType(object):
 
 class RockAction(Da.DiscreteAction):
     """
-    Accepted constructors - either RockAction(ActionType) or RockAction(code)
-    The Rock sample problem Action class
-    -implements get_bin_number() from DiscretizedAction class
-
-    class methods: bin_number (Enum) and rock_no
+    -The Rock sample problem Action class
+    -Wrapper for storing the bin number. Also stores the rock number for checking actions
+    -Handles pretty printing
     """
 
     def __init__(self, bin_number):

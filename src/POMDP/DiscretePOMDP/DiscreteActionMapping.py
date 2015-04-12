@@ -1,13 +1,17 @@
 __author__ = 'patrickemami'
 
 import ActionMapping as Am
-import ActionPool as Ap
 import ActionNode as An
 import numpy as np
-import BeliefNode as Bn
 import itertools
 
 class DiscreteActionMapping(Am.ActionMapping):
+    """
+    ActionMappings are used to map Belief Nodes to all of the different legal actions that can be
+    taken from that Belief Node.
+
+    This is a concrete implementation of the abstract class ActionMapping for Discrete POMDPs
+    """
     def __init__(self, belief_node_owner, discrete_action_pool, bin_sequence):
         super(DiscreteActionMapping, self).__init__(belief_node_owner)
         self.pool = discrete_action_pool
@@ -36,22 +40,6 @@ class DiscreteActionMapping(Am.ActionMapping):
         action_map_copy.total_visit_count = self.total_visit_count
         return action_map_copy
 
-    def get_all_entries_q_values(self, action_map):
-        assert action_map.entries.values().__len__() == self.entries.values().__len__()
-        for entry1, entry2 in itertools.izip(self.entries.values(), action_map.entries.values()):
-            entry2.mean_q_value = entry1.mean_q_value
-            entry2.total_q_value = entry1.total_q_value
-            entry2.visit_count = entry1.visit_count
-        action_map.total_visit_count = self.total_visit_count
-        return action_map
-
-    def update_legality(self):
-        for entry in self.entries.values():
-            entry.is_legal = False
-
-         # Only entries in the sequence are legal
-        for bin_number in self.bin_sequence:
-            self.entries.get(bin_number).is_legal = True
 
     def get_action_node(self, action):
         return self.entries.get(action.bin_number).child_node

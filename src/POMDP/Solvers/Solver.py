@@ -2,12 +2,12 @@ __author__ = 'patrickemami'
 
 import logging
 import time
+
 import MCTS
 import Statistic
 import History
 from console import *
 
-import cProfile
 
 module = "Solver"
 
@@ -79,6 +79,7 @@ class Solver(object):
                 print " runs in ", total_time,
                 print " seconds"
                 break
+
     def run(self, num_steps=None):
         run_start_time = time.time()
         discount = 1.0
@@ -113,9 +114,6 @@ class Solver(object):
                     print "is legal = ", entry.is_legal
             '''
             step_result, is_legal = self.model.generate_step(state, action)
-
-            # if step_result.next_state.position in self.model.rock_positions:
-            #    print 'STOP'
 
             self.results.reward.add(step_result.reward)
             self.results.undiscounted_return.running_total += step_result.reward

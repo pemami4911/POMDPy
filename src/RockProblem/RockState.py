@@ -28,12 +28,12 @@ class RockState(Ds.DiscreteState):
         assert isinstance(other_rock_state, RockState)
         distance = 0
         # distance = self.position.manhattan_distance(other_rock_state.position)
-        for i,j in itertools.izip(self.rock_states, other_rock_state.rock_states):
+        for i, j in itertools.izip(self.rock_states, other_rock_state.rock_states):
             if i != j:
                 distance += 1
         return distance
 
-    def equals(self, other_rock_state):
+    def __eq__(self, other_rock_state):
         return self.position == other_rock_state.position and self.rock_states is other_rock_state.rock_states
 
     def copy(self):
@@ -94,6 +94,10 @@ class RockState(Ds.DiscreteState):
         return state_list
 
     def separate_rocks(self):
+        """
+        Used for the PyGame sim
+        :return:
+        """
         good_rocks = []
         bad_rocks = []
         for i in range(0, self.rock_states.__len__()):

@@ -1,29 +1,18 @@
 __author__ = 'patrickemami'
 
-# see search_interface.hpp for basic-search-strategy, which I need to customize
-import numpy as np
 import random
-
-''' ------- global variables ------- '''
-BIG_NUM = 100000
 
 class BeliefNode:
     """
     Represents a single node in a belief tree.
     *
-    * The key functionality is a set of all the particles associated with this belief node, where
-    * each particle is a pointer to a HistoryEntry.
+    * The key functionality is a set of all the state particles associated with this belief node, where
+    * each particle is a pointer to a DiscreteState.
     *
     * Additionally, a belief node owns an ActionMapping, which stores the actions that have been
     * taken from this belief, as well as their associated statistics and subtrees.
     *
-    * The belief node can also store a vector of cached values, which is convenient if you want
-    * to cache values that are derived from the contents of the belief via a relatively expensive
-    * calculation.
-    *
-    * This caching is also particularly useful for incremental updates - the cached value can be
-    * compared to its new value after recalculation, and then the change in value can be easily
-    * back-propagated.
+    * Key method is create_or_get_child()
     """
     def __init__(self, solver, id=None, parent_entry=None):
         if id is None:
@@ -33,12 +22,9 @@ class BeliefNode:
 
         self.solver = solver
         self.data = None    # The smart history-based data, to be used for history-based policies.
-        #self.particles = []     # The set of history entries belonging to this node.
         self.depth = -1
-        #self.n_starting_sequences = 0
         self.action_map = None
         self.state_particles = []   # The set of states that comprise the belief distribution of this belief node
-
 
         # Nearest Neighbor heuristic
         # self.max_nn_distance = self.solver.model.sys_cfg["max_nn_distance"]
@@ -59,37 +45,7 @@ class BeliefNode:
 
     def copy(self, id=None, parent_entry=None):
         return BeliefNode(self.solver, id, parent_entry)
-    '''
-    def distance(self, other_belief_node):
-        """
-        Distance metric defined on belief nodes to estimate the relative "distance" between each other
-        for a nearest-neighbor search heuristic
-        :param other_belief_node:
-        :return: average_dist (double)
-        """
-        non_trans_action = self.solver.model.config["non-transferable-action"]
 
-        dist = 0.0
-        for entry1 in self.particles:
-            for entry2 in other_belief_node.particles:
-                # Have to have the same position
-                if not entry2.state.position.equals(entry1.state.position):
-                    dist = BIG_NUM
-                    break
-
-                # For the RockProblem, Sampling a rock is non-transferable, since it is
-                # illegal in all states except those in which the grid contains a rock
-                if entry2.action.bin_number == non_trans_action:
-                    dist = BIG_NUM
-                    break
-
-                # L1 norm between states
-                dist += entry1.state.distance_to(entry2.state)
-
-        average_dist = dist / (self.particles.__len__() + other_belief_node.particles.__len__())
-        assert average_dist >= 0
-        return average_dist
-    '''
     # Randomly select a History Entry
     def sample_particle(self):
         return random.choice(self.state_particles)
@@ -158,6 +114,37 @@ class BeliefNode:
             # Update the re-used child belief node's data
             child_node.data.update(child_node.get_parent_belief())
         return child_node, added
+    '''
+    def distance(self, other_belief_node):
+        """
+        Distance metric defined on belief nodes to estimate the relative "distance" between each other
+        for a nearest-neighbor search heuristic
+        :param other_belief_node:
+        :return: average_dist (double)
+        """
+        non_trans_action = self.solver.model.config["non-transferable-action"]
+
+        dist = 0.0
+        for entry1 in self.particles:
+            for entry2 in other_belief_node.particles:
+                # Have to have the same position
+                if not entry2.state.position.equals(entry1.state.position):
+                    dist = BIG_NUM
+                    break
+
+                # For the RockProblem, Sampling a rock is non-transferable, since it is
+                # illegal in all states except those in which the grid contains a rock
+                if entry2.action.bin_number == non_trans_action:
+                    dist = BIG_NUM
+                    break
+
+                # L1 norm between states
+                dist += entry1.state.distance_to(entry2.state)
+
+        average_dist = dist / (self.particles.__len__() + other_belief_node.particles.__len__())
+        assert average_dist >= 0
+        return average_dist
+    '''
     '''
     def add_particle(self, new_history_entry):
         self.particles.append(new_history_entry)

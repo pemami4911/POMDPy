@@ -10,8 +10,7 @@ class BeliefTree(BeliefStructure.BeliefStructure):
     Contains the BeliefTree class, which represents an entire belief tree.
     *
     * Most of the work is done in the individual classes for the mappings and nodes; this class
-    * simply owns a root node, and keeps track of a vector of all of the nodes in the entire tree
-    * for convenient iteration and serialization.
+    * simply owns a root node and handles pruning
     """
 
     def __init__(self, solver):
@@ -21,7 +20,7 @@ class BeliefTree(BeliefStructure.BeliefStructure):
 
     def prune_tree(self, belief_tree):
         """
-        Clears out the tree. This is difficult, because every node has a reference to its owner and child.
+        Clears out a belief tree. This is difficult, because every node has a reference to its owner and child.
         :return:
         """
         self.prune_node(belief_tree.root)
@@ -50,6 +49,10 @@ class BeliefTree(BeliefStructure.BeliefStructure):
 
     # --------- TREE MODIFICATION ------- #
     def reset(self):
+        """
+        Reset the tree
+        :return:
+        """
         self.prune_tree(self)
         self.root = BeliefNode.BeliefNode(self.solver, None, None)
         return self.root
@@ -63,7 +66,7 @@ class BeliefTree(BeliefStructure.BeliefStructure):
 
     def reset_data(self, root_data=None):
         """
-        Keeps information from the root
+        Keeps information from the provided root node
         :return:
         """
         if root_data is not None:

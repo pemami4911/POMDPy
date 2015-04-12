@@ -24,6 +24,7 @@ class DiscreteObservation(Pt.Point):
     def distance_to(self, other_discrete_observation):
         """
         :param other_discrete_observation:
+        Problem specific distance metric between observations
         :return:
         """
 

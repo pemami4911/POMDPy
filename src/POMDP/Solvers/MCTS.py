@@ -1,15 +1,15 @@
 __author__ = 'patrickemami'
 
+import time
+
 import numpy as np
-from memory_profiler import profile
+
 import BeliefTree as BT
 import ActionSelectors
 import Statistic
 import BeliefNode
 from console import *
-import time
 
-import GridPosition
 
 module = "MCTS"
 disable_tree = False
@@ -84,10 +84,10 @@ class MCTS(object):
             self.UCT_search()
         return ActionSelectors.ucb_action(self, self.policy.root, True)
 
-    # TODO for abstraction purposes, Discrete Actions should be dealt with as integers, not as a specific Action Type
     def update(self, step_result):
 
         # Update the Simulator with the Step Result
+        # This is important in case there are certain actions that change the state of the simulator
         self.model.update(step_result)
 
         child_belief_node = self.policy.root.get_child(step_result.action, step_result.observation)
@@ -145,7 +145,6 @@ class MCTS(object):
             return True
 
         # delete old tree and set the new root
-        # ~ 0.2 s spent here
         start_time = time.time()
         self.policy.prune_tree(self.policy)
         elapsed = time.time() - start_time

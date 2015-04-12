@@ -21,7 +21,8 @@ class Model(object):
     *          (s, a) => (o, r, s')
     * - createActionPool() - this defines the way in which actions are mapped out inside the policy
     *      tree
-    * - Create the logger for debugging, which all other loggers will be children of
+    * - generate_particles() - this uses previous state particles to create a new set of derived particles
+    *           by utilizing the step generator
     """
     __metaclass__ = abc.ABCMeta
 

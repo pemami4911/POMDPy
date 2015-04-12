@@ -102,7 +102,5 @@ class Histories(object):
     def delete_sequence(self, sequence):
         seq_id = sequence.id
 
-        assert self.sequences_by_id[seq_id] is sequence, self.logger.warning("Sequence ID does not match its index!")
-
         self.sequences_by_id[seq_id] = self.sequences_by_id.pop()
         self.sequences_by_id[seq_id].id = seq_id

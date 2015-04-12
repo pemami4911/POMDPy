@@ -11,7 +11,7 @@ class DiscreteAction(Pt.Point):
     def __hash__(self):
         return self.bin_number
 
-    def equals(self, other_discrete_action):
+    def __eq__(self, other_discrete_action):
         return self.bin_number == other_discrete_action.bin_number
 
     @abc.abstractmethod
@@ -30,7 +30,9 @@ class DiscreteAction(Pt.Point):
     @abc.abstractmethod
     def copy(self):
         """
+        Returns a proper copy of the Discrete Action
         :return:
         """
+
     def distance_to(self, other_discrete_action):
         pass

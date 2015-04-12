@@ -3,7 +3,9 @@ __author__ = 'patrickemami'
 import numpy as np
 
 class Statistic(object):
-
+    """
+    General statistics class
+    """
     def __init__(self, name, val=0.0, count=0.0):
         self.name = name
         self.mean = val

@@ -4,10 +4,9 @@ import DiscreteObservation as Do
 
 
 class RockObservation(Do.DiscreteObservation):
-
-    '''
+    """
     Default behavior is for the rock observation to say that the rock is empty
-    '''
+    """
     def __init__(self, is_good=False, is_empty=None):
         super(RockObservation, self).__init__(0 if is_empty else (2, 1)[is_good])
         self.is_empty = (True, is_empty)[is_empty is not None]

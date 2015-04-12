@@ -28,7 +28,6 @@ class RockData:
         """
         data_as_string = " Check count: " + str(self.check_count) + " Goodness number: " +\
                          str(self.goodness_number) + " Probability that rock is good: " + str(self.chance_good)
-
         return data_as_string
 
 class PositionAndRockData(Hd.HistoricalData):
@@ -55,10 +54,22 @@ class PositionAndRockData(Hd.HistoricalData):
             j.goodness_number = i.goodness_number
         return new_rock_data
 
+    def copy(self):
+        """
+        Default behavior is to return a shallow copy
+        """
+        return self.shallow_copy()
+
     def deep_copy(self):
+        """
+        Passes along a reference to the rock data to the new copy of RockPositionHistory
+        """
         return PositionAndRockData(self.model, self.grid_position.copy(), self.all_rock_data, self.solver)
 
     def shallow_copy(self):
+        """
+        Creates a copy of this object's rock data to pass along to the new copy
+        """
         new_rock_data = self.copy_rock_data(self.all_rock_data)
         return PositionAndRockData(self.model, self.grid_position.copy(), new_rock_data, self.solver)
 
@@ -213,157 +224,6 @@ class PositionAndRockData(Hd.HistoricalData):
                 smart_actions.append(Ra.ActionType.CHECK + i)
 
         return smart_actions
-
-    '''
-    These methods determine which actions are considered legal vs. illegal
-    '''
-    def generate_exploratory_actions(self):
-        """
-        These actions are simply for the agent to construct a representation of the environment and are used exclusively
-        early on
-        """
-        return [Ra.ActionType.NORTH, Ra.ActionType.SOUTH, Ra.ActionType.EAST, Ra.ActionType.WEST]
-
-    # Generate suggested actions for the agent, according to these *fair* rules
-    #   1. If the agent is on top of a rock and the rock has been checked, suggest sampling
-    #   2. If the agent knows that there is a worthwhile rock out there, it is suggest the check action for that rock
-    #   3. Always suggest all actions
-    def generate_sampling_actions(self):
-
-        n_rocks = self.model.n_rocks
-        # check if we are currently on top of a rock
-        rock_no = self.model.get_cell_type(self.grid_position)
-
-        suggested_actions = []
-
-        # if we are on top of a rock, and it has been checked, try sample it
-        if 0 <= rock_no < n_rocks:
-            rock_data = self.all_rock_data[rock_no]
-            if rock_data.chance_good == 1.0 or rock_data.goodness_number > 0:
-                suggested_actions.append(Ra.ActionType.SAMPLE)
-                return suggested_actions
-
-        suggested_actions = [Ra.ActionType.NORTH, Ra.ActionType.SOUTH, Ra.ActionType.EAST, Ra.ActionType.WEST]
-
-        # see which rocks we might want to check
-        for i in range(0, n_rocks):
-            rock_data = self.all_rock_data[i]
-            if rock_data.chance_good != 0.0 and rock_data.chance_good != 1.0 and np.abs(rock_data.goodness_number) < 2:
-                suggested_actions.append(Ra.ActionType.CHECK + i)
-
-        return suggested_actions
-
-'''
-class PositionData(Hd.HistoricalData):
-    """
-    Stores position data for each visited grid position
-    """
-    def __init__(self, model, grid_position, all_rock_data):
-        assert isinstance(grid_position, Gp.GridPosition)
-        self.model = model
-        self.grid_position = grid_position
-        self.logger = logging.getLogger('Model.RockModel.RockPositionData')
-        self.all_rock_data = all_rock_data
-
-    def copy(self):
-        return PositionData(self.model, self.grid_position, self.all_rock_data)
-
-    def create_child(self, rock_action, rock_observation):
-        assert isinstance(rock_action, Ra.RockAction)
-        assert isinstance(rock_observation, Ro.RockObservation)
-        # self.model.make_next_position(pos,action_type) returns next_position, is_legal
-        next_position, is_legal = self.model.make_next_position(self.grid_position.copy(), rock_action.bin_number)
-        if not is_legal:    # test is_legal, should be true
-            self.logger.warning("I tried an illegal action!")
-        return PositionData(self.model, next_position, self.all_rock_data)   # return new PositionData obj
-
-    def generate_legal_actions(self):
-        legal_actions = []
-        for action in self.model.get_all_actions_in_order():
-            pos_to_check = self.grid_position.copy()
-            next_position, is_legal = self.model.make_next_position(pos_to_check, action.bin_number)
-            if is_legal:    # if the action is legal
-                legal_actions.append(action.bin_number)
-        return legal_actions
-
-    def suggest_actions(self):
-
-
-
-    def print_position_data(self):
-        print "Position:",
-        print self.grid_position.print_position()
-
-    def generate_smart_actions(self):
-        smart_actions = []
-
-        n_rocks = self.model.n_rocks
-
-        # check if we are currently on top of a rock
-        rock_no = self.model.get_cell_type(self.grid_position)
-
-        # if we are on top of a rock, and it has been checked, sample it
-        if 0 <= rock_no < n_rocks:
-            rock_data = self.all_rock_data[rock_no]
-            if rock_data.chance_good == 1.0 or rock_data.goodness_number > 0:
-                # smart_actions.append(self.solver.action_pool.sample_an_action(Ra.ActionType.SAMPLE))
-                smart_actions.append(Ra.ActionType.SAMPLE)
-                return smart_actions
-
-        worth_while_rock_found = False
-        north_worth_while = False
-        south_worth_while = False
-        east_worth_while = False
-        west_worth_while = False
-
-        # Check to see which rocks are worthwhile
-
-        # Only pursue one worthwhile rock at a time to prevent the agent from getting confused and
-        # doing nothing
-        for i in range(0, n_rocks):
-
-            #Once an interesting rock is found, break out of the for loop
-            if worth_while_rock_found:
-                break
-
-            rock_data = self.all_rock_data[i]
-            if rock_data.chance_good != 0.0 and rock_data.goodness_number >= 0:
-                worth_while_rock_found = True
-                pos = self.model.rock_positions[i]
-                if pos.i > self.grid_position.i:
-                    south_worth_while = True
-                elif pos.i < self.grid_position.i:
-                    north_worth_while = True
-
-                if pos.j > self.grid_position.j:
-                    east_worth_while = True
-                elif pos.j < self.grid_position.j:
-                    west_worth_while = True
-
-        # If no worth while rocks were found, just head east
-        if not worth_while_rock_found:
-            smart_actions.append(Ra.ActionType.EAST)
-            return smart_actions
-
-
-        if north_worth_while:
-            smart_actions.append(Ra.ActionType.NORTH)
-        if south_worth_while:
-            smart_actions.append(Ra.ActionType.SOUTH)
-        if east_worth_while:
-            smart_actions.append(Ra.ActionType.EAST)
-        if west_worth_while:
-            smart_actions.append(Ra.ActionType.WEST)
-
-        # see which rocks we might want to check
-        for i in range(0, n_rocks):
-            rock_data = self.all_rock_data[i]
-            if rock_data.chance_good != 0.0 and rock_data.chance_good != 1.0 and np.abs(rock_data.goodness_number) < 2:
-                smart_actions.append(Ra.ActionType.CHECK + i)
-
-        return smart_actions
-
-'''
 
 
 

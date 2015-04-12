@@ -24,7 +24,6 @@ class ObservationMapping(object):
         :param observation:
         :return:
         """
-        pass
 
     @abc.abstractmethod
     def create_belief(self, observation):

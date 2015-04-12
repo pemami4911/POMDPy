@@ -13,8 +13,10 @@ This project uses:
 * numpy 1.9.2
 * matplotlib 1.4.3
 * pytest 2.7.0
+* pygame 1.9.1 
 
 ## TODO ##
 * Unit Test coverage is currently minimal, so this area is going to be expanded upon soon
 * The only current "working" test-problem is RockSample. More test problems are being worked on 
 * An extension for GPU-MCTS is being planned. The NumbaPro Python module seems to be a good bet for this
+* The PyGame sim is currently not supported, due to recent changes

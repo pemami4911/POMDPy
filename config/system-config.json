@@ -1,8 +1,8 @@
 {
 "policy_representation":"tree",
 "discount":0.995,
-"step_size":0.9,
-"ucb_coefficient":5.0,
+"step_size":0.995,
+"ucb_coefficient":10.0,
 "delta_epsilon_k":0.5,
 "max_nn_distance":0.0,
 "max_n_comparisons":0.0,
@@ -11,9 +11,9 @@
 "min_particle_count":500,
 "max_particle_count":1000,
 "num_steps":500,
-"num_sims":500,
+"num_sims":10,
 "num_runs":3,
 "num_start_states":1000,
-"maximum_depth":125,
+"maximum_depth":100,
 "time_out":3600
 }

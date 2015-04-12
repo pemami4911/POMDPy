@@ -43,8 +43,6 @@ class RockModel(Model.Model):
         # penalty for finishing without sampling a rock
         self.finishing_empty_handed = self.rock_config['finishing_empty_handed']
         self.half_efficiency_distance = self.rock_config['half_efficiency_distance']
-        self.preferred_action = self.sys_cfg["preferred_action"]
-        self.checking_penalty = self.rock_config["checking_penalty"]
 
         # ------------- Flags --------------- #
         # Flag that checks whether the agent has yet to successfully sample a rock
@@ -336,15 +334,6 @@ class RockModel(Model.Model):
                 # self.logger.warning("Invalid sample action on non-existent rock while making reward!")
                 return -self.illegal_move_penalty
 
-        if action.bin_number >= Ra.ActionType.CHECK:
-            if state.position.euclidean_distance(self.rock_positions[action.rock_no]) > self.half_efficiency_distance:
-                self.num_bad_checks += 1
-                return -self.checking_penalty
-            else:
-                # reward for checking close to rocks
-                self.num_good_checks += 1
-                return 3 * self.checking_penalty
-
         return 0
 
     def generate_reward(self, state, action):
@@ -366,58 +355,6 @@ class RockModel(Model.Model):
         return result, is_legal
 
     ''' ------------ particle generation -----------------'''
-    def generate_particles(self, previous_belief, action, obs, n_particles, prev_particles):
-        '''
-        if not isinstance(action, Ra.RockAction):
-            action = Ra.RockAction(action)
-
-        assert isinstance(action, Ra.RockAction)
-        assert isinstance(obs, Ro.RockObservation)
-
-        new_particles = []
-        if action.bin_number >= Ra.ActionType.CHECK:
-            # rock no for the rock being Checked
-            rock_no = action.rock_no
-            weight_map = {}
-            weight_total = 0
-            for state in prev_particles:
-                if new_particles.__len__() > self.sys_cfg["max_particle_count"]:
-                    break
-                # get the distance from a previous state particle to this new rock
-                dist = state.position.euclidean_distance(self.rock_positions[rock_no])
-                # whether the previous state particle thought this rock was good or not
-                rock_is_good = state.rock_states[rock_no]
-                # correctness probability
-                probability = self.get_sensor_correctness_probability(dist)
-                # if my current observation about this rock does not agree with my previous belief about this rock
-                # - take the complement of the probability
-                if rock_is_good is not obs.is_good:
-                    probability = 1 - probability
-
-                # update the weight with the probability
-                if state in weight_map:
-                    weight_map[state] += probability
-                else:
-                    weight_map.__setitem__(state, probability)
-                weight_total += probability
-
-                scale = n_particles / weight_total
-                for key, value in dict.iteritems(weight_map):
-                    proportion = value * scale
-                    num_to_add = long(proportion)
-                    if np.random.binomial(1.0, proportion - num_to_add):
-                        num_to_add += 1
-                    for i in range(0, num_to_add):
-                        new_particles.append(key.copy())
-
-        # if not a CHECK action, we just add each resultant state
-        else:
-            for state in prev_particles:
-                new_particles.append(self.make_next_state(state, action)[0])
-        return new_particles
-        '''
-        return Model.Model.generate_particles(self, previous_belief, action, obs, n_particles, prev_particles)
-
     def generate_particles_uninformed(self, previous_belief, action, obs, n_particles):
         old_pos = previous_belief.get_states()[0].position
 
@@ -475,6 +412,10 @@ class RockModel(Model.Model):
         return all_actions
 
     def get_random_action(self):
+        """
+        Creates a new random RockAction
+        :return:
+        """
         return Ra.RockAction(np.random.random_integers(0, 4 + self.n_rocks))
 
     def create_action_pool(self):
@@ -488,9 +429,6 @@ class RockModel(Model.Model):
         self.all_rock_data = []
         for i in range(0, self.n_rocks):
             self.all_rock_data.append(Rph.RockData())
-
-    def get_all_observations_in_order(self):
-        return [Ro.RockObservation(False, True), Ro.RockObservation(True, False), Ro.RockObservation(False, False)]
 
     def create_observation_pool(self, solver):
         return super(RockModel, self).create_observation_pool(solver)

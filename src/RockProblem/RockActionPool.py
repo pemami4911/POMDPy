@@ -11,7 +11,7 @@ import RockAction
 
 class RockActionPool(Ap.EnumeratedActionPool):
     """
-    Class methods: model (RockModel), mappings
+    Main functionality is to facilitate creation of legal actions for an action mapping
     """
     def __init__(self, rock_model):
         super(RockActionPool, self).__init__(rock_model.get_all_actions_in_order())
@@ -24,12 +24,6 @@ class RockActionPool(Ap.EnumeratedActionPool):
 
     def create_action_mapping(self, belief_node):
         return RockActionMap(belief_node, self, self.create_bin_sequence(belief_node))
-
-    def add_mapping(self, grid_position, disc_action_map):
-        pass
-
-    def remove_mapping(self, data, disc_action_map):
-        pass
 
 class RockActionMap(Dam.DiscreteActionMapping):
     """

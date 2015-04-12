@@ -1,5 +1,9 @@
 __author__ = 'patrickemami'
 
+"""
+Run POMDPy
+"""
+
 import RockModel
 import Solver
 
