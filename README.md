@@ -14,8 +14,12 @@ After tweaking the configuration files found in the config package <optional>, r
 ## Dependencies ##
 
 This project uses:
+
 * Python 2.7.9
 * numpy 1.9.2
+
+Optional, for extended functionality:
+
 * matplotlib 1.4.3
 * pytest 2.7.0
 * pygame 1.9.1 
