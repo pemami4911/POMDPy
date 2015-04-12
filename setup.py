@@ -16,5 +16,5 @@ setup(name='POMDPy',
           'config': ['*.json', '*.txt']
           },
       license='MIT',
-      install_requires='numpy-1.9.2'
+      install_requires='numpy'
       )
