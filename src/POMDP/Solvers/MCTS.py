@@ -1,13 +1,11 @@
 __author__ = 'patrickemami'
 
 import time
-
 import numpy as np
-
-import BeliefTree as BT
-import ActionSelectors
-import Statistic
-import BeliefNode
+from POMDP.BeliefTree import BeliefTree
+from ActionSelection import ActionSelectors
+from POMDP.Statistic import Statistic
+from POMDP.BeliefNode import BeliefNode
 from console import *
 
 
@@ -27,11 +25,11 @@ class MCTS(object):
     def __init__(self, solver, model):
         self.solver = solver
         self.model = model
-        self.policy = BT.BeliefTree(solver) # Search Tree
+        self.policy = BeliefTree(solver) # Search Tree
         self.peak_tree_depth = 0
-        self.tree_depth_stats = Statistic.Statistic("Tree Depth")
-        self.rollout_depth_stats = Statistic.Statistic("Rollout Depth")
-        self.total_reward_stats = Statistic.Statistic("Total Reward")
+        self.tree_depth_stats = Statistic("Tree Depth")
+        self.rollout_depth_stats = Statistic("Rollout Depth")
+        self.total_reward_stats = Statistic("Total Reward")
         self.step_size = self.model.sys_cfg["step_size"]
 
         # Solver owns Histories, the collection of History Sequences.
@@ -95,15 +93,20 @@ class MCTS(object):
         # If the child_belief_node is None because the step result randomly produced a different observation,
         # grab any of the beliefs extending from the belief node's action node
         if child_belief_node is None:
-            obs_mapping_entries = self.policy.root.action_map.get_action_node(step_result.action).\
-                observation_map.child_map.values()
+            action_node = self.policy.root.action_map.get_action_node(step_result.action)
+            if action_node is None:
+                # All hope is lost here, abandon ship.
+                return True
+
+            obs_mapping_entries = action_node.observation_map.child_map.values()
+
             for entry in obs_mapping_entries:
                 if entry.child_node is not None:
                     child_belief_node = entry.child_node
                     print "Had to grab nearest belief node...uncertainty introduced"
                     break
 
-        new_root = BeliefNode.BeliefNode(self.solver)
+        new_root = BeliefNode(self.solver)
         new_root.data = child_belief_node.data.shallow_copy()
         new_root.action_map = self.solver.action_pool.create_action_mapping(new_root)
 

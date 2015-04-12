@@ -1,9 +1,9 @@
 __author__ = 'patrickemami'
 
 import abc
-import Point as Pt
+from POMDP.Point import Point
 
-class DiscreteObservation(Pt.Point):
+class DiscreteObservation(Point):
 
     def __init__(self, bin_number):
         self.bin_number = bin_number

@@ -3,10 +3,9 @@ __author__ = 'patrickemami'
 import abc
 import itertools
 import numpy
-import Point as Pt
+from POMDP.Point import Point
 
-
-class DiscreteState(Pt.Point):
+class DiscreteState(Point):
     """
     An ABC for a discrete representation of a point in a state space
     """

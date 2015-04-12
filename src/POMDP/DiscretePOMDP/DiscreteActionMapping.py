@@ -1,11 +1,10 @@
 __author__ = 'patrickemami'
 
-import ActionMapping as Am
-import ActionNode as An
+from POMDP.ActionMapping import ActionMapping, ActionMappingEntry
+from POMDP.ActionNode import ActionNode
 import numpy as np
-import itertools
 
-class DiscreteActionMapping(Am.ActionMapping):
+class DiscreteActionMapping(ActionMapping):
     """
     ActionMappings are used to map Belief Nodes to all of the different legal actions that can be
     taken from that Belief Node.
@@ -46,7 +45,7 @@ class DiscreteActionMapping(Am.ActionMapping):
 
     def create_action_node(self, action):
         entry = self.entries.get(action.bin_number)
-        entry.child_node = An.ActionNode(entry)
+        entry.child_node = ActionNode(entry)
         self.number_of_children += 1
         return entry.child_node
 
@@ -109,7 +108,7 @@ class DiscreteActionMapping(Am.ActionMapping):
         for bin_number in self.bin_sequence:
             self.entries.get(bin_number).is_legal = True
 
-class DiscreteActionMappingEntry(Am.ActionMappingEntry):
+class DiscreteActionMappingEntry(ActionMappingEntry):
     """
     A concrete class implementing ActionMappingEntry for a discrete action space.
 

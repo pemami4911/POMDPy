@@ -1,12 +1,9 @@
 __author__ = 'patrickemami'
 
 import itertools
-import DiscreteState as Ds
+from POMDP.DiscretePOMDP.DiscreteState import DiscreteState
 
-"""
-
-"""
-class RockState(Ds.DiscreteState):
+class RockState(DiscreteState):
     """
     The state contains the position of the robot, as well as a boolean value for each rock
     representing whether it is good (true => good, false => bad).

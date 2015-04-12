@@ -3,18 +3,18 @@ __author__ = 'patrickemami'
 import os
 
 # file directory and name
-CFG_DIR = "config"
-ROCK_CFG_FILE = "rockproblem-config.json"
-SYS_CFG_FILE = "system-config.json"
+CFG_DIR = 'config'
+ROCK_CFG_FILE = 'rockproblem-config.json'
+SYS_CFG_FILE = 'system-config.json'
 
 dir = os.path.dirname(__file__)
-rock_cfg = os.path.join(dir, ROCK_CFG_FILE)
-sys_cfg = os.path.join(dir, SYS_CFG_FILE)
+rock_cfg = os.path.join(dir, '..', CFG_DIR, ROCK_CFG_FILE)
+sys_cfg = os.path.join(dir, '..', CFG_DIR, SYS_CFG_FILE)
 
 def parse_map(map):
     map_text = []
 
-    with open(os.path.join(dir, map), "r") as f:
+    with open(os.path.join(dir, '..', CFG_DIR, map), "r") as f:
         dimensions = f.readline().strip().split()
         for line in f:
             map_text.append(line.strip())

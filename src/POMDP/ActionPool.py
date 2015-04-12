@@ -2,8 +2,7 @@ __author__ = 'patrickemami'
 
 import abc
 from random import shuffle
-import BeliefNode as Bn
-import DiscreteActionMapping as Dam
+from DiscretePOMDP.DiscreteActionMapping import DiscreteActionMapping
 import numpy as np
 
 class ActionPool(object):
@@ -63,7 +62,7 @@ class DiscreteActionPool(ActionPool):
         """
 
     def create_action_mapping(self, belief_node):
-        return Dam.DiscreteActionMapping(belief_node, self, self.create_bin_sequence())
+        return DiscreteActionMapping(belief_node, self, self.create_bin_sequence())
 
 class EnumeratedActionPool(DiscreteActionPool):
     """

@@ -1,12 +1,9 @@
 __author__ = 'patrickemami'
 
-import ObservationMapping as Om
-import BeliefNode as Bn
-import ActionNode as An
-import DiscreteObservation as Do
-import logging
+from POMDP.ObservationMapping import *
+from POMDP.BeliefNode import BeliefNode
 
-class DiscreteObservationMap(Om.ObservationMapping):
+class DiscreteObservationMap(ObservationMapping):
     """
     A concrete class implementing ObservationMapping for a discrete set of observations.
     *
@@ -31,7 +28,7 @@ class DiscreteObservationMap(Om.ObservationMapping):
         entry = DiscreteObservationMapEntry()
         entry.map = self
         entry.observation = disc_observation
-        entry.child_node = Bn.BeliefNode(self.solver, None, entry)
+        entry.child_node = BeliefNode(self.solver, None, entry)
         self.child_map.__setitem__(entry.observation, entry)
         return entry.child_node
 
@@ -52,7 +49,7 @@ class DiscreteObservationMap(Om.ObservationMapping):
         return None
 
 
-class DiscreteObservationMapEntry(Om.ObservationMappingEntry):
+class DiscreteObservationMapEntry(ObservationMappingEntry):
     """
     A concrete class implementing ObservationMappingEntry for a discrete set of observations.
     *

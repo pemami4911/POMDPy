@@ -11,7 +11,7 @@
 "min_particle_count":500,
 "max_particle_count":1000,
 "num_steps":500,
-"num_sims":10,
+"num_sims":500,
 "num_runs":3,
 "num_start_states":1000,
 "maximum_depth":100,

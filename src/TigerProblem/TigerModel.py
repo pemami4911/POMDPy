@@ -3,9 +3,9 @@ __author__ = 'patrickemami'
 import json
 
 import numpy as np
-import random
+
 import Model
-from TigerAction import TigerAction, ActionType
+from TigerAction import ActionType
 from TigerState import TigerState
 from TigerObservation import TigerObservation
 from TigerActionPool import TigerActionPool

@@ -1,9 +1,8 @@
 __author__ = 'patrickemami'
 
-import DiscreteObservation as Do
+from POMDP.DiscretePOMDP.DiscreteObservation import DiscreteObservation
 
-
-class RockObservation(Do.DiscreteObservation):
+class RockObservation(DiscreteObservation):
     """
     Default behavior is for the rock observation to say that the rock is empty
     """

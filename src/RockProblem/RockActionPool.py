@@ -1,15 +1,10 @@
 __author__ = 'patrickemami'
 
-from random import shuffle
+from POMDP.ActionPool import EnumeratedActionPool
+from POMDP.DiscretePOMDP.DiscreteActionMapping import DiscreteActionMapping
 
-import ActionPool as Ap
-import DiscreteActionMapping as Dam
-import BeliefNode as Bn
-import RockModel
-import GridPosition as Gp
-import RockAction
 
-class RockActionPool(Ap.EnumeratedActionPool):
+class RockActionPool(EnumeratedActionPool):
     """
     Main functionality is to facilitate creation of legal actions for an action mapping
     """
@@ -25,7 +20,7 @@ class RockActionPool(Ap.EnumeratedActionPool):
     def create_action_mapping(self, belief_node):
         return RockActionMap(belief_node, self, self.create_bin_sequence(belief_node))
 
-class RockActionMap(Dam.DiscreteActionMapping):
+class RockActionMap(DiscreteActionMapping):
     """
     A custom mapping class that keeps track of which actions are legal or illegal at each belief
     """

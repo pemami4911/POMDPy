@@ -2,20 +2,18 @@ __author__ = 'patrickemami'
 
 import logging
 import time
-
 import MCTS
-import Statistic
-import History
+from POMDP.Statistic import Statistic
+from POMDP import History
 from console import *
-
 
 module = "Solver"
 
 class Results():
-    time = Statistic.Statistic("Total time")
-    reward = Statistic.Statistic("Total reward")
-    discounted_return = Statistic.Statistic("Discounted Reward")
-    undiscounted_return = Statistic.Statistic("Un-discounted Reward")
+    time = Statistic("Total time")
+    reward = Statistic("Total reward")
+    discounted_return = Statistic("Discounted Reward")
+    undiscounted_return = Statistic("Un-discounted Reward")
 
     def reset_running_totals(self):
         Results.time.running_total = 0.0
@@ -139,10 +137,8 @@ class Solver(object):
 
             out_of_particles = mcts.update(step_result)
 
-            print "num of particles pushed over to new root = ", mcts.policy.root.state_particles.__len__()
-
             if out_of_particles:
-                print "Out of particles, finishing episode with random actions"
+                print "Out of particles, finishing sequence with random actions"
                 while i < num_steps:
                     action = self.model.get_random_action()
                     step_result, is_legal = self.model.generate_step(state, action)
@@ -169,9 +165,12 @@ class Solver(object):
                     new_entry.register_entry(new_entry, None, step_result.next_state)
                     i += 1
                 break
+            else:
+                print "num of particles pushed over to new root = ", mcts.policy.root.state_particles.__len__()
 
             elapsed_time = time.time() - start_time
             print "MCTS Step Forward took ", elapsed_time
+
             if elapsed_time > self.model.sys_cfg["time_out"]:
                 print "Timed out after ", i,
                 print " runs in ", elapsed_time,

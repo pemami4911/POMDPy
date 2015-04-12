@@ -1,6 +1,6 @@
 __author__ = 'patrickemami'
 
-import DiscreteAction as Da
+from POMDP.DiscretePOMDP.DiscreteAction import DiscreteAction
 
 class ActionType(object):
     """
@@ -13,7 +13,7 @@ class ActionType(object):
     SAMPLE = 4
     CHECK = 5
 
-class RockAction(Da.DiscreteAction):
+class RockAction(DiscreteAction):
     """
     -The Rock sample problem Action class
     -Wrapper for storing the bin number. Also stores the rock number for checking actions

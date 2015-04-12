@@ -3,10 +3,11 @@ __author__ = 'patrickemami'
 import abc
 import logging
 import json
-import numpy as np
-import ObservationPool as Op
-import config_parser
 import random
+
+from ObservationPool import DiscreteObservationPool
+import config_parser
+
 
 class Model(object):
     """
@@ -168,7 +169,7 @@ class Model(object):
         return particles
 
     def create_observation_pool(self, solver):
-        return Op.DiscreteObservationPool(solver)
+        return DiscreteObservationPool(solver)
 
 class StepResult:
     """

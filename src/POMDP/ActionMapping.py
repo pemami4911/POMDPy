@@ -1,7 +1,6 @@
 __author__ = 'patrickemami'
 
 import abc
-import BeliefNode as Bn
 
 class ActionMapping(object):
     """

@@ -2,6 +2,14 @@ This open-source project contains a framework for implementing discrete or conti
 
 This is project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments or suggestions, feel free to send me a pull request or send me an email at pemami@ufl.edu.  
 
+## Installation ##
+From the root directory of the project, run 
+    `python setup.py install`
+
+## Running a sample ##
+After tweaking the configuration files found in the config package, run the RockSample Problem with 
+    `python src/run_pomd.py`
+    
 ## Belief Tree structure ##
 
 Parent BeliefNode -> ActionMapping -> ActionMappingEntry -> ActionNode -> ObservationMap -> ObservationMappingEntry -> Child BeliefNode

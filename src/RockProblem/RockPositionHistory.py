@@ -1,11 +1,8 @@
 __author__ = 'patrickemami'
 
-import HistoricalData as Hd
-import RockAction as Ra
-import GridPosition as Gp
-import logging
+from POMDP.HistoricalData import HistoricalData
+from RockAction import ActionType
 import numpy as np
-import math
 import itertools
 
 # Utility function
@@ -30,7 +27,7 @@ class RockData:
                          str(self.goodness_number) + " Probability that rock is good: " + str(self.chance_good)
         return data_as_string
 
-class PositionAndRockData(Hd.HistoricalData):
+class PositionAndRockData(HistoricalData):
     """
     A class to store the robot position associated with a given belief node, as well as
     explicitly calculated probabilities of goodness for each rock.
@@ -88,13 +85,13 @@ class PositionAndRockData(Hd.HistoricalData):
         next_position, is_legal = self.model.make_next_position(self.grid_position.copy(), rock_action.bin_number)
         next_data.grid_position = next_position
 
-        if rock_action.bin_number is Ra.ActionType.SAMPLE:
+        if rock_action.bin_number is ActionType.SAMPLE:
             rock_no = self.model.get_cell_type(self.grid_position)
             next_data.all_rock_data[rock_no].chance_good = 0.0
             next_data.all_rock_data[rock_no].check_count = 10
             next_data.all_rock_data[rock_no].goodness_number = -10
 
-        elif rock_action.bin_number >= Ra.ActionType.CHECK:
+        elif rock_action.bin_number >= ActionType.CHECK:
             rock_no = rock_action.rock_no
             rock_pos = self.model.rock_positions[rock_no]
 
@@ -134,13 +131,13 @@ class PositionAndRockData(Hd.HistoricalData):
         j = new_pos.j
 
         for action in all_actions:
-            if action is Ra.ActionType.NORTH:
+            if action is ActionType.NORTH:
                 new_pos.i -= 1
-            elif action is Ra.ActionType.EAST:
+            elif action is ActionType.EAST:
                 new_pos.j += 1
-            elif action is Ra.ActionType.SOUTH:
+            elif action is ActionType.SOUTH:
                 new_pos.i += 1
-            elif action is Ra.ActionType.WEST:
+            elif action is ActionType.WEST:
                 new_pos.j -= 1
 
             if not self.model.is_valid_pos(new_pos):
@@ -148,7 +145,7 @@ class PositionAndRockData(Hd.HistoricalData):
                 new_pos.j = j
                 continue
             else:
-                if action is Ra.ActionType.SAMPLE:
+                if action is ActionType.SAMPLE:
                     rock_no = self.model.get_cell_type(new_pos)
                     if 0 > rock_no or rock_no >= self.model.n_rocks:
                         continue
@@ -170,7 +167,7 @@ class PositionAndRockData(Hd.HistoricalData):
         if 0 <= rock_no < n_rocks:
             rock_data = self.all_rock_data[rock_no]
             if rock_data.chance_good == 1.0 or rock_data.goodness_number > 0:
-                smart_actions.append(Ra.ActionType.SAMPLE)
+                smart_actions.append(ActionType.SAMPLE)
                 return smart_actions
 
         worth_while_rock_found = False
@@ -204,24 +201,24 @@ class PositionAndRockData(Hd.HistoricalData):
 
         # If no worth while rocks were found, just head east
         if not worth_while_rock_found:
-            smart_actions.append(Ra.ActionType.EAST)
+            smart_actions.append(ActionType.EAST)
             return smart_actions
 
 
         if north_worth_while:
-            smart_actions.append(Ra.ActionType.NORTH)
+            smart_actions.append(ActionType.NORTH)
         if south_worth_while:
-            smart_actions.append(Ra.ActionType.SOUTH)
+            smart_actions.append(ActionType.SOUTH)
         if east_worth_while:
-            smart_actions.append(Ra.ActionType.EAST)
+            smart_actions.append(ActionType.EAST)
         if west_worth_while:
-            smart_actions.append(Ra.ActionType.WEST)
+            smart_actions.append(ActionType.WEST)
 
         # see which rocks we might want to check
         for i in range(0, n_rocks):
             rock_data = self.all_rock_data[i]
             if rock_data.chance_good != 0.0 and rock_data.chance_good != 1.0 and np.abs(rock_data.goodness_number) < 2:
-                smart_actions.append(Ra.ActionType.CHECK + i)
+                smart_actions.append(ActionType.CHECK + i)
 
         return smart_actions
 

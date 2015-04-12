@@ -1,8 +1,7 @@
 __author__ = 'patrickemami'
 
 import abc
-import DiscreteObservationMapping as Dom
-import ActionNode as An
+from DiscretePOMDP.DiscreteObservationMapping import DiscreteObservationMap
 
 class ObservationPool(object):
     """
@@ -36,4 +35,4 @@ class DiscreteObservationPool(ObservationPool):
         self.solver = solver
 
     def create_observation_mapping(self, action_node):
-        return Dom.DiscreteObservationMap(action_node, self.solver)
+        return DiscreteObservationMap(action_node, self.solver)

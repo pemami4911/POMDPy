@@ -1,9 +1,7 @@
 __author__ = 'patrickemami'
 
 import BeliefNode
-import logging
 import BeliefStructure
-from memory_profiler import profile
 
 class BeliefTree(BeliefStructure.BeliefStructure):
     """

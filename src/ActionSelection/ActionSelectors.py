@@ -2,8 +2,11 @@ __author__ = 'patrickemami'
 
 import random
 import json
-import config_parser
+
 import numpy as np
+
+import config_parser
+
 
 config = json.load(open(config_parser.sys_cfg, "r"))
 
