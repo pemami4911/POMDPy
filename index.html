@@ -19,26 +19,44 @@
     </section>
 
     <section class="main-content">
-      <p>This open-source project contains a framework for implementing discrete or continuous POMDPs in Python. The organization of the code was inspired by <a href="http://robotics.itee.uq.edu.au/%7Ehannakur/dokuwiki/doku.php?id=wiki:tapir">TAPIR</a> and the <a href="http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html">POMCP</a> algorithm.</p>
+      <p><img src="https://travis-ci.org/pemami4911/POMDPy.svg?branch=master" alt="Build"></p>
+
+<p>This open-source project contains a framework for implementing discrete or continuous POMDPs in Python. The organization of the code was inspired by <a href="http://robotics.itee.uq.edu.au/%7Ehannakur/dokuwiki/doku.php?id=wiki:tapir">TAPIR</a> and the <a href="http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html">POMCP</a> algorithm.</p>
 
 <p><a href="http://www.pomdp.org/tutorial/index.shtml">What the heck is a POMDP?</a></p>
 
 <p>Here's David Silver and Joel Veness's paper on POMCP, a ground-breaking POMDP solver. <a href="http://papers.nips.cc/paper/4031-monte-carlo-planning-in-large-pomdps.pdf">Monte-Carlo Planning in Large POMDPs</a></p>
 
-<p>This is project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments, suggestions, or encounter any bugs (I am sure there are still quite a few as this is a work-in-progress), feel free to send me a pull request or send me an email at <a href="mailto:pemami@ufl.edu">pemami@ufl.edu</a>.  </p>
+<p>This is project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments or suggestions, feel free to send me a pull request or send me an email at <a href="mailto:pemami@ufl.edu">pemami@ufl.edu</a>.  </p>
 
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
-<p>From the root directory of the project, run 
-    <code>python setup.py install</code></p>
+<p>Download the files as a zip or clone into the repository.
+From the root directory of the project, run</p>
+
+<pre><code>python setup.py install
+</code></pre>
 
 <h2>
 <a id="running-a-sample" class="anchor" href="#running-a-sample" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running a sample</h2>
 
-<p>After tweaking the configuration files found in the config package (optional), run the RockSample Problem with</p>
+<p>You can optionally tweak the system and RockSample configuration files, which are located in the config folder.
+The default RockSample Problem is RockSample(7, 8), a 7 x 7 grid with 8 rocks.</p>
+
+<p>To run the RockSample Problem, simply enter</p>
 
 <pre><code>python src/run_pomdp.py
+</code></pre>
+
+<p>See src/README.md for more implementation details.</p>
+
+<h2>
+<a id="running-tests" class="anchor" href="#running-tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running tests</h2>
+
+<p>Unit tests can be ran with </p>
+
+<pre><code>py.test test/unit_tests.py
 </code></pre>
 
 <h2>
@@ -49,13 +67,13 @@
 <ul>
 <li>Python 2.7.9</li>
 <li>numpy 1.9.2</li>
+<li>pytest 2.7.0</li>
 </ul>
 
 <p>Optional, for extended functionality:</p>
 
 <ul>
 <li>matplotlib 1.4.3</li>
-<li>pytest 2.7.0</li>
 <li>pygame 1.9.1 </li>
 </ul>
 
