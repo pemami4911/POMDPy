@@ -1,15 +1,23 @@
+#!/usr/bin/env python
 __author__ = 'patrickemami'
 
+import random
 import unittest
-import RockModel
-import Solver
-model = RockModel.RockModel("UnitTest")
-solver = Solver.Solver(model)
+import os, sys
+
+par_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+src_dir = os.path.join(par_dir, 'src')
+sys.path.append(src_dir)
+
+from src.RockProblem.RockModel import RockModel
+from src.POMDP.Solvers.Solver import Solver
+
+model = RockModel("unit_tests")
+solver = Solver(model)
 
 ''' --------- MCTS --------- '''
-import MCTS
-import random
-import ActionSelectors
+from src.POMDP.Solvers.MCTS import MCTS
+from src.ActionSelection import ActionSelectors
 
 mcts = None
 
@@ -17,7 +25,7 @@ class MCTSTestCase(unittest.TestCase):
 
     def test_create_mcts(self):
         global mcts
-        mcts = MCTS.MCTS(solver, model)
+        mcts = MCTS(solver, model)
         self.assertIsNotNone(mcts)
 
     def test_greedy_search(self):

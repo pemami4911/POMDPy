@@ -2,13 +2,13 @@ __author__ = 'patrickemami'
 
 import logging
 import json
-from POMDP.Model import Model, StepResult
 import config_parser
 from GridPosition import GridPosition
 from RockState import RockState
 from RockAction import RockAction
 from RockObservation import RockObservation
 from RockActionPool import RockActionPool
+from POMDP.Model import Model, StepResult
 
 # import numpy from RockPositionHistory
 from RockPositionHistory import *
