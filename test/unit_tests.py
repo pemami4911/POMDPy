@@ -5,7 +5,7 @@ import random
 import unittest
 import os, sys
 
-par_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+par_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 src_dir = os.path.join(par_dir, 'src')
 sys.path.append(src_dir)
 
@@ -49,11 +49,12 @@ class MCTSTestCase(unittest.TestCase):
         lowest_count_action = random.choice(mcts.policy.root.action_map.bin_sequence)
         for i in mcts.policy.root.action_map.bin_sequence:
             if i == lowest_count_action:
-                mcts.policy.root.action_map.entries.get(i).update_visit_count(99)
+                mcts.policy.root.action_map.entries.get(i).update_visit_count(90)
             else:
                 mcts.policy.root.action_map.entries.get(i).update_visit_count(100 + i)
             mcts.policy.root.action_map.entries.get(i).mean_q_value = 0.0
-        self.assertEqual(ActionSelectors.ucb_action(mcts, mcts.policy.root, False).bin_number, lowest_count_action)
+        self.assertEqual(ActionSelectors.ucb_action(mcts, mcts.policy.root, False).bin_number, lowest_count_action),
+
 
 if __name__ == '__main__':
     unittest.main()
