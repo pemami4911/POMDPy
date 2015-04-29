@@ -2,11 +2,12 @@ __author__ = 'patrickemami'
 
 import HistoricalData as Hd
 from TigerAction import ActionType
+import numpy as np
 
 class TigerData(Hd.HistoricalData):
     """
     Used to store the probabilities that the tiger is behind a certain door.
-    This is the belief distribution over the set os possible states.
+    This is the belief distribution over the set of possible states.
     For a 2-door system, you have
         P( X = 0 ) = p
         P( X = 1 ) = 1 - p
@@ -15,6 +16,7 @@ class TigerData(Hd.HistoricalData):
         self.listen_count = 0
         ''' Initially there is an equal probability of the tiger being in either door'''
         self.door_probabilities = [0.5, 0.5]
+        self.legal_actions = self.generate_legal_actions
 
     def copy(self):
         dat = TigerData()
@@ -32,6 +34,7 @@ class TigerData(Hd.HistoricalData):
             ''' for open door actions, the belief distribution over possible states isn't changed '''
             return next_data
         else:
+            self.listen_count += 1
             '''
             Based on the observation, the door probabilities should change here.
             This is the key update that affects value function
@@ -56,3 +59,17 @@ class TigerData(Hd.HistoricalData):
 
             next_data.door_probabilities = [p1_posterior, p2_posterior]
         return next_data
+
+    def generate_legal_actions(self):
+        '''
+        At each non-terminal state, the agent can listen or choose to open the door based on the current door probabilities
+        :return:
+        '''
+        bins = [ActionType.LISTEN]
+
+        if np.random.uniform(0, 1) <= self.door_probabilities[0]:
+            bins = bins + [ActionType.OPEN_DOOR_2]
+        else:
+            bins = bins + [ActionType.OPEN_DOOR_1]
+
+        return bins

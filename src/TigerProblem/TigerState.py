@@ -1,8 +1,8 @@
 __author__ = 'patrickemami'
 
-import DiscreteState as Ds
+from POMDP.DiscretePOMDP.DiscreteState import DiscreteState
 
-class TigerState(Ds.DiscreteState):
+class TigerState(DiscreteState):
     """
     Enumerated state for the Tiger POMDP
 
@@ -12,7 +12,8 @@ class TigerState(Ds.DiscreteState):
 
     The list "door_prizes" contains 0's for doors that have tigers behind them, and 1's
     for doors that have rewards behind them. This part of the state is obscured. Listening
-    actions are necessary to increase confidence in choosing the right door.
+    actions are necessary to increase confidence in choosing the right door. A single TigerState represents a
+    "guess" of the true belief state - which is the probability distribution over all states
 
     For a 2-door system, either door_prizes[0] = 0 and door_prizes[1] = 1, or
         door_prizes[0] = 1 and door_prizes[1] = 0
@@ -50,5 +51,13 @@ class TigerState(Ds.DiscreteState):
     def as_list(self):
         return self.door_open + self.door_prizes
 
+    def to_string(self):
+        if self.door_open:
+            state = 'Door is open'
+        else:
+            state = 'Door is closed'
+        return state + ' (' + str(self.door_prizes[0]) + ', ' + str(self.door_prizes[1]) + ')'
 
+    def print_state(self):
+        print self.to_string()
 

@@ -110,6 +110,16 @@ class Model(object):
         :return: a random legal action
         """
 
+    @abc.abstractmethod
+    def create_root_historical_data(self, solver):
+        """
+        reset smart data for the root of the belief tree, if smart data is being used
+        :return:
+        """
+
+    def create_observation_pool(self, solver):
+        return DiscreteObservationPool(solver)
+
     def generate_particles(self, previous_belief, action, obs, n_particles, prev_particles):
         """
         Generates new state particles based on the state particles of the previous node,
@@ -168,8 +178,6 @@ class Model(object):
                 particles.append(result.next_state)
         return particles
 
-    def create_observation_pool(self, solver):
-        return DiscreteObservationPool(solver)
 
 class StepResult:
     """

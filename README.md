@@ -7,9 +7,11 @@ From the root directory of the project, run
     `python setup.py install`
 
 ## Running a sample ##
-After tweaking the configuration files found in the config package <optional>, run the RockSample Problem with
+After tweaking the configuration files found in the config package to your liking, run the RockSample Problem with
 
     python src/run_pomdp.py
+    
+The TigerProblem can be ran by changing the value of the "SampleProblem" variable in src/run_pomdp.py to 2
 
 ## Dependencies ##
 
@@ -22,6 +24,6 @@ This project uses:
 
 ## TODO ##
 * Unit Test coverage is currently minimal, so this area is going to be expanded upon soon
-* The only current "working" test-problem is RockSample. More test problems are being worked on 
+* The current test-problems are the RockSample and TigerProblem. More test problems are being worked on 
 * An extension for GPU-MCTS is being planned. The NumbaPro Python module seems to be a good bet for this
 * The PyGame sim is currently not supported, due to recent changes

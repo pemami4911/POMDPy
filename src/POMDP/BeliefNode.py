@@ -109,7 +109,7 @@ class BeliefNode:
         else:
             # Update the current action mapping to reflect the state of the simulation
             # child_node.action_map.update()
-            self.solver.model.num_reused_nodes += 1
+            # self.solver.model.num_reused_nodes += 1
 
             # Update the re-used child belief node's data
             child_node.data.update(child_node.get_parent_belief())

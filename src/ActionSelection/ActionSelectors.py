@@ -2,9 +2,7 @@ __author__ = 'patrickemami'
 
 import random
 import json
-
 import numpy as np
-
 import config_parser
 
 

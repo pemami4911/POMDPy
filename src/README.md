@@ -10,7 +10,7 @@ To implement a POMDP with discrete states, actions, observations, and rewards, t
 * Model - this module is the most important, since it acts as the black-box generator 
     of (S', A, O, R) steps. 
 
-    You will also need to provide a .txt of .cfg containing a map or other data that encapsulate
+    You may want to to provide a .txt of .cfg containing a map or other data that encapsulate
     the environment and hence the transition probabilities for the world which the POMDP lives in.
    
 Continuous POMDPs are not yet supported.

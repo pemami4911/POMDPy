@@ -9,7 +9,7 @@ CONSOLE LOGGING VERBOSITY LEVELS
 3 - LOUD
 4 - DEBUG
 '''
-VERBOSITY = 2
+VERBOSITY = 3
 
 def console(verbosity_level, source, msg):
     if verbosity_level > VERBOSITY:

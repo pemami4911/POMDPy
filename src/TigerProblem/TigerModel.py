@@ -1,15 +1,13 @@
 __author__ = 'patrickemami'
 
-import json
-
 import numpy as np
-
+import random
 import Model
-from TigerAction import ActionType
+from TigerAction import *
 from TigerState import TigerState
 from TigerObservation import TigerObservation
 from TigerActionPool import TigerActionPool
-import config_parser
+from TigerData import TigerData
 
 
 class TigerModel(Model.Model):
@@ -19,12 +17,13 @@ class TigerModel(Model.Model):
         self.tiger_door = None
         self.num_doors = num_doors
         self.num_states = num_doors
-        self.config = json.load(open(config_parser.cfg_file, "r"))
+        self.set_init()
 
     def set_init(self):
         self.tiger_door = np.random.randint(0, self.num_doors)
+        print 'The tiger is behind door ' + str(self.tiger_door + 1)
 
-    ''' --------- UTIL --------- '''
+    ''' --------- Abstract Methods --------- '''
     def is_terminal(self, state):
         if state.door_open:
             return True
@@ -32,16 +31,36 @@ class TigerModel(Model.Model):
             return False
 
     def sample_an_init_state(self):
-        pass
+        return self.sample_state_uninformed()
 
+    # TODO test
     def sample_state_uninformed(self):
-        pass
+        random_configuration = [0, 1]
+        if np.random.uniform(0, 1) <= 0.5:
+            random_configuration.reverse()
+        return TigerState(False, random_configuration)
 
     def get_legal_actions(self):
-        return [ActionType.LISTEN, ActionType.OPEN_DOOR_0, ActionType.OPEN_DOOR_1]
+        return [TigerAction(ActionType.LISTEN), TigerAction(ActionType.OPEN_DOOR_1), TigerAction(ActionType.OPEN_DOOR_2)]
 
     def is_valid(self, state):
         return True
+
+    def reset(self):
+        pass
+
+    def update(self, sim_data):
+        pass
+
+    ''' Factory methods '''
+    def create_action_pool(self):
+        return TigerActionPool(self)
+
+    def get_random_action(self):
+        return random.choice(self.get_legal_actions())
+
+    def create_root_historical_data(self, solver):
+        return TigerData()
 
     ''' --------- BLACK BOX GENERATION --------- '''
     def generate_step(self, state, action):
@@ -49,22 +68,23 @@ class TigerModel(Model.Model):
             return None
 
         result = Model.StepResult()
-        result.next_state = self.make_next_state(state, action)
+        result.next_state, is_legal = self.make_next_state(state, action)
         result.action = action.copy()
-        result.observation = self.make_observation(action)
+        result.observation = self.make_observation(action, result.next_state)
         result.reward = self.make_reward(action, result.next_state)
         result.is_terminal = self.is_terminal(result.next_state)
 
-        return result
+        return result, is_legal
 
     def make_next_state(self, state, action):
         if action.bin_number == ActionType.LISTEN:
-            return state
+            return state, True
 
         if action.bin_number > 0:
-             return TigerState(True, state.door_prizes)
+             return TigerState(True, state.door_prizes), True
         else:
              print "make_next_state - Illegal action was used"
+        return None, False
 
     def make_reward(self, action, next_state):
         """
@@ -89,7 +109,7 @@ class TigerModel(Model.Model):
             print "make_reward - Illegal action was used"
             return 0
 
-    def make_observation(self, action):
+    def make_observation(self, action, next_state):
         '''
         :param action:
         :param next_state:
@@ -106,11 +126,11 @@ class TigerModel(Model.Model):
             obs = ([0, 1], [1, 0])[self.tiger_door == 0]
             probability_correct = np.random.uniform(0, 1)
             if probability_correct <= 0.85:
+                next_state.door_prizes = list(obs)
+                next_state.door_prizes.reverse()
                 return TigerObservation(obs)
             else:
-                return TigerObservation(obs.reverse())
-
-    ''' Factory methods '''
-    def create_action_pool(self):
-        return TigerActionPool(self)
+                next_state.door_prizes = list(obs)
+                obs.reverse()
+                return TigerObservation(obs)
 

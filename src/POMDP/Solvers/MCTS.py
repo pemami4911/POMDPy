@@ -107,7 +107,7 @@ class MCTS(object):
                     break
 
         new_root = BeliefNode(self.solver)
-        new_root.data = child_belief_node.data.shallow_copy()
+        new_root.data = child_belief_node.data.copy()
         new_root.action_map = self.solver.action_pool.create_action_mapping(new_root)
 
         # Extend the history sequence
@@ -198,6 +198,7 @@ class MCTS(object):
         total_reward = 0.0
         discount = 1.0
         num_steps = 0
+
         while num_steps < self.model.sys_cfg["maximum_depth"] and not is_terminal:
 
             rand_action = self.model.get_random_action()
@@ -228,7 +229,7 @@ class MCTS(object):
 
         self.clear_stats()
         # Create a snapshot of the current information state
-        initial_root_data = self.policy.root.data.shallow_copy()
+        initial_root_data = self.policy.root.data.copy()
 
         for i in range(self.model.sys_cfg["num_sims"]):
             # Reset the Simulator
@@ -236,7 +237,7 @@ class MCTS(object):
 
             # Reset the root node to the information state at the beginning of the UCT Search
             # After each simulation
-            self.policy.root.data = initial_root_data.shallow_copy()
+            self.policy.root.data = initial_root_data.copy()
 
             state = self.policy.root.sample_particle()
             # Tree depth, which increases with each recursive step
@@ -292,9 +293,9 @@ class MCTS(object):
         console(4, module + ".step_node", "Step Result.Next_State = " + step_result.next_state.to_string())
         console(4, module + ".step_node", "Step Result.Reward = " + str(step_result.reward))
 
-        child_belief_node, added = belief_node.create_or_get_child(action, step_result.observation)
-
         if not step_result.is_terminal:
+            child_belief_node, added = belief_node.create_or_get_child(action, step_result.observation)
+
             if child_belief_node is not None:
                 tree_depth += 1
                 delayed_reward = self.simulate_node(step_result.next_state, child_belief_node, tree_depth)
