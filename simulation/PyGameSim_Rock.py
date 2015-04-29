@@ -1,5 +1,7 @@
 __author__ = 'patrickemami'
 
+''' NOT CURRENTLY WORKING '''
+
 # PyGame
 import pygame
 from RockModel import RSCellType

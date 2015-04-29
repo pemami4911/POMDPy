@@ -1,3 +1,3 @@
 __author__ = 'patrickemami'
-__all__ = ['ActionSelection', 'POMDP', 'RockProblem', 'TigerProblem', 'numpy']
+__all__ = ['ActionSelection', 'POMDP', 'RockProblem', 'TigerProblem', 'config_parser', 'console']
 

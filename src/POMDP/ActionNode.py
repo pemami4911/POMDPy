@@ -1,6 +1,5 @@
 __author__ = 'patrickemami'
 
-import ObservationMapping as Om
 
 class ActionNode(object):
     """

@@ -1,7 +1,6 @@
 __author__ = 'patrickemami'
 
 import abc
-import ActionNode as An
 
 class ObservationMapping(object):
     """
