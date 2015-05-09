@@ -201,7 +201,7 @@ class MCTS(object):
 
         while num_steps < self.model.sys_cfg["maximum_depth"] and not is_terminal:
 
-            rand_action = self.model.get_random_action()
+            rand_action = self.solver.action_pool.sample_random_action()
             step_result, is_legal = self.model.generate_step(state, rand_action)
             is_terminal = step_result.is_terminal
 

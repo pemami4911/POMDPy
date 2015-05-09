@@ -1,4 +1,4 @@
 __author__ = 'patrickemami'
 
-__all__ = ['GridPosition', 'RockAction', 'RockActionPool', 'RockModel', 'RockObservation', 'RockPositionHistory',
+__all__ = ['GridPosition', 'RockAction', 'RockModel', 'RockObservation', 'RockPositionHistory',
            'RockState']

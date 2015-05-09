@@ -140,7 +140,7 @@ class Solver(object):
             if out_of_particles:
                 print "Out of particles, finishing sequence with random actions"
                 while i < num_steps:
-                    action = self.model.get_random_action()
+                    action = self.action_pool.sample_random_action()
                     step_result, is_legal = self.model.generate_step(state, action)
 
                     self.results.reward.add(step_result.reward)

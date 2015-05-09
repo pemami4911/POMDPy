@@ -52,14 +52,12 @@ src/POMDP/Solvers/Solver.py
 src/POMDP/Solvers/__init__.py
 src/RockProblem/GridPosition.py
 src/RockProblem/RockAction.py
-src/RockProblem/RockActionPool.py
 src/RockProblem/RockModel.py
 src/RockProblem/RockObservation.py
 src/RockProblem/RockPositionHistory.py
 src/RockProblem/RockState.py
 src/RockProblem/__init__.py
 src/TigerProblem/TigerAction.py
-src/TigerProblem/TigerActionPool.py
 src/TigerProblem/TigerData.py
 src/TigerProblem/TigerModel.py
 src/TigerProblem/TigerObservation.py

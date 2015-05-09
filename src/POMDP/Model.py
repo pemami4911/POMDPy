@@ -76,9 +76,9 @@ class Model(object):
         """
 
     @abc.abstractmethod
-    def get_legal_actions(self):
+    def get_all_actions(self):
         """
-        :return: list of legal actions
+        :return: list of Concrete Discrete/Continuous Actions
         """
 
     @abc.abstractmethod
@@ -102,12 +102,6 @@ class Model(object):
         """
         :param solver:
         :return:
-        """
-
-    @abc.abstractmethod
-    def get_random_action(self):
-        """
-        :return: a random legal action
         """
 
     @abc.abstractmethod

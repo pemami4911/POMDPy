@@ -1,7 +1,6 @@
 __author__ = 'patrickemami'
 
-
-import DiscreteAction as Da
+from POMDP.DiscretePOMDP.DiscreteAction import DiscreteAction
 
 class ActionType(object):
     """
@@ -11,7 +10,7 @@ class ActionType(object):
     OPEN_DOOR_1 = 1
     OPEN_DOOR_2 = 2
 
-class TigerAction(Da.DiscreteAction):
+class TigerAction(DiscreteAction):
 
     def __init__(self, action_type):
         super(TigerAction, self).__init__(action_type)
@@ -19,9 +18,6 @@ class TigerAction(Da.DiscreteAction):
 
     def copy(self):
         return TigerAction(self.bin_number)
-
-    def get_bin_number(self):
-        return self.bin_number
 
     def to_string(self):
         if self.bin_number is ActionType.LISTEN:

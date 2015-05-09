@@ -23,3 +23,9 @@
 
 2015-04-29 00:43:26,687 - Model.Solver - 100	1.0		20.0	0.0		18.8868897771	0.0		56.6149580479
 
+2015-05-08 21:09:46,605 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-05-08 21:09:57,388 - Model.Solver - 100	3.0		9.0	0.471404520791		8.95175	0.493737826854		3.58100001017
+2015-05-08 21:10:22,743 - Model.Solver - Simulations	Runs	Un-discounted Return	Un-discounted Error		Discounted Return	Discounted Error	Time
+
+2015-05-08 21:13:33,137 - Model.Solver - 100	3.0		26.6666666667	2.72165526976		24.2112771919	2.42481025368		63.450666666

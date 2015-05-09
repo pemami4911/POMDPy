@@ -1,2 +1,2 @@
 __author__ = 'patrickemami'
-__all__ = ['TigerAction', 'TigerActionPool', 'TigerData', 'TigerModel', 'TigerObservation', 'TigerState']
+__all__ = ['TigerAction', 'TigerData', 'TigerModel', 'TigerObservation', 'TigerState']

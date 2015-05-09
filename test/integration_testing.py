@@ -21,7 +21,7 @@ def add_to_tree():
         # sample an init state
         rand_state = model.sample_an_init_state()
         # Sample a random action
-        rand_action = model.get_random_action()
+        rand_action = solver.action_pool.sample_random_action()
         # Generate an observation by generating a step
         step_result, is_legal = model.generate_step(rand_state, rand_action)
         # Create a child belief node

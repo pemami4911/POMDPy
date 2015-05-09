@@ -179,7 +179,7 @@ r.draw_env()
 
 print "------------- Black Box Dynamics Testing ----------------"
 current_state = r.sample_state_uninformed()
-current_action = r.get_random_action()
+current_action = numpy.random.choice(r.get_all_actions())
 print "Current state: ",
 current_state.print_state(),
 print "Current position: ",
@@ -216,7 +216,7 @@ print "Testing Step Generation"
 
 import Model
 
-step = r.generate_step(next_state, r.get_random_action())
+step = r.generate_step(next_state, numpy.random.choice(r.get_all_actions()))
 assert isinstance(step[0], Model.StepResult)
 step[0].print_step_result()
 

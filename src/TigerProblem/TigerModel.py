@@ -6,8 +6,8 @@ import Model
 from TigerAction import *
 from TigerState import TigerState
 from TigerObservation import TigerObservation
-from TigerActionPool import TigerActionPool
 from TigerData import TigerData
+from POMDP.DiscretePOMDP.DiscreteActionPool import DiscreteActionPool
 
 
 class TigerModel(Model.Model):
@@ -40,7 +40,7 @@ class TigerModel(Model.Model):
             random_configuration.reverse()
         return TigerState(False, random_configuration)
 
-    def get_legal_actions(self):
+    def get_all_actions(self):
         return [TigerAction(ActionType.LISTEN), TigerAction(ActionType.OPEN_DOOR_1), TigerAction(ActionType.OPEN_DOOR_2)]
 
     def is_valid(self, state):
@@ -54,10 +54,7 @@ class TigerModel(Model.Model):
 
     ''' Factory methods '''
     def create_action_pool(self):
-        return TigerActionPool(self)
-
-    def get_random_action(self):
-        return random.choice(self.get_legal_actions())
+        return DiscreteActionPool(self)
 
     def create_root_historical_data(self, solver):
         return TigerData()

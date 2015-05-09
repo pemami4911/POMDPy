@@ -7,7 +7,7 @@ from GridPosition import GridPosition
 from RockState import RockState
 from RockAction import RockAction
 from RockObservation import RockObservation
-from RockActionPool import RockActionPool
+from POMDP.DiscretePOMDP.DiscreteActionPool import DiscreteActionPool
 from POMDP.Model import Model, StepResult
 
 # import numpy from RockPositionHistory
@@ -403,24 +403,14 @@ class RockModel(Model):
             self.num_times_sampled = 0.0
             self.sampled_rock_yet = True
 
-    def get_legal_actions(self):
-        pass
-
-    def get_all_actions_in_order(self):
+    def get_all_actions(self):
         all_actions = []
         for code in range(0, 5 + self.n_rocks):
             all_actions.append(RockAction(code))
         return all_actions
 
-    def get_random_action(self):
-        """
-        Creates a new random RockAction
-        :return:
-        """
-        return RockAction(np.random.random_integers(0, 4 + self.n_rocks))
-
     def create_action_pool(self):
-        return RockActionPool(self)
+        return DiscreteActionPool(self)
 
     def create_root_historical_data(self, solver):
         self.create_new_rock_data()
