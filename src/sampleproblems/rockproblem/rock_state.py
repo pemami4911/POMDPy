@@ -1,7 +1,7 @@
 __author__ = 'patrickemami'
 
 import itertools
-from POMDP.discretePOMDP.DiscreteState import DiscreteState
+from POMDP.discretePOMDP.discrete_state import DiscreteState
 
 class RockState(DiscreteState):
     """

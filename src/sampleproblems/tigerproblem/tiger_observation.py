@@ -1,6 +1,6 @@
 __author__ = 'patrickemami'
 
-import DiscreteObservation as Do
+import discrete_observation as Do
 
 class TigerObservation(Do.DiscreteObservation):
     """

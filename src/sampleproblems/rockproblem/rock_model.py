@@ -8,7 +8,7 @@ from grid_position import GridPosition
 from rock_state import RockState
 from rock_action import RockAction
 from rock_observation import RockObservation
-from POMDP.discretePOMDP.DiscreteActionPool import DiscreteActionPool
+from POMDP.discretePOMDP.discrete_action_pool import DiscreteActionPool
 from POMDP.model import Model, StepResult
 
 

@@ -1,6 +1,6 @@
 __author__ = 'patrickemami'
 
-from POMDP.discretePOMDP.DiscreteState import DiscreteState
+from POMDP.discretePOMDP.discrete_state import DiscreteState
 
 class TigerState(DiscreteState):
     """

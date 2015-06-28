@@ -1,4 +1,5 @@
 config
+log
 plots
 simulation
 src

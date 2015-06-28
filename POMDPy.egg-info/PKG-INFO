@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: POMDPy
-Version: 1.0.0
+Version: 1.0.1
 Summary: A Python Framework for implementing Discrete and Continuous POMDPs with a MCTS solver
 Home-page: http://pemami4911.github.io/POMDPy/
 Author: Patrick Emami
