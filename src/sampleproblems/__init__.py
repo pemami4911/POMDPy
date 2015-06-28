@@ -1,3 +1,3 @@
 __author__ = 'patrickemami'
 
-__all__ = ['RockProblem', 'TigerProblem']
+__all__ = ['rockproblem', 'tigerproblem']

@@ -1,8 +1,8 @@
 __author__ = 'patrickemami'
 
-from src.sampleproblems.rockproblem.rock_model import RockModel
-from src.POMDP.solvers.solver import Solver
-from src.POMDP.solvers.MCTS import MCTS
+from sampleproblems.rockproblem.rock_model import RockModel
+from POMDP.solvers.solver import Solver
+from POMDP.solvers.MCTS import MCTS
 
 '''
 TEST 0 - Pruning

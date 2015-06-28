@@ -1,4 +1,5 @@
 __author__ = 'patrickemami'
-__all__ = ['ActionMapping', 'ActionNode', 'ActionPool', 'BeliefNode', 'BeliefStructure', 'BeliefTree',
-           'HistoricalData', 'History', 'Model', 'ObservationMapping', 'ObservationPool', 'Point', 'QTable',
-           'Statistic', 'DiscretePOMDP', 'Solvers']
+
+__all__ = ['action_mapping', 'action_node', 'action_pool', 'belief_node', 'belief_structure', 'belief_tree',
+           'historical_data', 'history', 'model', 'observation_mapping', 'observation_pool', 'point', 'q_table',
+           'statistic', 'discretePOMDP', 'solvers']

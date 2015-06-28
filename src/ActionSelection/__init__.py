@@ -1,3 +1,3 @@
 __author__ = 'patrickemami'
 
-__all__ = ['ActionSelectors.py', 'StepGenerator']
+__all__ = ['action_selectors.py']

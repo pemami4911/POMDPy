@@ -108,11 +108,7 @@ print "Passed"
 
 print 'Testing dictionary of DiscreteActionMappingEntry objects'
 
-<<<<<<< HEAD
-from discretePOMDP.DiscreteActionMapping import DiscreteActionMappingEntry
-=======
 from discretePOMDP.discrete_action_mapping import DiscreteActionMappingEntry
->>>>>>> [issue #1] log files in wrong place
 
 a = DiscreteActionMappingEntry()
 b = DiscreteActionMappingEntry()
