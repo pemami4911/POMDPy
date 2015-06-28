@@ -12,8 +12,8 @@ par_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 src_dir = os.path.join(par_dir, 'src')
 sys.path.append(src_dir)
 
-from sampleproblems.rockproblem.rock_model import RockModel
 from POMDP.solvers.solver import Solver
+from sampleproblems.rockproblem.rock_model import RockModel
 
 model = RockModel("unit_tests")
 solver = Solver(model)
