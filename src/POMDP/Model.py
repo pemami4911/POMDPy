@@ -1,11 +1,10 @@
 __author__ = 'patrickemami'
 
 import abc
-import logging
 import json
 import random
 
-from ObservationPool import DiscreteObservationPool
+from observation_pool import DiscreteObservationPool
 import config_parser
 
 
@@ -29,9 +28,6 @@ class Model(object):
 
     def __init__(self, problem_name):
         self.problem_name = problem_name
-        self.format = "%(asctime)s - %(name)s - %(message)s"
-        logging.basicConfig(filename='POMDPy.log', level=logging.DEBUG, format=self.format)
-        self.logger = logging.getLogger('Model')
         self.sys_cfg = json.load(open(config_parser.sys_cfg, "r"))
 
     @abc.abstractmethod

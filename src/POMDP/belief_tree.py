@@ -1,9 +1,9 @@
 __author__ = 'patrickemami'
 
-import BeliefNode
-import BeliefStructure
+import belief_node
+import belief_structure
 
-class BeliefTree(BeliefStructure.BeliefStructure):
+class BeliefTree(belief_structure.BeliefStructure):
     """
     Contains the BeliefTree class, which represents an entire belief tree.
     *
@@ -28,10 +28,14 @@ class BeliefTree(BeliefStructure.BeliefStructure):
         if belief_node is None:
             return
 
+        # observation mapping entry
         belief_node.parent_entry = None
+
+        # the action maps owner reference
         belief_node.action_map.owner = None
-        # self.solver.action_pool.remove_mapping(belief_node.data, belief_node.action_map)
+
         action_mapping_entries = belief_node.action_map.get_child_entries()
+
         for entry in action_mapping_entries:
             # Action Node
             entry.child_node.parent_entry = None
@@ -45,6 +49,24 @@ class BeliefTree(BeliefStructure.BeliefStructure):
             entry.child_node = None
         belief_node.action_map = None
 
+    def prune_siblings(self, belief_node):
+        if belief_node is None:
+            return
+
+        parent_belief = belief_node.get_parent_belief()
+
+        if parent_belief is not None:
+
+            # For all action entries with action nodes expanded out from the parent_belief (root of the belief tree)
+            for action_mapping_entry in parent_belief.action_map.get_child_entries():
+
+                # for every observation made
+                for obs_mapping_entry in action_mapping_entry.child_node.observation_map.get_child_entries():
+
+                    # if the belief node is not the new root of the belief tree, prune it
+                    if obs_mapping_entry.child_node is not belief_node:
+                        self.prune_node(obs_mapping_entry.child_node)
+
     # --------- TREE MODIFICATION ------- #
     def reset(self):
         """
@@ -52,7 +74,7 @@ class BeliefTree(BeliefStructure.BeliefStructure):
         :return:
         """
         self.prune_tree(self)
-        self.root = BeliefNode.BeliefNode(self.solver, None, None)
+        self.root = belief_node.BeliefNode(self.solver, None, None)
         return self.root
 
     def reset_root_data(self):

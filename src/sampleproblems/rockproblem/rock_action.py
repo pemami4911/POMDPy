@@ -1,6 +1,6 @@
 __author__ = 'patrickemami'
 
-from POMDP.DiscretePOMDP.DiscreteAction import DiscreteAction
+from POMDP.discretePOMDP.DiscreteAction import DiscreteAction
 
 class ActionType(object):
     """

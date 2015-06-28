@@ -1,8 +1,8 @@
 __author__ = 'patrickemami'
 
-import RockModel
-import Solver
-import MCTS
+from src.sampleproblems.rockproblem.rock_model import RockModel
+from src.POMDP.solvers.solver import Solver
+from src.POMDP.solvers.MCTS import MCTS
 
 '''
 TEST 0 - Pruning
@@ -10,9 +10,9 @@ TEST 1 - Action Selection after simulation
 '''
 TEST = 1
 
-model = RockModel.RockModel("Objgraph Test")
-solver = Solver.Solver(model)
-mcts = MCTS.MCTS(solver, model)
+model = RockModel("Objgraph Test")
+solver = Solver(model)
+mcts = MCTS(solver, model)
 
 def add_to_tree():
         global mcts

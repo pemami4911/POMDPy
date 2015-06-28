@@ -5,7 +5,6 @@ import json
 import numpy as np
 import config_parser
 
-
 config = json.load(open(config_parser.sys_cfg, "r"))
 
 ''' ------------ GLOBAL VARS -------------'''

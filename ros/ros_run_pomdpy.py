@@ -6,9 +6,8 @@ import rospy
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import uint32
 
-from TigerProblem import *
-from RockProblem import *
-from POMDP.Solvers import *
+from sampleproblems.tigerproblem import *
+from POMDP.solvers import *
 
 """
 Simple Publisher Node for POMDPy 

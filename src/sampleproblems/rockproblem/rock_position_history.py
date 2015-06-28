@@ -1,9 +1,11 @@
 __author__ = 'patrickemami'
 
-from POMDP.HistoricalData import HistoricalData
-from RockAction import ActionType
 import numpy as np
+
+from POMDP.historical_data import HistoricalData
+from rock_action import ActionType
 import itertools
+
 
 # Utility function
 class RockData:

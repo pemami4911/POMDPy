@@ -1,8 +1,10 @@
 __author__ = 'patrickemami'
 
+import logging
+
 import matplotlib.pyplot as plt
 import numpy as np
-import logging
+
 
 '''
  For n runs, each containing 100 episodes, plot:
@@ -19,12 +21,11 @@ import logging
 - Do (30-100) Runs for UCB and TD. on
 '''
 
-import RockSolver
-import RockModel
+import rock_model
 
-my_model = RockModel.RockModel("RockProblem")
-my_solver = RockSolver.RockSolver(my_model)
-logger = logging.getLogger('Model.results')
+my_model = rock_model.RockModel("rockproblem")
+my_solver = RockSolver(my_model)
+logger = logging.getLogger('POMDPy.results')
 
 print "Trial for: ",
 print my_model.config["algorithm"]

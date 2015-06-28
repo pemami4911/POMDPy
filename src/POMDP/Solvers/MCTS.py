@@ -2,22 +2,22 @@ __author__ = 'patrickemami'
 
 import time
 import numpy as np
-from POMDP.BeliefTree import BeliefTree
-from ActionSelection import ActionSelectors
-from POMDP.Statistic import Statistic
-from POMDP.BeliefNode import BeliefNode
+from POMDP.belief_tree import BeliefTree
+from actionselection import action_selectors
+from POMDP.statistic import Statistic
 from console import *
-
 
 module = "MCTS"
 disable_tree = False
 
-''' ------------ Global vars ----------------- '''
-
 
 class MCTS(object):
     """
-    Monte-Carlo Tree Search POMDP solver, from POMCP
+    Monte-Carlo Tree Search implementation, from POMCP
+    """
+
+    """
+    Dimensions for the fast-UCB table
     """
     UCB_N = 10000
     UCB_n = 100
@@ -80,7 +80,7 @@ class MCTS(object):
             self.rollout_search()
         else:
             self.UCT_search()
-        return ActionSelectors.ucb_action(self, self.policy.root, True)
+        return action_selectors.ucb_action(self, self.policy.root, True)
 
     def update(self, step_result):
 
@@ -90,6 +90,7 @@ class MCTS(object):
 
         child_belief_node = self.policy.root.get_child(step_result.action, step_result.observation)
 
+        ''' --- DAMAGE CONTROL --- '''
         # If the child_belief_node is None because the step result randomly produced a different observation,
         # grab any of the beliefs extending from the belief node's action node
         if child_belief_node is None:
@@ -105,10 +106,7 @@ class MCTS(object):
                     child_belief_node = entry.child_node
                     print "Had to grab nearest belief node...uncertainty introduced"
                     break
-
-        new_root = BeliefNode(self.solver)
-        new_root.data = child_belief_node.data.copy()
-        new_root.action_map = self.solver.action_pool.create_action_mapping(new_root)
+        ''' ---------------------- '''
 
         # Extend the history sequence
         new_hist_entry = self.history.add_entry()
@@ -117,20 +115,45 @@ class MCTS(object):
         new_hist_entry.observation = step_result.observation
         new_hist_entry.register_entry(new_hist_entry, None, step_result.next_state)
 
+        '''
         if child_belief_node is not None:
             console(2, module + ".update", "Matched " + str(child_belief_node.state_particles.__len__()) + " states")
             # If a child belief node for the root already exists, just copy over its state particles into the new root's
             # particles
             for i in child_belief_node.state_particles:
                 new_root.state_particles.append(i.copy())
-
         else:
             console(2, module + ".update", "No matching node found")
 
+        '''
+
         # If the new root does not yet have the max possible number of particles add some more
+        if child_belief_node.state_particles.__len__() < self.model.sys_cfg["max_particle_count"]:
+
+            num_to_add = self.model.sys_cfg["max_particle_count"] - child_belief_node.state_particles.__len__()
+
+            # Generate particles for the new root node
+            child_belief_node.state_particles += self.model.generate_particles(self.policy.root, step_result.action,
+                                            step_result.observation, num_to_add,
+                                            self.policy.root.state_particles)
+
+            # If that failed, attempt to create a new state particle set
+            if child_belief_node.state_particles.__len__() == 0:
+                child_belief_node.state_particles += self.model.generate_particles_uninformed(self.policy.root, step_result.action,
+                                                                                    step_result.observation,
+                                                                                    self.model.sys_cfg["min_particle_count"])
+
+        # Failed to continue search
+        if child_belief_node.state_particles.__len__() == 0 and (child_belief_node is None or
+                                                                    child_belief_node.state_particles.__len__() == 0):
+            return True
+
+        ''' -------------------------------
+       # If the new root does not yet have the max possible number of particles add some more
         if new_root.state_particles.__len__() < self.model.sys_cfg["max_particle_count"]:
 
             num_to_add = self.model.sys_cfg["max_particle_count"] - new_root.state_particles.__len__()
+
             # Generate particles for the new root node
             new_root.state_particles += self.model.generate_particles(self.policy.root, step_result.action,
                                             step_result.observation, num_to_add,
@@ -147,13 +170,16 @@ class MCTS(object):
                                                                     child_belief_node.state_particles.__len__() == 0):
             return True
 
+         ------------------------------- '''
+
         # delete old tree and set the new root
         start_time = time.time()
-        self.policy.prune_tree(self.policy)
+        self.policy.prune_siblings(child_belief_node)
+        #self.policy.prune_tree(self.policy)
         elapsed = time.time() - start_time
         print "Time spent pruning = ", str(elapsed)
-        self.policy.root = new_root
-
+        self.policy.root = child_belief_node
+        # self.policy.root = new_root
         return False
 
     ''' --------------- Rollout Search --------------'''
@@ -263,7 +289,7 @@ class MCTS(object):
 
     def simulate_node(self, state, belief_node, tree_depth):
 
-        action = ActionSelectors.ucb_action(self, belief_node, False)
+        action = action_selectors.ucb_action(self, belief_node, False)
 
         self.peak_tree_depth = tree_depth
 

@@ -2,16 +2,18 @@ __author__ = 'patrickemami'
 
 import logging
 import json
+
 import config_parser
-from GridPosition import GridPosition
-from RockState import RockState
-from RockAction import RockAction
-from RockObservation import RockObservation
-from POMDP.DiscretePOMDP.DiscreteActionPool import DiscreteActionPool
-from POMDP.Model import Model, StepResult
+from grid_position import GridPosition
+from rock_state import RockState
+from rock_action import RockAction
+from rock_observation import RockObservation
+from POMDP.discretePOMDP.DiscreteActionPool import DiscreteActionPool
+from POMDP.model import Model, StepResult
+
 
 # import numpy from RockPositionHistory
-from RockPositionHistory import *
+from rock_position_history import *
 
 class RSCellType(object):
     """
@@ -28,7 +30,7 @@ class RockModel(Model):
     def __init__(self, problem_name):
         super(RockModel, self).__init__(problem_name)
         # logging utility
-        self.logger = logging.getLogger('Model.RockModel')
+        self.logger = logging.getLogger('POMDPy.RockModel')
         self.rock_config = json.load(open(config_parser.rock_cfg, "r"))
 
         # -------- Model configurations -------- #

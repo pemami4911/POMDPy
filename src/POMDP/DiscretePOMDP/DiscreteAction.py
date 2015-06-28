@@ -1,7 +1,7 @@
 __author__ = 'patrickemami'
 
 import abc
-from POMDP.Point import Point
+from POMDP.point import Point
 
 class DiscreteAction(Point):
 

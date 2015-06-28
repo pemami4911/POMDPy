@@ -40,28 +40,28 @@ my_b = B()
 my_b.foo()
 my_b.bar()
 '''
-from RockAction import *
+from rock_action import *
 
 r = RockAction(2)
 r.print_action()
 
-from RockState import RockState
-from GridPosition import GridPosition
+import rock_state
+import grid_position
 
 print 'Testing "isinstance"'
-g = GridPosition(3,3)
+g = grid_position(3,3)
 states = [1, 0, 0, 1]
 
-r = RockState(g, states)
+r = rock_state(g, states)
 r.print_state()
 
-g2 = GridPosition(4,4)
-assert isinstance(g2, GridPosition)
+g2 = grid_position(4,4)
+assert isinstance(g2, grid_position)
 print "Passed"
 
 states2 = [1, 0, 0, 1]
 
-r2 = RockState(g2, states2)
+r2 = rock_state(g2, states2)
 print r.equals(r2)
 
 print "distance to: should be 2"
@@ -82,15 +82,15 @@ print "Passed"
 print 'manhattan distance test with GridPosition'
 import numpy
 
-a = GridPosition(0,0)
-b = GridPosition(1,3)
+a = grid_position(0,0)
+b = grid_position(1,3)
 
 assert 4 == a.manhattan_distance(b)
 print "Passed"
 
 print 'Euclidean distance test with Grid Position'
-a = GridPosition(0,0)
-b = GridPosition(2,2)
+a = grid_position(0,0)
+b = grid_position(2,2)
 assert numpy.sqrt(8) == a.euclidean_distance(b)
 print a.euclidean_distance(b)
 print "Passed"
@@ -108,7 +108,7 @@ print "Passed"
 
 print 'Testing dictionary of DiscreteActionMappingEntry objects'
 
-from DiscretePOMDP.DiscreteActionMapping import DiscreteActionMappingEntry
+from discretePOMDP.DiscreteActionMapping import DiscreteActionMappingEntry
 
 a = DiscreteActionMappingEntry()
 b = DiscreteActionMappingEntry()
@@ -150,11 +150,11 @@ print "Passed"
 
 print "Testing RockModel creation"
 
-import RockModel
+import rock_model
 
-r = RockModel.RockModel("RockProblem")
+r = rock_model.RockModel("rockproblem")
 
-assert isinstance(r, RockModel.RockModel)
+assert isinstance(r, rock_model.RockModel)
 print "Passed"
 
 print "Testing 'sample_state_uninformed and print_state"
@@ -214,23 +214,23 @@ print "Passed"
 
 print "Testing Step Generation"
 
-import Model
+import model
 
 step = r.generate_step(next_state, numpy.random.choice(r.get_all_actions()))
-assert isinstance(step[0], Model.StepResult)
+assert isinstance(step[0], model.StepResult)
 step[0].print_step_result()
 
 print "------------- End Black Box Dynamics Testing ----------------"
 
-g = GridPosition(1, 2)
-h = [GridPosition(1, 2)]
+g = grid_position(1, 2)
+h = [grid_position(1, 2)]
 
 if g in h:
     print "SUCCESS"
 else:
     print "FAILURE"
 
-if g == GridPosition(1, 2):
+if g == grid_position(1, 2):
     print "SUCCESS"
 else:
     print "FAILURE"

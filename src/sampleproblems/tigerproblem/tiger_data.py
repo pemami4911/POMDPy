@@ -1,8 +1,10 @@
 __author__ = 'patrickemami'
 
-import HistoricalData as Hd
-from TigerAction import ActionType
 import numpy as np
+
+import historical_data as Hd
+from tiger_action import ActionType
+
 
 class TigerData(Hd.HistoricalData):
     """

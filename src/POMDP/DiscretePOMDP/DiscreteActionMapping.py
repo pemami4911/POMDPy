@@ -1,7 +1,7 @@
 __author__ = 'patrickemami'
 
-from POMDP.ActionMapping import ActionMapping, ActionMappingEntry
-from POMDP.ActionNode import ActionNode
+from POMDP.action_mapping import ActionMapping, ActionMappingEntry
+from POMDP.action_node import ActionNode
 import numpy as np
 
 class DiscreteActionMapping(ActionMapping):
@@ -69,7 +69,7 @@ class DiscreteActionMapping(ActionMapping):
                 return_entries.append(entry)
         return return_entries
 
-    # Returns a list of all ActionMappingEntries associated with this mapping
+    # Returns a shuffled list of all ActionMappingEntries associated with this mapping
     def get_all_entries(self):
         all_actions = self.entries.values()
         np.random.shuffle(all_actions)

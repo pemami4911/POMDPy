@@ -4,7 +4,9 @@ __author__ = 'patrickemami'
 
 # PyGame
 import pygame
-from RockModel import RSCellType
+
+from rock_model import RSCellType
+
 
 # multi-threading
 import threading
@@ -157,11 +159,11 @@ class Policy(threading.Thread):
 
                 pygame.time.wait(1000)
 if __name__ == '__main__':
-    import Solver.Solver
-    import RockModel
+    import solver.Solver
+    import rock_model
 
-    model = RockModel.RockModel("RockProblemSim")
-    solver = Solver.Solver(model)
+    model = rock_model.RockModel("RockProblemSim")
+    solver = solver.Solver(model)
 
     sim = Simulator(model, solver)
     sim.main()

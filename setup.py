@@ -1,8 +1,8 @@
-__author__ = 'Patrick'
+__author__ = 'Patrick Emami'
 
 from setuptools import setup, find_packages
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 DESCRIPTION = 'A Python Framework for implementing Discrete and Continuous POMDPs with a MCTS solver'
 
 setup(name='POMDPy',

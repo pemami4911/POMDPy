@@ -17,6 +17,7 @@ class ActionNode(object):
     def get_parent_belief(self):
         return self.parent_entry.get_mapping().get_owner()
 
+    # Returns a specific child belief node given the observation
     def get_child(self, obs):
         return self.observation_map.get_belief(obs)
 

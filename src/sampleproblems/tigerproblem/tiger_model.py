@@ -1,16 +1,16 @@
 __author__ = 'patrickemami'
 
 import numpy as np
-import random
-import Model
-from TigerAction import *
-from TigerState import TigerState
-from TigerObservation import TigerObservation
-from TigerData import TigerData
-from POMDP.DiscretePOMDP.DiscreteActionPool import DiscreteActionPool
+
+import model
+from tiger_action import *
+from tiger_state import TigerState
+from tiger_observation import TigerObservation
+from tiger_data import TigerData
+from POMDP.discretePOMDP.DiscreteActionPool import DiscreteActionPool
 
 
-class TigerModel(Model.Model):
+class TigerModel(model.Model):
 
     def __init__(self, problem_name="Tiger Problem", num_doors=2):
         super(TigerModel, self).__init__(problem_name)
@@ -64,7 +64,7 @@ class TigerModel(Model.Model):
         if action is None:
             return None
 
-        result = Model.StepResult()
+        result = model.StepResult()
         result.next_state, is_legal = self.make_next_state(state, action)
         result.action = action.copy()
         result.observation = self.make_observation(action, result.next_state)

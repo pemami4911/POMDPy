@@ -3,21 +3,24 @@ __author__ = 'patrickemami'
 
 import random
 import unittest
-import os, sys
+import os
+
+import sys
+
 
 par_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 src_dir = os.path.join(par_dir, 'src')
 sys.path.append(src_dir)
 
-from src.RockProblem.RockModel import RockModel
-from src.POMDP.Solvers.Solver import Solver
+from src.sampleproblems.rockproblem.rock_model import RockModel
+from POMDP.solvers.solver import Solver
 
 model = RockModel("unit_tests")
 solver = Solver(model)
 
 ''' --------- MCTS --------- '''
-from src.POMDP.Solvers.MCTS import MCTS
-from src.ActionSelection import ActionSelectors
+from src.POMDP.solvers.MCTS import MCTS
+from src.actionselection import action_selectors
 
 mcts = None
 
@@ -36,7 +39,7 @@ class MCTSTestCase(unittest.TestCase):
         global mcts
         maximal = random.choice(mcts.policy.root.action_map.bin_sequence)
         mcts.policy.root.action_map.entries.get(maximal).update_q_value(1.0, 1)
-        self.assertEqual(ActionSelectors.ucb_action(mcts, mcts.policy.root, True).bin_number, maximal)
+        self.assertEqual(action_selectors.ucb_action(mcts, mcts.policy.root, True).bin_number, maximal)
 
     def test_ucb_search(self):
         """
@@ -53,7 +56,7 @@ class MCTSTestCase(unittest.TestCase):
             else:
                 mcts.policy.root.action_map.entries.get(i).update_visit_count(100 + i)
             mcts.policy.root.action_map.entries.get(i).mean_q_value = 0.0
-        self.assertEqual(ActionSelectors.ucb_action(mcts, mcts.policy.root, False).bin_number, lowest_count_action),
+        self.assertEqual(action_selectors.ucb_action(mcts, mcts.policy.root, False).bin_number, lowest_count_action),
 
 
 if __name__ == '__main__':

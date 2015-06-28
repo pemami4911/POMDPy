@@ -1,7 +1,7 @@
 __author__ = 'Patrick'
 
-from POMDP.ActionPool import ActionPool
-from POMDP.DiscretePOMDP.DiscreteActionMapping import DiscreteActionMapping
+from POMDP.action_pool import ActionPool
+from POMDP.discretePOMDP.DiscreteActionMapping import DiscreteActionMapping
 import numpy as np
 
 class DiscreteActionPool(ActionPool):

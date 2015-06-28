@@ -3,7 +3,7 @@ __author__ = 'patrickemami'
 import abc
 import itertools
 import numpy
-from POMDP.Point import Point
+from POMDP.point import Point
 
 class DiscreteState(Point):
     """

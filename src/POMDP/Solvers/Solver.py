@@ -3,8 +3,8 @@ __author__ = 'patrickemami'
 import logging
 import time
 import MCTS
-from POMDP.Statistic import Statistic
-from POMDP import History
+from POMDP.statistic import Statistic
+from POMDP.history import *
 from console import *
 
 module = "Solver"
@@ -22,15 +22,18 @@ class Results():
         Results.undiscounted_return.running_total = 0.0
 
 class Solver(object):
-
+    """
+    This class is responsible for initiating a run
+    and storing statistics on that run
+    """
     def __init__(self, model):
-        self.logger = logging.getLogger('Model.Solver')
-
+        self.logger = logging.getLogger('POMDPy.Solver')
         self.model = model
         self.action_pool = None
         self.observation_pool = None
         self.results = Results()
-        self.histories = History.Histories() # Collection of history sequences
+        # Collection of history sequences
+        self.histories = Histories()
 
         self.initialize()
 

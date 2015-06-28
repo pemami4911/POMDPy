@@ -1,7 +1,7 @@
 __author__ = 'patrickemami'
 
 import abc
-from DiscretePOMDP.DiscreteObservationMapping import DiscreteObservationMap
+from discretePOMDP.DiscreteObservationMapping import DiscreteObservationMap
 
 class ObservationPool(object):
     """
