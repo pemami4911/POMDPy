@@ -1,6 +1,7 @@
 __author__ = 'patrickemami'
 
 import time
+import random
 import numpy as np
 from POMDP.belief_tree import BeliefTree
 from actionselection import action_selectors
@@ -8,7 +9,6 @@ from POMDP.statistic import Statistic
 from console import *
 
 module = "MCTS"
-disable_tree = False
 
 
 class MCTS(object):
@@ -27,6 +27,7 @@ class MCTS(object):
         self.model = model
         self.policy = BeliefTree(solver) # Search Tree
         self.peak_tree_depth = 0
+        self.disable_tree = False
         self.tree_depth_stats = Statistic("Tree Depth")
         self.rollout_depth_stats = Statistic("Rollout Depth")
         self.total_reward_stats = Statistic("Total Reward")
@@ -76,7 +77,7 @@ class MCTS(object):
             return self.model.sys_cfg["ucb_coefficient"] * np.sqrt(log_n/action_map_entry_visit_count)
 
     def select_action(self):
-        if disable_tree:
+        if self.disable_tree:
             self.rollout_search()
         else:
             self.UCT_search()
@@ -91,12 +92,14 @@ class MCTS(object):
         child_belief_node = self.policy.root.get_child(step_result.action, step_result.observation)
 
         ''' --- DAMAGE CONTROL --- '''
+        ''' ================================================================================================'''
         # If the child_belief_node is None because the step result randomly produced a different observation,
         # grab any of the beliefs extending from the belief node's action node
         if child_belief_node is None:
             action_node = self.policy.root.action_map.get_action_node(step_result.action)
             if action_node is None:
-                # All hope is lost here, abandon ship.
+                # I grabbed a child belief node that doesn't have an action node. Use rollout from here on out.
+                print "Child belief node None"
                 return True
 
             obs_mapping_entries = action_node.observation_map.child_map.values()
@@ -106,7 +109,7 @@ class MCTS(object):
                     child_belief_node = entry.child_node
                     print "Had to grab nearest belief node...uncertainty introduced"
                     break
-        ''' ---------------------- '''
+        ''' ================================================================================================'''
 
         # Extend the history sequence
         new_hist_entry = self.history.add_entry()
@@ -114,18 +117,6 @@ class MCTS(object):
         new_hist_entry.action = step_result.action
         new_hist_entry.observation = step_result.observation
         new_hist_entry.register_entry(new_hist_entry, None, step_result.next_state)
-
-        '''
-        if child_belief_node is not None:
-            console(2, module + ".update", "Matched " + str(child_belief_node.state_particles.__len__()) + " states")
-            # If a child belief node for the root already exists, just copy over its state particles into the new root's
-            # particles
-            for i in child_belief_node.state_particles:
-                new_root.state_particles.append(i.copy())
-        else:
-            console(2, module + ".update", "No matching node found")
-
-        '''
 
         # If the new root does not yet have the max possible number of particles add some more
         if child_belief_node.state_particles.__len__() < self.model.sys_cfg["max_particle_count"]:
@@ -143,107 +134,70 @@ class MCTS(object):
                                                                                     step_result.observation,
                                                                                     self.model.sys_cfg["min_particle_count"])
 
-        # Failed to continue search
-        if child_belief_node.state_particles.__len__() == 0 and (child_belief_node is None or
-                                                                    child_belief_node.state_particles.__len__() == 0):
+        # Failed to continue search- ran out of particles
+        if child_belief_node is None or child_belief_node.state_particles.__len__() == 0:
+            print "Couldn't refill particles!!!"
             return True
-
-        ''' -------------------------------
-       # If the new root does not yet have the max possible number of particles add some more
-        if new_root.state_particles.__len__() < self.model.sys_cfg["max_particle_count"]:
-
-            num_to_add = self.model.sys_cfg["max_particle_count"] - new_root.state_particles.__len__()
-
-            # Generate particles for the new root node
-            new_root.state_particles += self.model.generate_particles(self.policy.root, step_result.action,
-                                            step_result.observation, num_to_add,
-                                            self.policy.root.state_particles)
-
-            # If that failed, attempt to create a new state particle set
-            if new_root.state_particles.__len__() == 0:
-                new_root.state_particles += self.model.generate_particles_uninformed(self.policy.root, step_result.action,
-                                                                                    step_result.observation,
-                                                                                    self.model.sys_cfg["min_particle_count"])
-
-        # Failed to continue search
-        if new_root.state_particles.__len__() == 0 and (child_belief_node is None or
-                                                                    child_belief_node.state_particles.__len__() == 0):
-            return True
-
-         ------------------------------- '''
 
         # delete old tree and set the new root
         start_time = time.time()
         self.policy.prune_siblings(child_belief_node)
-        #self.policy.prune_tree(self.policy)
         elapsed = time.time() - start_time
         print "Time spent pruning = ", str(elapsed)
         self.policy.root = child_belief_node
-        # self.policy.root = new_root
         return False
 
     ''' --------------- Rollout Search --------------'''
+    '''
+    At each node, examine all legal actions and choose the actions with
+    the highest evaluation
+    '''
     def rollout_search(self):
-        legal_actions = self.model.get_legal_actions()
-        history_length = self.history.entry_sequence.__len__()
-
         for i in range(self.model.sys_cfg["num_sims"]):
-            action = legal_actions[i%legal_actions.size()]
             state = self.policy.root.sample_particle()
-            step_result = self.model.generate_step(state, action)
-            new_hist_entry = self.history.add_entry()
-            new_hist_entry.reward = step_result.reward
-            new_hist_entry.action = step_result.action
-            new_hist_entry.observation = step_result.observation
+            legal_actions = self.policy.root.data.generate_legal_actions()
+            action = legal_actions[i % legal_actions.__len__()]
+
+            # model#generate_step casts the variable action from an int to the proper DiscreteAction subclass type
+            step_result, is_legal = self.model.generate_step(state, action)
 
             if not step_result.is_terminal:
-                child_node = self.policy.root.create_or_get_child(action, step_result.observation)
+                child_node, added = self.policy.root.create_or_get_child(step_result.action, step_result.observation)
                 child_node.state_particles.append(step_result.next_state)
-
-            # Create a new history entry and step the history forward
-            new_hist_entry.register_entry(new_hist_entry, None, step_result.next_state)
-            delayed_reward = self.rollout(step_result.next_state)
+                delayed_reward = self.rollout(step_result.next_state, child_node.data.generate_legal_actions())
+            else:
+                delayed_reward = 0
 
             # TODO Might want to subtract out the current mean_q_value
             total_reward = (step_result.reward + self.model.sys_cfg["discount"] * delayed_reward) * self.step_size
-
-            action_mapping_entry = self.policy.root.action_map.get_entry(step_result.action)
+            action_mapping_entry = self.policy.root.action_map.get_entry(step_result.action.bin_number)
             assert action_mapping_entry is not None
 
             action_mapping_entry.update_visit_count(1.0)
             action_mapping_entry.update_q_value(total_reward)
 
-            # Truncate the history sequence
-            self.history.entry_sequence = self.history.entry_sequence[:history_length]
+    def rollout(self, start_state, starting_legal_actions):
 
-    # Uniform Random Action Rollout
-    def rollout(self, state):
-        console(2, module + ".rollout", "Starting rollout")
-
+        legal_actions = list(starting_legal_actions)
+        state = start_state.copy()
         is_terminal = False
         total_reward = 0.0
         discount = 1.0
         num_steps = 0
 
         while num_steps < self.model.sys_cfg["maximum_depth"] and not is_terminal:
-
-            rand_action = self.solver.action_pool.sample_random_action()
-            step_result, is_legal = self.model.generate_step(state, rand_action)
+            legal_action = random.choice(legal_actions)
+            step_result, is_legal = self.model.generate_step(state, legal_action)
             is_terminal = step_result.is_terminal
-
-            console(4, module + ".rollout", "Step Result.Action = " + step_result.action.to_string())
-            console(4, module + ".rollout", "Step Result.Observation = " + step_result.observation.to_string())
-            console(4, module + ".rollout", "Step Result.Next_State = " + step_result.next_state.to_string())
-            console(4, module + ".rollout", "Step Result.Reward = " + str(step_result.reward))
-
             total_reward += step_result.reward * discount
             discount *= self.model.sys_cfg["discount"]
-
+            # advance to next state
+            state = step_result.next_state
+            # generate new set of legal actions from the new state
+            legal_actions = self.model.get_legal_actions(state)
             num_steps += 1
 
         self.rollout_depth_stats.add(num_steps)
-        console(2, module + ".rollout", "Ending rollout after " + str(num_steps) + " steps, with total reward "
-                + str(total_reward))
         return total_reward
 
     ''' --------------- Multi-Armed Bandit Search -------------- '''
@@ -252,6 +206,7 @@ class MCTS(object):
         Expands the root node via random simulations
         :return:
         """
+        start_time = time.time()
 
         self.clear_stats()
         # Create a snapshot of the current information state
@@ -273,7 +228,7 @@ class MCTS(object):
             console(3, module + ".UCT_search", "Starting simulation at random state = " + state.to_string())
 
             # initiate
-            total_reward = self.simulate_node(state, self.policy.root, tree_depth)
+            total_reward = self.simulate_node(state, self.policy.root, tree_depth, start_time)
 
             self.total_reward_stats.add(total_reward)
             self.tree_depth_stats.add(self.peak_tree_depth)
@@ -287,7 +242,11 @@ class MCTS(object):
         console_no_print(3, self.rollout_depth_stats.show)
         console_no_print(3, self.total_reward_stats.show)
 
-    def simulate_node(self, state, belief_node, tree_depth):
+    def simulate_node(self, state, belief_node, tree_depth, start_time):
+
+        # Time expired
+        if time.time() - start_time > self.model.sys_cfg["action_selection_time_out"]:
+            return 0
 
         action = action_selectors.ucb_action(self, belief_node, False)
 
@@ -301,14 +260,18 @@ class MCTS(object):
         if tree_depth == 1:
             # Add a state particle with the new state
             if belief_node.state_particles.__len__() < self.model.sys_cfg["max_particle_count"]:
-                belief_node.state_particles += [state]
+                belief_node.state_particles.append(state)
 
         # Q value
-        total_reward = self.step_node(belief_node, state, action, tree_depth)
+        total_reward = self.step_node(belief_node, state, action, tree_depth, start_time)
         # Add RAVE ?
         return total_reward
 
-    def step_node(self, belief_node, state, action, tree_depth):
+    def step_node(self, belief_node, state, action, tree_depth, start_time):
+
+        # Time expired
+        if time.time() - start_time > self.model.sys_cfg["action_selection_time_out"]:
+            return 0
 
         delayed_reward = 0
 
@@ -324,7 +287,7 @@ class MCTS(object):
 
             if child_belief_node is not None:
                 tree_depth += 1
-                delayed_reward = self.simulate_node(step_result.next_state, child_belief_node, tree_depth)
+                delayed_reward = self.simulate_node(step_result.next_state, child_belief_node, tree_depth, start_time)
             else:
                 delayed_reward = self.rollout(state)
             tree_depth -= 1
@@ -333,10 +296,10 @@ class MCTS(object):
 
         # TODO try subtracting out current Q value for variance-control purposes
         # delayed_reward is "Q maximal"
-        Q_value = (step_result.reward + self.model.sys_cfg["discount"] * delayed_reward) * self.step_size
+        q_value = (step_result.reward + self.model.sys_cfg["discount"] * delayed_reward) * self.step_size
 
         belief_node.action_map.get_entry(action.bin_number).update_visit_count(1)
-        belief_node.action_map.get_entry(action.bin_number).update_q_value(Q_value)
+        belief_node.action_map.get_entry(action.bin_number).update_q_value(q_value)
 
-        return Q_value
+        return q_value
 

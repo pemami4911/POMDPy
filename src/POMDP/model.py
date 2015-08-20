@@ -107,6 +107,13 @@ class Model(object):
         :return:
         """
 
+    @abc.abstractmethod
+    def get_legal_actions(self, state):
+        """
+        Given the current state of the system, return all legal actions
+        :return: list of legal actions
+        """
+
     def create_observation_pool(self, solver):
         return DiscreteObservationPool(solver)
 

@@ -92,14 +92,13 @@ class RockModel(Model):
         self.all_rock_data = []
 
         # Actual rock states
-        self.actual_rock_states  = []
+        self.actual_rock_states = []
 
         # The environment map in text form.
         self.map_text, dimensions = config_parser.parse_map(self.rock_config['map_file'])
         self.n_rows = int(dimensions[0])
         self.n_cols = int(dimensions[1])
 
-        ''' Initialization of map '''
         self.initialize()
 
     # initialize the maps of the grid
@@ -135,7 +134,9 @@ class RockModel(Model):
         self.actual_rock_states = self.sample_rocks()
         print "Actual rock states = ", self.actual_rock_states
 
+    ''' ================= '''
     ''' Utility functions '''
+    ''' ================= '''
     # returns the RSCellType at the specified position
     def get_cell_type(self, pos):
         return self.env_map[pos.i][pos.j]
@@ -144,7 +145,9 @@ class RockModel(Model):
         assert self.half_efficiency_distance is not 0, self.logger.warning("Tried to divide by 0! Naughty naughty!")
         return (1 + np.power(2.0, -distance / self.half_efficiency_distance)) * 0.5
 
-    ''' Sampling '''
+    ''' ================= '''
+    '''     Sampling      '''
+    ''' ================= '''
     def sample_an_init_state(self):
         self.sampled_rock_yet = False
         self.unique_rocks_sampled = []
@@ -198,6 +201,37 @@ class RockModel(Model):
     def is_valid_pos(self, pos):
         return 0 <= pos.i < self.n_rows and 0 <= pos.j < self.n_cols and \
             self.get_cell_type(pos) is not RSCellType.OBSTACLE
+
+    def get_legal_actions(self, state):
+        legal_actions = []
+        all_actions = xrange(0, 5 + self.n_rocks)
+        new_pos = state.position.copy()
+        i = new_pos.i
+        j = new_pos.j
+
+        for action in all_actions:
+            if action is ActionType.NORTH:
+                new_pos.i -= 1
+            elif action is ActionType.EAST:
+                new_pos.j += 1
+            elif action is ActionType.SOUTH:
+                new_pos.i += 1
+            elif action is ActionType.WEST:
+                new_pos.j -= 1
+
+            if not self.is_valid_pos(new_pos):
+                new_pos.i = i
+                new_pos.j = j
+                continue
+            else:
+                if action is ActionType.SAMPLE:
+                    rock_no = self.get_cell_type(new_pos)
+                    if 0 > rock_no or rock_no >= self.n_rocks:
+                        continue
+                new_pos.i = i
+                new_pos.j = j
+                legal_actions.append(action)
+        return legal_actions
 
     ''' --------------- get next position and state ---------------'''
     def make_adjacent_position(self, pos, action_type):
@@ -306,13 +340,8 @@ class RockModel(Model):
     def make_reward(self, state, action, next_state, is_legal):
         if not is_legal:
             return -self.illegal_move_penalty
-        if self.is_terminal(next_state):
 
-            # if the agent never sampled any rocks and yet the agent believes there are still good rocks out there,
-            # penalize the agent for trying to escape to the exit !!!
-            #if not self.sampled_rock_yet and self.any_good_rocks:
-            #    return -self.finishing_empty_handed
-            #else:
+        if self.is_terminal(next_state):
             return self.exit_reward
 
         if action.bin_number is ActionType.SAMPLE:
@@ -347,6 +376,8 @@ class RockModel(Model):
         if action is None:
             print "Tried to generate a step with a null action"
             return None
+        elif type(action) is int:
+            action = RockAction(action)
 
         result = StepResult()
         result.next_state, is_legal = self.make_next_state(state, action)

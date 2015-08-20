@@ -13,13 +13,21 @@ class Results():
     time = Statistic("Total time")
     reward = Statistic("Total reward")
     discounted_return = Statistic("Discounted Reward")
-    undiscounted_return = Statistic("Un-discounted Reward")
+    undiscounted_return = Statistic("Undiscounted Reward")
 
     def reset_running_totals(self):
         Results.time.running_total = 0.0
         Results.reward.running_total = 0.0
         Results.discounted_return.running_total = 0.0
         Results.undiscounted_return.running_total = 0.0
+
+    def print_divider(self, size):
+        if size == "large":
+            print "======================================================"
+        elif size == "medium":
+            print "=============================="
+        else:
+            print "===="
 
 class Solver(object):
     """
@@ -46,8 +54,8 @@ class Solver(object):
 
         console(2, module + ".discounted_return", "Main runs")
 
-        self.logger.info("Simulations\tRuns\tUn-discounted Return\tUn-discounted Error\t"
-                         + "\tDiscounted Return\tDiscounted Error\tTime\n")
+        self.logger.info("Simulations\tRuns\tUndiscounted Return\tUndiscounted Error\t"
+                         + "\tDiscounted Return\tDiscounted Error\tTime")
 
         self.multi_run()
 
@@ -75,7 +83,7 @@ class Solver(object):
             self.run()
             total_time = self.results.time.mean * self.results.time.count
 
-            if total_time > self.model.sys_cfg["time_out"]:
+            if total_time > self.model.sys_cfg["max_time_out"]:
                 print "Timed out after ", i,
                 print " runs in ", total_time,
                 print " seconds"
@@ -84,6 +92,7 @@ class Solver(object):
     def run(self, num_steps=None):
         run_start_time = time.time()
         discount = 1.0
+        out_of_particles = False
 
         if num_steps is None:
             num_steps = self.model.sys_cfg["num_steps"]
@@ -103,17 +112,14 @@ class Solver(object):
 
         for i in range(num_steps):
             start_time = time.time()
+
+            if out_of_particles:
+                print "Out of particles; finishing sequence with rollout strategy"
+                mcts.disable_tree = True
+
             # action will be of type Discrete Action
             action = mcts.select_action()
 
-            '''
-            if state.position in self.model.rock_positions:
-                for entry in mcts.policy.root.action_map.get_all_entries():
-                    print "Action = ", entry.bin_number
-                    print "Visit count = ", entry.visit_count
-                    print "Mean Q Value = ", entry.mean_q_value
-                    print "is legal = ", entry.is_legal
-            '''
             step_result, is_legal = self.model.generate_step(state, action)
 
             self.results.reward.add(step_result.reward)
@@ -123,7 +129,7 @@ class Solver(object):
             discount *= self.model.sys_cfg["discount"]
             state = step_result.next_state
 
-            print "======================================================"
+            self.results.print_divider("large")
             console(2, module + ".run", "Step Result.Action = " + step_result.action.to_string())
             console(2, module + ".run", "Step Result.Observation = " + step_result.observation.to_string())
             console(2, module + ".run", "Step Result.Next_State = " + step_result.next_state.to_string())
@@ -140,57 +146,22 @@ class Solver(object):
 
             out_of_particles = mcts.update(step_result)
 
-            if out_of_particles:
-                print "Out of particles, finishing sequence with random actions"
-                while i < num_steps:
-                    action = self.action_pool.sample_random_action()
-                    step_result, is_legal = self.model.generate_step(state, action)
-
-                    self.results.reward.add(step_result.reward)
-                    self.results.undiscounted_return.running_total += step_result.reward
-                    self.results.discounted_return.running_total += (step_result.reward * discount)
-                    discount *= self.model.sys_cfg["discount"]
-                    state = step_result.next_state
-
-                    console(2, module + ".run", "Step Result.Action = " + step_result.action.to_string())
-                    console(2, module + ".run", "Step Result.Observation = " + step_result.observation.to_string())
-                    console(2, module + ".run", "Step Result.Next_State = " + step_result.next_state.to_string())
-                    console(2, module + ".run", "Step Result.Reward = " + str(step_result.reward))
-
-                    if step_result.is_terminal:
-                        print "Terminated"
-                        break
-
-                    new_entry = mcts.history.add_entry()
-                    new_entry.reward = step_result.reward
-                    new_entry.action = step_result.action
-                    new_entry.observation = step_result.observation
-                    new_entry.register_entry(new_entry, None, step_result.next_state)
-                    i += 1
-                break
-            else:
+            if not out_of_particles:
                 print "num of particles pushed over to new root = ", mcts.policy.root.state_particles.__len__()
 
-            elapsed_time = time.time() - start_time
-            print "MCTS Step Forward took ", elapsed_time
-
-            if elapsed_time > self.model.sys_cfg["time_out"]:
-                print "Timed out after ", i,
-                print " runs in ", elapsed_time,
-                print " seconds"
-                break
+            print "MCTS Step Forward took ", time.time() - start_time
 
         self.results.time.add(time.time() - run_start_time)
         self.results.discounted_return.add(self.results.discounted_return.running_total)
         self.results.undiscounted_return.add(self.results.undiscounted_return.running_total)
         print "Discounted Return statistics"
-        print "============================"
+        self.results.print_divider("medium")
         self.results.discounted_return.show()
-        print "Un-discounted Return statistics"
-        print "=============================="
+        print "Undiscounted Return statistics"
+        self.results.print_divider("medium")
         self.results.undiscounted_return.show()
         print "Time"
-        print "===="
+        self.results.print_divider("medium")
         print self.results.time.show()
 
         mcts.history.show()

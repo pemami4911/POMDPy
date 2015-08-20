@@ -43,6 +43,9 @@ class TigerModel(model.Model):
     def get_all_actions(self):
         return [TigerAction(ActionType.LISTEN), TigerAction(ActionType.OPEN_DOOR_1), TigerAction(ActionType.OPEN_DOOR_2)]
 
+    def get_legal_actions(self, state):
+        return self.get_all_actions()
+
     def is_valid(self, state):
         return True
 

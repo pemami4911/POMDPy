@@ -58,6 +58,14 @@ class MCTSTestCase(unittest.TestCase):
             mcts.policy.root.action_map.entries.get(i).mean_q_value = 0.0
         self.assertEqual(action_selectors.ucb_action(mcts, mcts.policy.root, False).bin_number, lowest_count_action),
 
+    def test_rollout_strategy(self):
+        """
+        Testing rollout strategy
+        :return:
+        """
+        global mcts
+        mcts.rollout_search()
+
 
 if __name__ == '__main__':
     unittest.main()
