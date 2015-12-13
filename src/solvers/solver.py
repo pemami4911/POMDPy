@@ -1,15 +1,16 @@
 __author__ = 'patrickemami'
 
+import time
 import logging
 from MCTS import *
-from POMDP.statistic import Statistic
-from POMDP.history import *
-from util.console import *
+from POMDP import Statistic
+from history import *
+from console import *
 
 module = "Solver"
 
 
-class Results():
+class Results(object):
     time = Statistic("Total time")
     reward = Statistic("Total reward")
     discounted_return = Statistic("Discounted Reward")

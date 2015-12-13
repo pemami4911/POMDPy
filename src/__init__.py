@@ -1,4 +1,7 @@
 __author__ = 'patrickemami'
 
-__all__ = ['action_selection', 'POMDP', 'util', 'sample_problems', 'run_pomdp']
-
+from . import POMDP
+from . import discrete_POMDP
+from . import util
+from . import solvers
+from . import sample_problems

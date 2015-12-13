@@ -3,10 +3,10 @@ __author__ = 'patrickemami'
 import time
 import random
 import numpy as np
-from POMDP.belief_tree import BeliefTree
-from POMDP.statistic import Statistic
+from POMDP import BeliefTree
+from POMDP import Statistic
 from action_selection import action_selectors
-from util.console import *
+from util import *
 
 module = "MCTS"
 

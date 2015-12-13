@@ -1,7 +1,7 @@
 __author__ = 'patrickemami'
 
-from POMDP.action_mapping import ActionMapping, ActionMappingEntry
-from POMDP.action_node import ActionNode
+from src.POMDP import ActionMapping, ActionMappingEntry
+from src.POMDP import ActionNode
 import numpy as np
 
 

@@ -3,7 +3,8 @@ __author__ = 'patrickemami'
 import abc
 import itertools
 import numpy
-from POMDP.point import Point
+from src.POMDP import Point
+
 
 class DiscreteState(Point):
     """
@@ -54,7 +55,7 @@ class DiscreteState(Point):
         assert type(other_state_as_list) is list
         this_as_list = self.as_list()
         dist = 0
-        for i,j in itertools.izip(this_as_list, other_state_as_list):
+        for i, j in itertools.izip(this_as_list, other_state_as_list):
             dist += numpy.linalg.norm(i-j)
         return dist
 

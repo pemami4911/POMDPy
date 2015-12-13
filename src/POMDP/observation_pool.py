@@ -1,7 +1,8 @@
 __author__ = 'patrickemami'
 
 import abc
-from discrete_POMDP.discrete_observation_mapping import DiscreteObservationMap
+from discrete_POMDP import DiscreteObservationMap
+
 
 class ObservationPool(object):
     """
@@ -21,6 +22,7 @@ class ObservationPool(object):
         :param action_node:
         :return: ObservationMapping
         """
+
 
 class DiscreteObservationPool(ObservationPool):
     """

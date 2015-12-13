@@ -1,6 +1,7 @@
 __author__ = 'patrickemami'
 
-from POMDP.discrete_POMDP.discrete_observation import DiscreteObservation
+from discrete_POMDP import DiscreteObservation
+
 
 class TigerObservation(DiscreteObservation):
     """
@@ -11,6 +12,7 @@ class TigerObservation(DiscreteObservation):
     source_of_roar[1] = 1 (door 2)
     or vice versa
     """
+
     def __init__(self, source_of_roar):
         if source_of_roar is not None:
             super(TigerObservation, self).__init__((1, 0)[source_of_roar[0]])

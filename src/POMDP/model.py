@@ -5,7 +5,7 @@ import json
 import random
 
 from observation_pool import DiscreteObservationPool
-from util import config_parser
+from src.util import config_parser
 
 
 class Model(object):

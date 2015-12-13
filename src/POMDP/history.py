@@ -1,7 +1,8 @@
 __author__ = 'patrickemami'
 
 import time  # sleep
-from util.console import print_divider
+from util import print_divider
+
 
 class HistoryEntry:
     """

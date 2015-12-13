@@ -1,7 +1,7 @@
 __author__ = 'patrickemami'
 
 import numpy as np
-from POMDP.historical_data import HistoricalData
+from POMDP import HistoricalData
 from rock_action import ActionType
 import itertools
 
@@ -11,6 +11,7 @@ class RockData:
     """
     Stores data about each rock
     """
+
     def __init__(self):
         # The number of times this rock has been checked.
         self.check_count = 0
@@ -24,15 +25,17 @@ class RockData:
         """
         Pretty printing
         """
-        data_as_string = " Check count: " + str(self.check_count) + " Goodness number: " +\
+        data_as_string = " Check count: " + str(self.check_count) + " Goodness number: " + \
                          str(self.goodness_number) + " Probability that rock is good: " + str(self.chance_good)
         return data_as_string
+
 
 class PositionAndRockData(HistoricalData):
     """
     A class to store the robot position associated with a given belief node, as well as
     explicitly calculated probabilities of goodness for each rock.
     """
+
     def __init__(self, model, grid_position, all_rock_data, solver):
         self.model = model
         self.solver = solver

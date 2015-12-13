@@ -1,8 +1,9 @@
 __author__ = 'patrickemami'
 
-import belief_structure
+from belief_structure import BeliefStructure
 
-class QTable(belief_structure.BeliefStructure):
+
+class QTable(BeliefStructure):
     """
     Creates a Q table and visit frequency table for quick and dirty Q learning
     """

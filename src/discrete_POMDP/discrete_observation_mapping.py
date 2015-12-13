@@ -1,7 +1,8 @@
 __author__ = 'patrickemami'
 
-from POMDP.observation_mapping import *
-from POMDP.belief_node import BeliefNode
+from src.POMDP import ObservationMapping, ObservationMappingEntry
+from src.POMDP import BeliefNode
+
 
 class DiscreteObservationMap(ObservationMapping):
     """

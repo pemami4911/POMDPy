@@ -1,6 +1,7 @@
 __author__ = 'patrickemami'
 
-from POMDP.discrete_POMDP.discrete_action import DiscreteAction
+from discrete_POMDP import DiscreteAction
+
 
 class ActionType(object):
     """
@@ -12,6 +13,7 @@ class ActionType(object):
     WEST = 3
     SAMPLE = 4
     CHECK = 5
+
 
 class RockAction(DiscreteAction):
     """

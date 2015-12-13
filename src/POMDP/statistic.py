@@ -2,6 +2,7 @@ __author__ = 'patrickemami'
 
 import numpy as np
 
+
 class Statistic(object):
     """
     General statistics class

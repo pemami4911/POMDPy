@@ -1,6 +1,6 @@
 __author__ = 'patrickemami'
 
-from POMDP.discrete_POMDP.discrete_state import DiscreteState
+from discrete_POMDP import DiscreteState
 
 
 class TigerState(DiscreteState):
@@ -28,8 +28,7 @@ class TigerState(DiscreteState):
         door_open = True, door_prizes[0] = X, and door_prizes[1] = X
     """
     def __init__(self, door_open, door_prizes):
-        ''' should both be lists '''
-        self.door_open = door_open
+        self.door_open = door_open  # lists
         self.door_prizes = door_prizes
 
     def distance_to(self, other_state):

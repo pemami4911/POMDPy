@@ -1,6 +1,7 @@
 __author__ = 'patrickemami'
 
-from POMDP.discrete_POMDP.discrete_action import DiscreteAction
+from discrete_POMDP import DiscreteAction
+
 
 class ActionType(object):
     """
@@ -10,8 +11,8 @@ class ActionType(object):
     OPEN_DOOR_1 = 1
     OPEN_DOOR_2 = 2
 
-class TigerAction(DiscreteAction):
 
+class TigerAction(DiscreteAction):
     def __init__(self, action_type):
         super(TigerAction, self).__init__(action_type)
         self.bin_number = action_type

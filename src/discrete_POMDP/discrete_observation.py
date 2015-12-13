@@ -1,7 +1,8 @@
 __author__ = 'patrickemami'
 
 import abc
-from POMDP.point import Point
+from src.POMDP import Point
+
 
 class DiscreteObservation(Point):
 

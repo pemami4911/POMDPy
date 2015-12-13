@@ -1,6 +1,6 @@
 __author__ = 'patrickemami'
 
-from POMDP.discrete_POMDP.discrete_observation import DiscreteObservation
+from discrete_POMDP import DiscreteObservation
 
 
 class RockObservation(DiscreteObservation):

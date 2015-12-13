@@ -1,10 +1,9 @@
 __author__ = 'patrickemami'
 
 import abc
-from POMDP.point import Point
+import POMDP
 
-
-class DiscreteAction(Point):
+class DiscreteAction(POMDP.Point):
 
     def __init__(self, bin_number):
         self.bin_number = bin_number

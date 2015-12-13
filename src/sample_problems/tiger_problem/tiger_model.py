@@ -7,7 +7,7 @@ from tiger_action import *
 from tiger_state import TigerState
 from tiger_observation import TigerObservation
 from tiger_data import TigerData
-from POMDP.discrete_POMDP.discrete_action_pool import DiscreteActionPool
+from discrete_POMDP import DiscreteActionPool
 
 
 class TigerModel(model.Model):

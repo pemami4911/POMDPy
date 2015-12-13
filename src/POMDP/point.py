@@ -2,6 +2,7 @@ __author__ = 'patrickemami'
 
 import abc
 
+
 class Point(object):
     """
     Interface for a point-set topology. Each point is an element of a set of points

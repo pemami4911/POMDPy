@@ -2,16 +2,14 @@ __author__ = 'patrickemami'
 
 import logging
 import json
-from util import config_parser
-from util.console import *
 from grid_position import GridPosition
 from rock_state import RockState
 from rock_action import RockAction
 from rock_observation import RockObservation
-from POMDP.discrete_POMDP.discrete_action_pool import DiscreteActionPool
-from POMDP.model import Model, StepResult
-from rock_position_history import * # import numpy from RockPositionHistory
-
+from discrete_POMDP import DiscreteActionPool
+from model import Model, StepResult
+from rock_position_history import *  # import numpy from RockPositionHistory
+from util import *
 
 module = "RockModel"
 

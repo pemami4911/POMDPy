@@ -2,6 +2,7 @@ __author__ = 'patrickemami'
 
 import abc
 
+
 class ActionMapping(object):
     """
     Action Mapping abc for discrete and continuous actions

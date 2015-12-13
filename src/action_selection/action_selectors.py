@@ -3,7 +3,7 @@ __author__ = 'patrickemami'
 import random
 import json
 import numpy as np
-from util import config_parser
+from src.util import config_parser
 
 config = json.load(open(config_parser.sys_cfg, "r"))
 

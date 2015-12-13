@@ -2,7 +2,7 @@ __author__ = 'patrickemami'
 
 import numpy as np
 
-from POMDP.historical_data import HistoricalData
+from POMDP import HistoricalData
 from tiger_action import ActionType
 
 
