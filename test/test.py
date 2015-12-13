@@ -108,7 +108,7 @@ print "Passed"
 
 print 'Testing dictionary of DiscreteActionMappingEntry objects'
 
-from discretePOMDP.discrete_action_mapping import DiscreteActionMappingEntry
+from discrete_POMDP.discrete_action_mapping import DiscreteActionMappingEntry
 
 a = DiscreteActionMappingEntry()
 b = DiscreteActionMappingEntry()
@@ -152,7 +152,7 @@ print "Testing RockModel creation"
 
 import rock_model
 
-r = rock_model.RockModel("rockproblem")
+r = rock_model.RockModel("rock_problem")
 
 assert isinstance(r, rock_model.RockModel)
 print "Passed"

@@ -23,7 +23,7 @@ import numpy as np
 
 import rock_model
 
-my_model = rock_model.RockModel("rockproblem")
+my_model = rock_model.RockModel("rock_problem")
 my_solver = RockSolver(my_model)
 logger = logging.getLogger('POMDPy.results')
 

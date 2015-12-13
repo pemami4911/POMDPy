@@ -8,10 +8,10 @@ from grid_position import GridPosition
 from rock_state import RockState
 from rock_action import RockAction
 from rock_observation import RockObservation
-from POMDP.discretePOMDP.discrete_action_pool import DiscreteActionPool
+from POMDP.discrete_POMDP.discrete_action_pool import DiscreteActionPool
 from POMDP.model import Model, StepResult
-# import numpy from RockPositionHistory
-from rock_position_history import *
+from rock_position_history import * # import numpy from RockPositionHistory
+
 
 module = "RockModel"
 

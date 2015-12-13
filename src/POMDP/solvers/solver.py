@@ -1,7 +1,7 @@
 __author__ = 'patrickemami'
 
 import logging
-from mcts import *
+from MCTS import *
 from POMDP.statistic import Statistic
 from POMDP.history import *
 from util.console import *

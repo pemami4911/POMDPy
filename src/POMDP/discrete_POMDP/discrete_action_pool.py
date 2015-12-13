@@ -1,8 +1,9 @@
 __author__ = 'Patrick'
 
 from POMDP.action_pool import ActionPool
-from POMDP.discretePOMDP.discrete_action_mapping import DiscreteActionMapping
+from POMDP.discrete_POMDP.discrete_action_mapping import DiscreteActionMapping
 import numpy as np
+
 
 class DiscreteActionPool(ActionPool):
     """
@@ -13,7 +14,6 @@ class DiscreteActionPool(ActionPool):
     def __init__(self, model):
         """
         :param model:
-        :param all_actions: list of discrete actions
         """
         self.all_actions = model.get_all_actions()
 

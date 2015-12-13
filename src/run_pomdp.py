@@ -7,8 +7,8 @@ Run one of the sample problems
 import sys
 
 from POMDP.solvers.solver import Solver
-from sampleproblems.rockproblem.rock_model import RockModel
-from sampleproblems.tigerproblem.tiger_model import TigerModel
+from sample_problems.rock_problem.rock_model import RockModel
+from sample_problems.tiger_problem.tiger_model import TigerModel
 from log.log_pomdpy import init_logger
 
 SAMPLE_PROBLEM = sys.argv[1]

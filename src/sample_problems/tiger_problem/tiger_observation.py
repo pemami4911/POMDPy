@@ -1,6 +1,6 @@
 __author__ = 'patrickemami'
 
-from POMDP.discretePOMDP.discrete_observation import DiscreteObservation
+from POMDP.discrete_POMDP.discrete_observation import DiscreteObservation
 
 class TigerObservation(DiscreteObservation):
     """

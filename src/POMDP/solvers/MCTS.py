@@ -4,8 +4,8 @@ import time
 import random
 import numpy as np
 from POMDP.belief_tree import BeliefTree
-from actionselection import action_selectors
 from POMDP.statistic import Statistic
+from action_selection import action_selectors
 from util.console import *
 
 module = "MCTS"

@@ -13,14 +13,14 @@ src_dir = os.path.join(par_dir, 'src')
 sys.path.append(src_dir)
 
 from POMDP.solvers.solver import Solver
-from sampleproblems.rockproblem.rock_model import RockModel
+from sample_problems.rockproblem.rock_model import RockModel
 
 model = RockModel("unit_tests")
 solver = Solver(model)
 
 ''' --------- MCTS --------- '''
-from POMDP.solvers.mcts import mcts
-from actionselection import action_selectors
+from POMDP.solvers.MCTS import mcts
+from action_selection import action_selectors
 
 mcts = None
 
