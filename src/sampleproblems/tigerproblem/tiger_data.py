@@ -2,11 +2,11 @@ __author__ = 'patrickemami'
 
 import numpy as np
 
-import historical_data as Hd
+from POMDP.historical_data import HistoricalData
 from tiger_action import ActionType
 
 
-class TigerData(Hd.HistoricalData):
+class TigerData(HistoricalData):
     """
     Used to store the probabilities that the tiger is behind a certain door.
     This is the belief distribution over the set of possible states.

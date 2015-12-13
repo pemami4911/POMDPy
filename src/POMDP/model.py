@@ -5,7 +5,7 @@ import json
 import random
 
 from observation_pool import DiscreteObservationPool
-import config_parser
+from util import config_parser
 
 
 class Model(object):
@@ -31,11 +31,19 @@ class Model(object):
         self.sys_cfg = json.load(open(config_parser.sys_cfg, "r"))
 
     @abc.abstractmethod
-    def reset(self):
+    def reset_for_sim(self):
         """
         The Simulator (Model) should be reset before each simulation
         :return:
         """
+
+    @abc.abstractmethod
+    def reset_for_run(self):
+        """
+        Defines behavior for resetting the simulator before each run
+        :return:
+        """
+
     @abc.abstractmethod
     def update(self, sim_data):
         """
@@ -78,6 +86,13 @@ class Model(object):
         """
 
     @abc.abstractmethod
+    def get_legal_actions(self, state):
+        """
+        Given the current state of the system, return all legal actions
+        :return: list of legal actions
+        """
+
+    @abc.abstractmethod
     def is_terminal(self, state):
         """
         Returns true iff the given state is terminal.
@@ -108,10 +123,10 @@ class Model(object):
         """
 
     @abc.abstractmethod
-    def get_legal_actions(self, state):
+    def get_max_undiscounted_return(self):
         """
-        Given the current state of the system, return all legal actions
-        :return: list of legal actions
+        Calculate and return the highest possible undiscounted return
+        :return:
         """
 
     def create_observation_pool(self, solver):

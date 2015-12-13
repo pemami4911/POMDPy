@@ -41,3 +41,203 @@
 2015-08-20 17:29:52,498 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
 2015-08-20 17:39:53,827 - POMDPy.Solver - 100	        1.0		60.0	            0.0		                35.1783987455	    0.0		            591.678532124
 2015-08-20 17:39:53,827 - POMDPy.Solver - Map: map-15-15.txt
+2015-08-26 00:12:22,765 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 01:12:33,036 - POMDPy.Solver - 100	49.0		40.2040816327	2.18833749327		32.8885876376	1.7498773206		73.6625510333
+2015-08-26 01:12:33,036 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-26 08:34:08,901 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 08:48:34,460 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 12:48:48,490 - POMDPy.Solver - 100	81.0		35.3086419753	1.11912636787		20.9696262555	0.693696830118		177.930802475
+2015-08-26 12:48:48,490 - POMDPy.Solver - Map: map-11-11.txt
+2015-08-26 12:52:54,417 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 15:07:13,332 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 15:38:02,559 - POMDPy.Solver - 100	44.0		25.6818181818	1.34062891036		11.3166541055	0.765767352898		42.0127272823
+2015-08-26 15:38:02,561 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-26 15:51:14,842 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 16:14:16,099 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 20:33:17,520 - POMDPy.Solver - 1000	4.0		30.0	3.53553390593		7.53230461425	1.14830144948		3885.33874995
+2015-08-26 20:33:17,520 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-26 20:47:25,391 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 21:17:01,316 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 21:17:27,674 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 21:21:42,206 - POMDPy.Solver - 1000	1.0		30.0	0.0		4.25087392072	0.0		254.511000156
+2015-08-26 21:21:42,206 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-26 21:25:27,108 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 21:26:36,280 - POMDPy.Solver - 1000	1.0		40.0	0.0		16.5415203217	0.0		69.1549999714
+2015-08-26 21:26:36,280 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-26 21:29:09,663 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 21:59:42,191 - POMDPy.Solver - 1000	36.0		24.4444444444	1.07183675026		11.7887686667	0.520476921556		50.8902500206
+2015-08-26 21:59:42,193 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-26 22:56:58,012 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-26 23:27:52,917 - POMDPy.Solver - 1000	34.0		25.0	1.33167428502		11.7445273141	0.651570207464		54.5436764675
+2015-08-26 23:27:52,917 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-27 00:13:20,687 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-27 00:43:41,743 - POMDPy.Solver - 1000	30.0		25.6666666667	1.98232934439		11.6864245808	1.07319557264		60.6891666969
+2015-08-27 00:43:41,743 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-27 01:18:04,187 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-27 02:32:56,523 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-27 02:33:42,042 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-27 02:38:23,519 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-27 02:41:15,361 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-27 02:41:44,161 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-27 02:42:21,296 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-28 23:58:58,303 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:03:57,848 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:05:39,959 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:06:31,463 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:07:01,487 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:07:42,834 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:09:38,543 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:10:17,174 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:10:48,690 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:11:42,237 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:20:13,073 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:20:30,040 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 00:37:26,963 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 01:01:37,292 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-29 02:10:45,832 - POMDPy.Solver - 500	5.0		30.0	8.94427191		7.85877459638	3.82257136246		829.69000001
+2015-08-29 02:10:45,832 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-29 08:57:33,875 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 09:43:23,127 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 10:03:01,809 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 10:11:14,502 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 10:17:05,789 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 10:24:43,802 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 10:34:36,739 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 10:36:14,617 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 10:52:43,709 - POMDPy.Solver - 200	1.0		30.0	0.0		0.922229171099	0.0		989.032999992
+2015-08-30 10:52:43,710 - POMDPy.Solver - Map: map-11-11.txt
+2015-08-30 11:24:51,644 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 11:46:39,796 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 15:04:43,490 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 15:04:55,990 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 15:34:15,835 - POMDPy.Solver - 250	3.0		20.0	4.71404520791		4.1185856318	2.27680113992		586.592999935
+2015-08-30 15:34:15,836 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-30 16:26:15,505 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 16:29:18,315 - POMDPy.Solver - 1000	1.0		20.0	0.0		15.2079543129	0.0		182.796000004
+2015-08-30 16:29:18,315 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-30 16:33:39,976 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 16:34:58,378 - POMDPy.Solver - 100	1.0		30.0	0.0		14.7871659763	0.0		78.385999918
+2015-08-30 16:34:58,378 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-30 16:35:31,970 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 16:36:52,716 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 17:04:31,605 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 18:57:25,115 - POMDPy.Solver - 150	15.0		26.0	2.79682359512		3.92004523053	1.14924522127		451.548533344
+2015-08-30 18:57:25,115 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-30 19:33:51,279 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 19:37:44,828 - POMDPy.Solver - 150	15.0		26.0	2.45854518861		14.7407984469	1.2614427933		15.556400013
+2015-08-30 19:37:44,828 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-30 20:01:30,450 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 20:03:44,454 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 20:11:18,437 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 20:40:18,358 - POMDPy.Solver - 150	15.0		14.6666666667	2.80739763509		5.40283316572	2.18837465137		115.981399949
+2015-08-30 20:40:18,358 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-30 21:41:17,650 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 21:43:05,065 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 21:44:10,684 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 22:01:56,309 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 22:15:54,111 - POMDPy.Solver - 1000	5.0		30.0	4.0		14.1838929439	2.21674243274		167.544199991
+2015-08-30 22:15:54,111 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-30 22:25:46,490 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 22:44:31,994 - POMDPy.Solver - 1000	5.0		32.0	5.21536192416		11.5815427304	3.16567294795		225.085400057
+2015-08-30 22:44:31,994 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-30 22:50:48,171 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 23:16:00,321 - POMDPy.Solver - 1000	5.0		26.0	3.577708764		7.1181719482	1.65545244588		302.411600018
+2015-08-30 23:16:00,321 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-30 23:24:41,128 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 23:48:56,602 - POMDPy.Solver - 1000	5.0		18.0	1.788854382		6.99089016903	2.03306124551		291.077400064
+2015-08-30 23:48:56,602 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-30 23:49:49,934 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-30 23:50:01,753 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-31 00:44:39,265 - POMDPy.Solver - 1000	10.0		24.0	3.7947331922		6.9506285123	2.07866832803		327.734400058
+2015-08-31 00:44:39,265 - POMDPy.Solver - Map: map-7-8.txt
+2015-08-31 00:45:09,122 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-31 01:18:15,924 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-31 22:00:27,980 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-31 22:15:56,773 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-31 22:49:04,556 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-08-31 23:20:44,065 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 00:10:13,236 - POMDPy.Solver - 1000	5.0		40.0	4.0		5.94868305847	1.41513518181		593.815999985
+2015-09-01 00:10:13,236 - POMDPy.Solver - Map: map-11-11.txt
+2015-09-01 00:44:08,407 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 04:55:05,223 - POMDPy.Solver - 1000	22.0		35.0	3.32471337235		5.15835061136	0.646284172932		684.382045442
+2015-09-01 04:55:05,223 - POMDPy.Solver - Map: map-11-11.txt
+2015-09-01 07:27:03,897 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 07:32:58,776 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 11:40:21,861 - POMDPy.Solver - 1000	64.0		27.96875	1.61141690096		8.21313995106	0.845316238631		231.909156259
+2015-09-01 11:40:21,862 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-01 15:41:48,154 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 15:42:12,763 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 20:04:41,295 - POMDPy.Solver - 1000	6.0		51.6666666667	7.60725774313		1.84726599765	0.587407247278		2624.71899998
+2015-09-01 20:04:41,296 - POMDPy.Solver - Map: map-15-15.txt
+2015-09-01 21:51:01,427 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 21:57:09,980 - POMDPy.Solver - 1000	2.0		20.0	0.0		8.23611745163	1.90894837281		184.260999918
+2015-09-01 21:57:09,980 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-01 22:07:55,469 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 22:15:15,259 - POMDPy.Solver - 1000	2.0		10.0	7.07106781187		-0.721018214758	2.93946806227		219.877999902
+2015-09-01 22:15:15,260 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-01 22:16:48,921 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 22:24:41,871 - POMDPy.Solver - 1000	2.0		20.0	14.1421356237		-0.705827372423	3.27573380789		236.458500028
+2015-09-01 22:24:41,871 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-01 22:34:21,411 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 22:43:53,835 - POMDPy.Solver - 1000	5.0		14.0	3.577708764		4.37249832513	1.68028800329		114.471999979
+2015-09-01 22:43:53,835 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-01 22:45:54,358 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-01 23:06:14,247 - POMDPy.Solver - 1000	5.0		30.0	7.48331477355		10.278141852	2.47912167191		243.961600065
+2015-09-01 23:06:14,249 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-01 23:29:53,272 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-02 00:27:10,892 - POMDPy.Solver - 1000	15.0		22.0	3.42539535431		5.64256532631	1.58556485525		229.15946668
+2015-09-02 00:27:10,894 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-02 20:20:35,163 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-02 20:47:55,263 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-02 21:02:00,540 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-02 21:41:55,476 - POMDPy.Solver - 1000	15.0		26.0	2.95145914949		11.0782652499	1.4885670193		159.649000057
+2015-09-02 21:41:55,477 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-02 22:09:52,822 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-02 22:51:39,121 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-03 02:54:09,345 - POMDPy.Solver - 1000	69.0		23.9130434783	1.65518910354		7.25170864721	0.76456079784		210.858507263
+2015-09-03 02:54:09,345 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-03 08:42:14,361 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-03 09:01:07,881 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-03 13:03:23,496 - POMDPy.Solver - 1000	18.0		40.0	3.42467444609		3.75109118778	0.703853915502		807.514166647
+2015-09-03 13:03:23,496 - POMDPy.Solver - Map: map-11-11.txt
+2015-09-03 13:43:37,644 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-03 17:53:43,404 - POMDPy.Solver - 1000	6.0		35.0	6.56167322834		2.11077730054	0.880167799554		2500.92433329
+2015-09-03 17:53:43,404 - POMDPy.Solver - Map: map-15-15.txt
+2015-09-04 09:47:20,378 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-08 01:56:27,065 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-08 15:46:22,638 - POMDPy.Solver - 1000	20.0		44.0	2.38746727726		2.05616258786	0.396706431111		2489.74580001
+2015-09-08 15:46:22,638 - POMDPy.Solver - Map: map-15-15.txt
+2015-09-09 00:30:25,927 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-09 00:30:25,927 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-09 09:04:14,374 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-09 23:01:54,927 - POMDPy.Solver - 1000	13.0		41.5384615385	4.84629472886		2.06610055488	0.620765102173		3866.15053846
+2015-09-09 23:01:54,927 - POMDPy.Solver - Map: map-15-15.txt
+2015-09-10 00:13:28,009 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-10 12:16:30,630 - POMDPy.Solver - 1000	61.0		34.9180327869	2.04258546422		3.4151086813	0.560498494972		711.171819671
+2015-09-10 12:16:30,631 - POMDPy.Solver - Map: map-11-11.txt
+2015-09-10 14:48:27,443 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-11 02:49:28,987 - POMDPy.Solver - 1000	63.0		34.9206349206	1.45258504721		4.3499574253	0.469927475755		686.672507948
+2015-09-11 02:49:28,987 - POMDPy.Solver - Map: map-11-11.txt
+2015-09-11 08:09:51,447 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-11 08:10:04,476 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-11 20:13:32,161 - POMDPy.Solver - 1000	188.0		27.9255319149	0.984990306204		8.29250285114	0.477607224078		230.877856383
+2015-09-11 20:13:32,161 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-11 20:35:23,081 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-12 08:36:43,269 - POMDPy.Solver - 1000	209.0		24.976076555	0.874759453836		7.58128911825	0.421950422848		207.068138752
+2015-09-12 08:36:43,269 - POMDPy.Solver - Map: map-7-8.txt
+2015-09-12 10:07:53,457 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-09-12 10:07:53,457 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 22:30:51,006 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 22:31:48,763 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 22:34:44,663 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 22:38:24,539 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 23:30:57,861 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 23:34:30,313 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 23:35:11,732 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 23:40:17,729 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 23:43:50,467 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 23:45:45,226 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 23:49:45,558 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-12 23:53:21,792 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-13 00:02:00,061 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time
+2015-12-13 00:08:57,118 - POMDPy.Solver - Simulations	Runs	Undiscounted Return	Undiscounted Error		Discounted Return	Discounted Error	Time

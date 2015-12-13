@@ -1,5 +1,8 @@
 __author__ = 'patrickemami'
 
+import time  # sleep
+from util.console import print_divider
+
 class HistoryEntry:
     """
     * Contains the HistoryEntry class, which represents a single entry in a history sequence.
@@ -41,6 +44,7 @@ class HistoryEntry:
         current_entry.register_state(state)
         current_entry.register_node(node)
 
+
 class HistorySequence:
     """
     Represents a single history sequence.
@@ -72,14 +76,16 @@ class HistorySequence:
         del self.entry_sequence[history_entry.id]
 
     def show(self):
+        print "Displaying history sequence..."
         for entry in self.entry_sequence:
-            print "=============="
+            print_divider("medium")
             print "id: ", entry.id
             print "action: ", entry.action.to_string()
             print "observation: ", entry.observation.to_string()
             print "next state: ", entry.state.to_string()
             print "reward: ", entry.reward
-            print "=============="
+        time.sleep(2)  # pause for 2 seconds
+
 
 class Histories(object):
     """
@@ -88,6 +94,7 @@ class Histories(object):
     * The createSequence() method is the usual way to make a new history sequence, as it will
     * be owned by this Histories object.
     """
+
     def __init__(self):
         self.sequences_by_id = []
 

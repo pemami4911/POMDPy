@@ -26,12 +26,6 @@ class BeliefNode:
         self.action_map = None
         self.state_particles = []   # The set of states that comprise the belief distribution of this belief node
 
-        # Nearest Neighbor heuristic
-        # self.max_nn_distance = self.solver.model.sys_cfg["max_nn_distance"]
-        # self.max_n_comparisons = self.solver.model.sys_cfg["max_n_comparisons"]
-        # The closest neighbor found so far for this node
-        # self.neighbor = None
-
         if parent_entry is not None:
             self.parent_entry = parent_entry
             # Correctly calculate the depth based on the parent node.
@@ -41,7 +35,7 @@ class BeliefNode:
             self.depth = 0
 
         # Add this node to the index in the tree.
-        #self.solver.policy.add_node(self)
+        # self.solver.policy.add_node(self)
 
     def copy(self, id=None, parent_entry=None):
         return BeliefNode(self.solver, id, parent_entry)
@@ -80,6 +74,17 @@ class BeliefNode:
         node = self.action_map.get_action_node(action)
         if node is not None:
             return node.get_child(obs)
+        else:
+            return None
+
+    def child(self, action, obs):
+        node = self.action_map.get_action_node(action)
+        if node is not None:
+            child_node = node.get_child(obs)
+            if child_node is None:
+                return None
+            child_node.data.update(child_node.get_parent_belief())
+            return child_node
         else:
             return None
 

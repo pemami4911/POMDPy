@@ -1,8 +1,8 @@
 __author__ = 'patrickemami'
 
-import discrete_observation as Do
+from POMDP.discretePOMDP.discrete_observation import DiscreteObservation
 
-class TigerObservation(Do.DiscreteObservation):
+class TigerObservation(DiscreteObservation):
     """
     For num_doors = 2, there is an 85 % of hearing the roaring coming from the tiger door.
     There is a 15 % of hearing the roaring come from the reward door.

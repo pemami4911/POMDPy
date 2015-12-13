@@ -3,6 +3,7 @@ __author__ = 'patrickemami'
 import belief_node
 import belief_structure
 
+
 class BeliefTree(belief_structure.BeliefStructure):
     """
     Contains the BeliefTree class, which represents an entire belief tree.
@@ -16,25 +17,30 @@ class BeliefTree(belief_structure.BeliefStructure):
         self.solver = solver
         self.root = None
 
-    def prune_tree(self, belief_tree):
+    def prune_tree(self, bt):
         """
-        Clears out a belief tree. This is difficult, because every node has a reference to its owner and child.
+        Clears out a belief tree. This is difficult,
+        because every node has a reference to its owner and child.
+        """
+        self.prune_node(bt.root)
+        bt.root = None
+
+    def prune_node(self, bn):
+        """
+        Remove node bn and all of its descendants from the belief tree
+        :param bn:
         :return:
         """
-        self.prune_node(belief_tree.root)
-        belief_tree.root = None
-
-    def prune_node(self, belief_node):
-        if belief_node is None:
+        if bn is None:
             return
 
         # observation mapping entry
-        belief_node.parent_entry = None
+        bn.parent_entry = None
 
         # the action maps owner reference
-        belief_node.action_map.owner = None
+        bn.action_map.owner = None
 
-        action_mapping_entries = belief_node.action_map.get_child_entries()
+        action_mapping_entries = bn.action_map.get_child_entries()
 
         for entry in action_mapping_entries:
             # Action Node
@@ -47,13 +53,19 @@ class BeliefTree(belief_structure.BeliefStructure):
                 observation_entry.child_node = None
             entry.child_node.observation_map = None
             entry.child_node = None
-        belief_node.action_map = None
+        bn.action_map = None
 
-    def prune_siblings(self, belief_node):
-        if belief_node is None:
+    def prune_siblings(self, bn):
+        """
+        Prune all of the sibling nodes of the provided belief node, leaving the parents
+        and ancestors of bn intact
+        :param bn:
+        :return:
+        """
+        if bn is None:
             return
 
-        parent_belief = belief_node.get_parent_belief()
+        parent_belief = bn.get_parent_belief()
 
         if parent_belief is not None:
 
@@ -64,7 +76,7 @@ class BeliefTree(belief_structure.BeliefStructure):
                 for obs_mapping_entry in action_mapping_entry.child_node.observation_map.get_child_entries():
 
                     # if the belief node is not the new root of the belief tree, prune it
-                    if obs_mapping_entry.child_node is not belief_node:
+                    if obs_mapping_entry.child_node is not bn:
                         self.prune_node(obs_mapping_entry.child_node)
 
     # --------- TREE MODIFICATION ------- #
@@ -97,5 +109,3 @@ class BeliefTree(belief_structure.BeliefStructure):
     def initialize(self):
         self.reset_root_data()
         self.root.action_map = self.solver.action_pool.create_action_mapping(self.root)
-
-

@@ -2,18 +2,19 @@ __author__ = 'patrickemami'
 
 import logging
 import json
-
-import config_parser
+from util import config_parser
+from util.console import *
 from grid_position import GridPosition
 from rock_state import RockState
 from rock_action import RockAction
 from rock_observation import RockObservation
 from POMDP.discretePOMDP.discrete_action_pool import DiscreteActionPool
 from POMDP.model import Model, StepResult
-
-
 # import numpy from RockPositionHistory
 from rock_position_history import *
+
+module = "RockModel"
+
 
 class RSCellType(object):
     """
@@ -25,8 +26,8 @@ class RSCellType(object):
     GOAL = -2
     OBSTACLE = -3
 
-class RockModel(Model):
 
+class RockModel(Model):
     def __init__(self, problem_name):
         super(RockModel, self).__init__(problem_name)
         # logging utility
@@ -44,7 +45,6 @@ class RockModel(Model):
         # The penalty for an illegal move.
         self.illegal_move_penalty = self.rock_config['illegal_move_penalty']
         # penalty for finishing without sampling a rock
-        self.finishing_empty_handed = self.rock_config['finishing_empty_handed']
         self.half_efficiency_distance = self.rock_config['half_efficiency_distance']
 
         # ------------- Flags --------------- #
@@ -131,12 +131,11 @@ class RockModel(Model):
         self.num_states = pow(2, self.n_rocks)
         self.min_val = -self.illegal_move_penalty / (1 - self.sys_cfg['discount'])
         self.max_val = self.good_rock_reward * self.n_rocks + self.exit_reward
-        self.actual_rock_states = self.sample_rocks()
-        print "Actual rock states = ", self.actual_rock_states
 
     ''' ================= '''
     ''' Utility functions '''
     ''' ================= '''
+
     # returns the RSCellType at the specified position
     def get_cell_type(self, pos):
         return self.env_map[pos.i][pos.j]
@@ -148,6 +147,7 @@ class RockModel(Model):
     ''' ================= '''
     '''     Sampling      '''
     ''' ================= '''
+
     def sample_an_init_state(self):
         self.sampled_rock_yet = False
         self.unique_rocks_sampled = []
@@ -181,7 +181,10 @@ class RockModel(Model):
                 value += (1 << i)
         return value
 
+    ''' ===================================================================  '''
     ''' ---------------Implementation of abstract Model class ---------------'''
+    ''' ===================================================================  '''
+
     def is_terminal(self, rock_state):
         return self.get_cell_type(rock_state.position) is RSCellType.GOAL
 
@@ -196,11 +199,11 @@ class RockModel(Model):
     def is_valid_state(self, rock_state):
         pos = rock_state.position
         return 0 <= pos.i < self.n_rows and 0 <= pos.j < self.n_cols and \
-            self.get_cell_type(pos) is not RSCellType.OBSTACLE
+               self.get_cell_type(pos) is not RSCellType.OBSTACLE
 
     def is_valid_pos(self, pos):
         return 0 <= pos.i < self.n_rows and 0 <= pos.j < self.n_cols and \
-            self.get_cell_type(pos) is not RSCellType.OBSTACLE
+               self.get_cell_type(pos) is not RSCellType.OBSTACLE
 
     def get_legal_actions(self, state):
         legal_actions = []
@@ -233,7 +236,26 @@ class RockModel(Model):
                 legal_actions.append(action)
         return legal_actions
 
+    def get_max_undiscounted_return(self):
+        total = 10
+        for _ in self.actual_rock_states:
+            if _:
+                total += 10
+        return total
+
+    def reset_for_sim(self):
+        self.good_samples = 0.0
+        self.num_reused_nodes = 0
+        self.num_bad_rocks_sampled = 0
+        self.num_bad_checks = 0
+        self.num_good_checks = 0
+
+    def reset_for_run(self):
+        self.actual_rock_states = self.sample_rocks()
+        console(2, module, self.reset_for_run.__name__, "Actual rock states = " + str(self.actual_rock_states))
+
     ''' --------------- get next position and state ---------------'''
+
     def make_adjacent_position(self, pos, action_type):
         if action_type is ActionType.NORTH:
             pos.i -= 1
@@ -269,6 +291,7 @@ class RockModel(Model):
         return pos, is_legal
 
     ''' --------------- Black Box Dynamics stuff --------------'''
+
     def make_next_state(self, state, action):
         action_type = action.bin_number
         next_position, is_legal = self.make_next_position(state.position.copy(), action_type)
@@ -389,6 +412,7 @@ class RockModel(Model):
         return result, is_legal
 
     ''' ------------ particle generation -----------------'''
+
     def generate_particles_uninformed(self, previous_belief, action, obs, n_particles):
         old_pos = previous_belief.get_states()[0].position
 
@@ -401,6 +425,7 @@ class RockModel(Model):
         return particles
 
     ''' --------------- pretty printing methods --------------- '''
+
     def disp_cell(self, rs_cell_type):
         if rs_cell_type >= RSCellType.ROCK:
             print hex(rs_cell_type - RSCellType.ROCK),
@@ -422,12 +447,6 @@ class RockModel(Model):
             print '\n'
 
     ''' --------------- model customizations --------------- '''
-    def reset(self):
-        self.good_samples = 0.0
-        self.num_reused_nodes = 0
-        self.num_bad_rocks_sampled = 0
-        self.num_bad_checks = 0
-        self.num_good_checks = 0
 
     def update(self, step_result):
         if step_result.action.bin_number == ActionType.SAMPLE:
@@ -456,8 +475,3 @@ class RockModel(Model):
 
     def create_observation_pool(self, solver):
         return super(RockModel, self).create_observation_pool(solver)
-
-
-
-
-

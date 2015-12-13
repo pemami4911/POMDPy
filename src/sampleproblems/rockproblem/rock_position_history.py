@@ -1,7 +1,6 @@
 __author__ = 'patrickemami'
 
 import numpy as np
-
 from POMDP.historical_data import HistoricalData
 from rock_action import ActionType
 import itertools
@@ -41,8 +40,12 @@ class PositionAndRockData(HistoricalData):
 
         # List of RockData indexed by the rock number
         self.all_rock_data = all_rock_data
+
         # Holds reference to the function for generating legal actions
-        self.legal_actions = self.generate_legal_actions
+        if self.model.sys_cfg["preferred_actions"] is "True":
+            self.legal_actions = self.generate_smart_actions
+        else:
+            self.legal_actions = self.generate_legal_actions
 
     def copy_rock_data(self, other_data):
         new_rock_data = []
@@ -183,10 +186,10 @@ class PositionAndRockData(HistoricalData):
         # Only pursue one worthwhile rock at a time to prevent the agent from getting confused and
         # doing nothing
         for i in range(0, n_rocks):
-            #Once an interesting rock is found, break out of the for loop
+            # Once an interesting rock is found, break out of the for loop
 
-            #if worth_while_rock_found:
-            #    break
+            if worth_while_rock_found:
+                break
             rock_data = self.all_rock_data[i]
             if rock_data.chance_good != 0.0 and rock_data.goodness_number >= 0:
                 worth_while_rock_found = True
@@ -195,7 +198,6 @@ class PositionAndRockData(HistoricalData):
                     south_worth_while = True
                 elif pos.i < self.grid_position.i:
                     north_worth_while = True
-
                 if pos.j > self.grid_position.j:
                     east_worth_while = True
                 elif pos.j < self.grid_position.j:
@@ -205,7 +207,6 @@ class PositionAndRockData(HistoricalData):
         if not worth_while_rock_found:
             smart_actions.append(ActionType.EAST)
             return smart_actions
-
 
         if north_worth_while:
             smart_actions.append(ActionType.NORTH)

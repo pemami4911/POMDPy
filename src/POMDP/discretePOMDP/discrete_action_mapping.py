@@ -4,6 +4,7 @@ from POMDP.action_mapping import ActionMapping, ActionMappingEntry
 from POMDP.action_node import ActionNode
 import numpy as np
 
+
 class DiscreteActionMapping(ActionMapping):
     """
     ActionMappings are used to map Belief Nodes to all of the different legal actions that can be
@@ -39,7 +40,6 @@ class DiscreteActionMapping(ActionMapping):
         action_map_copy.total_visit_count = self.total_visit_count
         return action_map_copy
 
-
     def get_action_node(self, action):
         return self.entries.get(action.bin_number).child_node
 
@@ -55,7 +55,7 @@ class DiscreteActionMapping(ActionMapping):
 
     def get_child_entries(self):
         return_entries = []
-        for i in range(0,self.number_of_bins):
+        for i in range(0, self.number_of_bins):
             entry = self.entries.get(i)
             if entry.child_node is not None:
                 return_entries.append(entry)
@@ -84,7 +84,7 @@ class DiscreteActionMapping(ActionMapping):
         unvisited_entries = []
         for entry in self.entries.values():
             # allow illegal entries
-            #if entry.visit_count == 0:
+            # if entry.visit_count == 0:
             if entry.is_legal and entry.visit_count == 0:
                 unvisited_entries.append(entry)
         if unvisited_entries.__len__() != 0:
@@ -104,9 +104,10 @@ class DiscreteActionMapping(ActionMapping):
         for entry in self.entries.values():
             entry.is_legal = False
 
-         # Only entries in the sequence are legal
+        # Only entries in the sequence are legal
         for bin_number in self.bin_sequence:
             self.entries.get(bin_number).is_legal = True
+
 
 class DiscreteActionMappingEntry(ActionMappingEntry):
     """
@@ -159,9 +160,9 @@ class DiscreteActionMappingEntry(ActionMappingEntry):
 
         # Update the mean Q
         old_mean_q = self.mean_q_value
-        #if self.visit_count <= 0:
+        # if self.visit_count <= 0:
         #    self.mean_q_value = -np.inf
-        #else:
+        # else:
 
         # Average the Q value by taking the Total Q value of this entry divided by the
         # number of times this action has been tried

@@ -42,7 +42,6 @@ class Statistic(object):
         self.min = np.inf
 
     def show(self):
-        print "+-----------------+"
         print "Name = ", self.name
         print "Running Total = ", self.running_total
         print "Mean = ", self.mean

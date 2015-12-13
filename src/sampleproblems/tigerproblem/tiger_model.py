@@ -2,7 +2,7 @@ __author__ = 'patrickemami'
 
 import numpy as np
 
-import model
+from POMDP import model
 from tiger_action import *
 from tiger_state import TigerState
 from tiger_observation import TigerObservation
@@ -43,17 +43,23 @@ class TigerModel(model.Model):
     def get_all_actions(self):
         return [TigerAction(ActionType.LISTEN), TigerAction(ActionType.OPEN_DOOR_1), TigerAction(ActionType.OPEN_DOOR_2)]
 
-    def get_legal_actions(self, state):
+    def get_legal_actions(self, _):
         return self.get_all_actions()
 
-    def is_valid(self, state):
+    def is_valid(self, _):
         return True
 
-    def reset(self):
+    def reset_for_sim(self):
+        pass
+
+    def reset_for_run(self):
         pass
 
     def update(self, sim_data):
         pass
+
+    def get_max_undiscounted_return(self):
+        return 10
 
     ''' Factory methods '''
     def create_action_pool(self):

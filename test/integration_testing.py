@@ -2,7 +2,7 @@ __author__ = 'patrickemami'
 
 from sampleproblems.rockproblem.rock_model import RockModel
 from POMDP.solvers.solver import Solver
-from POMDP.solvers.MCTS import MCTS
+from POMDP.solvers.mcts import mcts
 
 '''
 TEST 0 - Pruning
@@ -12,7 +12,7 @@ TEST = 1
 
 model = RockModel("Objgraph Test")
 solver = Solver(model)
-mcts = MCTS(solver, model)
+mcts = mcts(solver, model)
 
 def add_to_tree():
         global mcts

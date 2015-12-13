@@ -45,7 +45,10 @@ Optional, for extended functionality:
 * pygame 1.9.1 
 
 ## TODO ##
-* Unit Test coverage is currently minimal, so this area is going to be expanded upon soon
-* The current test-problems are the RockSample and TigerProblem. More test problems are being worked on 
-* An extension for GPU-MCTS is being planned. The NumbaPro Python module seems to be a good bet for this
-* The PyGame sim is currently not supported, due to recent changes
+* Add more unit tests
+* Add additional benchmark problems 
+* Add GPU support (MCTS-GPU)
+* Supply an easy-to-use configuration schema to specify a POMDP and auto-generate the classes
+* Add ways of creating generative models
+* Clean up output displayed to the user
+* Continuous-time POMDPs? DNN-POMDPs? AIXI?

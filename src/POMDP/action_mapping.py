@@ -69,6 +69,7 @@ class ActionMapping(object):
         :return action:
         """
 
+
 class ActionMappingEntry(object):
     """
     An interface for discrete and continuous actions

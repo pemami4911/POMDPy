@@ -11,11 +11,22 @@ CONSOLE LOGGING VERBOSITY LEVELS
 '''
 VERBOSITY = 2
 
-def console(verbosity_level, source, msg):
+
+def print_divider(size):
+    if size == "large":
+        print "======================================================================"
+    elif size == "medium":
+        print "=========================================="
+    else:
+        print "========"
+
+
+def console(verbosity_level, module, func, msg):
     if verbosity_level > VERBOSITY:
         return
     else:
-        print source + ' - ' + msg
+        print module + '.' + func + ' - ' + msg
+
 
 # Pass a function that handles printing
 def console_no_print(verbosity_level, func):
@@ -24,4 +35,3 @@ def console_no_print(verbosity_level, func):
     else:
         assert callable(func)
         func()
-

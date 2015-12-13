@@ -2,7 +2,8 @@ __author__ = 'patrickemami'
 
 import logging
 import logging.handlers
-import config_parser
+from util import config_parser
+
 
 def init_logger():
 

@@ -3,13 +3,10 @@ __author__ = 'patrickemami'
 import random
 import json
 import numpy as np
-import config_parser
+from util import config_parser
 
 config = json.load(open(config_parser.sys_cfg, "r"))
 
-''' ------------ GLOBAL VARS -------------'''
-use_rave = False
-rave_constant = 0.0
 
 # UCB1 action selection algorithm
 def ucb_action(mcts, current_node, greedy):
@@ -30,11 +27,6 @@ def ucb_action(mcts, current_node, greedy):
 
         current_q = action_entry.mean_q_value
 
-        # TODO RAVE stuff
-        # if use_rave and action.visit_count > 0.0:
-
-        # if has_alpha ...
-
         # TODO epsilon-greedy? Act randomly with probability 1/epsilon?
         # If the UCB coefficient is 0, this is just pure Q learning
         if not greedy:
@@ -52,7 +44,3 @@ def ucb_action(mcts, current_node, greedy):
     return random.choice(best_actions)
 
 # Add more action selectors here
-
-
-
-

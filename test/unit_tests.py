@@ -19,7 +19,7 @@ model = RockModel("unit_tests")
 solver = Solver(model)
 
 ''' --------- MCTS --------- '''
-from POMDP.solvers.MCTS import MCTS
+from POMDP.solvers.mcts import mcts
 from actionselection import action_selectors
 
 mcts = None
@@ -28,7 +28,7 @@ class MCTSTestCase(unittest.TestCase):
 
     def test_create_mcts(self):
         global mcts
-        mcts = MCTS(solver, model)
+        mcts = mcts(solver, model)
         self.assertIsNotNone(mcts)
 
     def test_greedy_search(self):
