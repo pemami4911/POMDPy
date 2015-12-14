@@ -2,7 +2,7 @@ __author__ = 'patrickemami'
 
 import logging
 import logging.handlers
-from util import config_parser
+from pomdpy.util import config_parser
 
 
 def init_logger():
