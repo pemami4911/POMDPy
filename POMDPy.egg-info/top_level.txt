@@ -1,6 +1,6 @@
 config
 log
 plots
+pomdpy
 simulation
-src
 test

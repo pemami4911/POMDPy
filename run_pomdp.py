@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 __author__ = 'patrickemami'
 
-'''
-Run one of the sample problems
-'''
 import sys
-from src.solvers import Solver
-from src.sample_problems.rock_problem import RockModel
-from src.sample_problems.tiger_problem import TigerModel
+from pomdpy.solvers import Solver
+from pomdpy.examples.rock_problem import RockModel
+from pomdpy.examples.tiger_problem import TigerModel
 from log import init_logger
 
 SAMPLE_PROBLEM = sys.argv[1]
