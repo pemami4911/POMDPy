@@ -3,6 +3,10 @@ __author__ = 'patrickemami'
 from pomdpy.examples.rock_problem import RockModel
 from pomdpy.solvers import Solver, mcts
 
+"""
+Move to unit tests
+"""
+
 '''
 TEST 0 - Pruning
 TEST 1 - Action Selection after simulation

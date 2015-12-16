@@ -9,7 +9,7 @@ from pomdpy.action_selection import action_selectors
 from pomdpy.pomdp.belief_tree import BeliefTree
 from solver import Solver
 
-module = "MCTS"
+module = "montecarlo"
 
 
 class MCTS(Solver):

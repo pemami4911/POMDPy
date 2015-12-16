@@ -1,6 +1,6 @@
 __author__ = 'patrickemami'
 
-__all__ = ['mcts', 'solver']
+__all__ = ['solver', 'mcts']
 
 from solver import Solver
-from mcts import MCTS
+from montecarlo import MCTS

@@ -12,7 +12,7 @@ model = RockModel("unit_tests")
 agent = Agent(model, MCTS)
 
 
-class TestPOMDPY(unittest.TestCase):
+class TestPOMDPy(unittest.TestCase):
 
     def setUp(self, *args):
         self.solver = agent.solver_factory(agent, model)
