@@ -36,7 +36,6 @@ class MCTS(Solver):
         self.rollout_depth_stats = Statistic("Rollout Depth")
         self.total_reward_stats = Statistic("Total Reward")
 
-
         if self.model.sys_cfg["policy_representation"] is "Tree" or "tree":
             self.disable_tree = False
         else:
