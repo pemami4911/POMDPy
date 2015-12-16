@@ -254,7 +254,7 @@ class RockModel(Model):
 
     def reset_for_run(self):
         self.actual_rock_states = self.sample_rocks()
-        console(2, module, self.reset_for_run.__name__, "Actual rock states = " + str(self.actual_rock_states))
+        console(2, module,  "Actual rock states = " + str(self.actual_rock_states))
 
     ''' --------------- get next position and state ---------------'''
 

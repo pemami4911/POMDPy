@@ -4,3 +4,4 @@
 *.log
 build
 POMDPy.egg-info
+dist

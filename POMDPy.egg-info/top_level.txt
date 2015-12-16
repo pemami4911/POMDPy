@@ -1,6 +1,0 @@
-config
-log
-plots
-pomdpy
-simulation
-test

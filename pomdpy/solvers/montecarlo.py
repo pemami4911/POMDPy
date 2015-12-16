@@ -4,14 +4,15 @@ import time
 import random
 import numpy as np
 from pomdpy.util import console
-from pomdpy.pomdp import BeliefTree
 from pomdpy.pomdp import Statistic
 from pomdpy.action_selection import action_selectors
+from pomdpy.pomdp.belief_tree import BeliefTree
+from solver import Solver
 
-module = "MCTS"
+module = "montecarlo"
 
 
-class MCTS(object):
+class MCTS(Solver):
     """
     Monte-Carlo Tree Search implementation, from POMCP
     """
@@ -20,19 +21,20 @@ class MCTS(object):
     UCB_N = 10000
     UCB_n = 100
 
-    def __init__(self, solver, model):
-        self.solver = solver
-        self.model = model
-        self.policy = BeliefTree(solver)  # Search Tree
+    def __init__(self, agent, model):
+        """
+        Initialize an instance of the MCTS solver
+        :param agent:
+        :param model:
+        :return:
+        """
+        super(MCTS, self).__init__(agent, model)
+        self.policy = BeliefTree(agent)
         self.peak_tree_depth = 0
         self.step_size = self.model.sys_cfg["step_size"]
         self.tree_depth_stats = Statistic("Tree Depth")
         self.rollout_depth_stats = Statistic("Rollout Depth")
         self.total_reward_stats = Statistic("Total Reward")
-
-        # Solver owns Histories, the collection of History Sequences.
-        # There is one sequence per run of the MCTS algorithm
-        self.history = self.solver.histories.create_sequence()
 
         if self.model.sys_cfg["policy_representation"] is "Tree" or "tree":
             self.disable_tree = False
@@ -50,10 +52,6 @@ class MCTS(object):
                     self.fast_UCB[N][n] = model.sys_cfg["ucb_coefficient"] * np.sqrt(np.log(N + 1) / n)
 
         # Initialize the Belief Tree
-        self.reset()
-
-    def reset(self):
-        # Initialize policy root stuff
         self.policy.reset()
         self.policy.initialize()
 
@@ -63,12 +61,31 @@ class MCTS(object):
             particle = self.model.sample_an_init_state()
             self.policy.root.state_particles.append(particle)
 
+    @staticmethod
+    def reset(agent, model):
+        """
+        Generate a new MCTS solver
+
+        Implementation of abstract method
+        """
+        return MCTS(agent, model)
+
     def clear_stats(self):
+        """
+        Reset statistics
+        """
         self.total_reward_stats.clear()
         self.tree_depth_stats.clear()
         self.rollout_depth_stats.clear()
 
     def find_fast_ucb(self, total_visit_count, action_map_entry_visit_count, log_n):
+        """
+        Look up and return the value in the UCB table corresponding to the params
+        :param total_visit_count:
+        :param action_map_entry_visit_count:
+        :param log_n:
+        :return:
+        """
         assert self.fast_UCB is not None
         if total_visit_count < MCTS.UCB_N and action_map_entry_visit_count < MCTS.UCB_n:
             return self.fast_UCB[int(total_visit_count)][int(action_map_entry_visit_count)]
@@ -79,38 +96,49 @@ class MCTS(object):
             return self.model.sys_cfg["ucb_coefficient"] * np.sqrt(log_n / action_map_entry_visit_count)
 
     def select_action(self):
+        """
+        Starts off the Monte-Carlo Tree Search and returns the selected action. If the belief tree
+                data structure is disabled, random rollout is used.
+
+        Implementation of abstract method
+        """
         if self.disable_tree:
             self.rollout_search()
         else:
-            self.UCT_search()
+            self.uct_search()
         return action_selectors.ucb_action(self, self.policy.root, True)
 
     def update(self, step_result):
+        """
+        Given the result of applying the action selected by MCTS, update the belief tree, particle set, etc
 
+        Implementation of abstract method
+        :param step_result:
+        :return:
+        """
         # Update the Simulator with the Step Result
         # This is important in case there are certain actions that change the state of the simulator
         self.model.update(step_result)
 
         child_belief_node = self.policy.root.get_child(step_result.action, step_result.observation)
 
-        ''' ================================================================================================'''
         # If the child_belief_node is None because the step result randomly produced a different observation,
         # grab any of the beliefs extending from the belief node's action node
         if child_belief_node is None:
             action_node = self.policy.root.action_map.get_action_node(step_result.action)
             if action_node is None:
                 # I grabbed a child belief node that doesn't have an action node. Use rollout from here on out.
-                console(2, module, self.update.__name__, "Reached a dead end, using random rollout to finish the run")
-                return True
+                console(2, module, "Reached branch with no leaf nodes, using random rollout to finish the episode")
+                self.disable_tree = True
+                return
 
             obs_mapping_entries = action_node.observation_map.child_map.values()
 
             for entry in obs_mapping_entries:
                 if entry.child_node is not None:
                     child_belief_node = entry.child_node
-                    console(2, module, self.update.__name__, "Had to grab nearest belief node...variance added")
+                    console(2, module, "Had to grab nearest belief node...variance added")
                     break
-        ''' ================================================================================================'''
 
         # If the new root does not yet have the max possible number of particles add some more
         if child_belief_node.state_particles.__len__() < self.model.sys_cfg["max_particle_count"]:
@@ -132,19 +160,17 @@ class MCTS(object):
 
         # Failed to continue search- ran out of particles
         if child_belief_node is None or child_belief_node.state_particles.__len__() == 0:
-            console(1, module, self.update.__name__, "Couldn't refill particles")
-            return True
+            console(1, module, "Couldn't refill particles, must use random rollout to finish episode")
+            self.disable_tree = True
+            return
 
         # Prune the siblings of the chosen belief node and
         # set that node as the new "root"
         start_time = time.time()
         self.policy.prune_siblings(child_belief_node)
         elapsed = time.time() - start_time
-        console(2, module, self.update.__name__, "Time spent pruning = " + str(elapsed) + " seconds")
+        console(2, module, "Time spent pruning = " + str(elapsed) + " seconds")
         self.policy.root = child_belief_node
-        return False
-
-    ''' --------------- Rollout Search --------------'''
 
     def rollout_search(self):
         """
@@ -176,7 +202,9 @@ class MCTS(object):
             action_mapping_entry.update_q_value(total_reward)
 
     def rollout(self, start_state, starting_legal_actions):
-
+        """
+        Iterative random rollout search
+        """
         legal_actions = list(starting_legal_actions)
         state = start_state.copy()
         is_terminal = False
@@ -200,10 +228,9 @@ class MCTS(object):
         return total_reward
 
     ''' --------------- Multi-Armed Bandit Search -------------- '''
-
-    def UCT_search(self):
+    def uct_search(self):
         """
-        Expands the root node via random simulations, using the UCT action selection strategy
+        Expand the root node via random simulations, using the UCT action selection strategy
         """
         start_time = time.time()
 
@@ -224,7 +251,7 @@ class MCTS(object):
             tree_depth = 0
             self.peak_tree_depth = 0
 
-            console(3, module, self.UCT_search.__name__, "Starting simulation at random state = " + state.to_string())
+            console(3, module, "Starting simulation at random state = " + state.to_string())
 
             # initiate
             total_reward = self.simulate_node(state, self.policy.root, tree_depth, start_time)
@@ -232,13 +259,20 @@ class MCTS(object):
             self.total_reward_stats.add(total_reward)
             self.tree_depth_stats.add(self.peak_tree_depth)
 
-            console(3, module, self.UCT_search.__name__, "Total reward = " + str(total_reward))
+            console(3, module, "Total reward = " + str(total_reward))
 
         # Reset the information state back to the state it was in before the simulations occurred for consistency
         self.policy.root.data = initial_root_data
 
     def simulate_node(self, state, belief_node, tree_depth, start_time):
-
+        """
+        Begin the process of traversing down the Belief Tree by selecting an action according to the UCB1 algorithm
+        :param state:
+        :param belief_node:
+        :param tree_depth:
+        :param start_time:
+        :return:
+        """
         # Time expired
         if time.time() - start_time > self.model.sys_cfg["action_selection_time_out"]:
             return 0
@@ -249,7 +283,7 @@ class MCTS(object):
 
         # Search horizon reached
         if tree_depth >= self.model.sys_cfg["maximum_depth"]:
-            console(4, module, self.simulate_node.__name__, "Search horizon reached")
+            console(4, module, "Search horizon reached")
             return 0
 
         if tree_depth == 1:
@@ -263,6 +297,15 @@ class MCTS(object):
         return total_reward
 
     def step_node(self, belief_node, state, action, tree_depth, start_time):
+        """
+        Generate the next step in the current episode based on the selected action and update the corresponding Q value
+        :param belief_node:
+        :param state:
+        :param action:
+        :param tree_depth:
+        :param start_time:
+        :return:
+        """
 
         # Time expired
         if time.time() - start_time > self.model.sys_cfg["action_selection_time_out"]:
@@ -272,10 +315,10 @@ class MCTS(object):
 
         step_result, is_legal = self.model.generate_step(state, action)
 
-        console(4, module, self.step_node.__name__, "Step Result.Action = " + step_result.action.to_string())
-        console(4, module, self.step_node.__name__, "Step Result.Observation = " + step_result.observation.to_string())
-        console(4, module, self.step_node.__name__, "Step Result.Next_State = " + step_result.next_state.to_string())
-        console(4, module, self.step_node.__name__, "Step Result.Reward = " + str(step_result.reward))
+        console(4, module, "Step Result.Action = " + step_result.action.to_string())
+        console(4, module, "Step Result.Observation = " + step_result.observation.to_string())
+        console(4, module, "Step Result.Next_State = " + step_result.next_state.to_string())
+        console(4, module, "Step Result.Reward = " + str(step_result.reward))
 
         child_belief_node = belief_node.child(action, step_result.observation)
         if child_belief_node is None and not step_result.is_terminal and belief_node.action_map.total_visit_count > 0:
@@ -289,7 +332,7 @@ class MCTS(object):
                 delayed_reward = self.rollout(state, belief_node.data.generate_legal_actions())
             tree_depth -= 1
         else:
-            console(3, module, self.step_node.__name__, "Reached terminal state.")
+            console(3, module, "Reached terminal state.")
 
         # delayed_reward is "Q maximal"
         # current_q_value is the Q value of the current belief-action pair

@@ -2,10 +2,11 @@
 __author__ = 'patrickemami'
 
 import sys
-from pomdpy.solvers import Solver
-from pomdpy.examples.rock_problem import RockModel
-from pomdpy.examples.tiger_problem import TigerModel
-from log import init_logger
+from pomdpy import Agent
+from pomdpy.solvers import MCTS
+from pomdpy.log import init_logger
+from examples.rock_problem import RockModel
+from examples.tiger_problem import TigerModel
 
 SAMPLE_PROBLEM = sys.argv[1]
 
@@ -16,13 +17,13 @@ if __name__ == '__main__':
     if SAMPLE_PROBLEM == "1":
         simulator = RockModel("Rock Problem")
         simulator.draw_env()
-        my_solver = Solver(simulator)
-        my_solver.discounted_return()
-        my_solver.logger.info("Map: " + simulator.rock_config["map_file"])
+        agent = Agent(simulator, MCTS)
+        agent.discounted_return()
+        agent.logger.info("Map: " + simulator.rock_config["map_file"])
     elif SAMPLE_PROBLEM == "2":
         simulator = TigerModel("Tiger Problem")
-        my_solver = Solver(simulator)
-        my_solver.discounted_return()
+        agent = Agent(simulator, MCTS)
+        agent.discounted_return()
     else:
         print "Unable to execute unknown sample problem " + SAMPLE_PROBLEM
 
