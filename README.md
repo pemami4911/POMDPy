@@ -1,3 +1,4 @@
+## POMDPy
 ![Build](https://travis-ci.org/pemami4911/POMDPy.svg?branch=master)
 
 This open-source project contains a framework for implementing discrete or continuous POMDPs in Python. The organization of the code was inspired by [TAPIR](http://robotics.itee.uq.edu.au/~hannakur/dokuwiki/doku.php?id=wiki:tapir) and the [POMCP](http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html) algorithm.
@@ -15,7 +16,7 @@ From the root directory of the project, run
     python setup.py install
 
 ## Running a sample ##
-You can optionally tweak the system and RockSample configuration files (`system-config.json` and `rock_problem-config.json`), which are located in `pompdy/config`.
+You can optionally tweak the system and RockSample configuration files `system-config.json` and `rock_problem-config.json`, which are located in `pompdy/config`.
 The following maps are available:
 * RockSample(7, 8), a 7 x 7 grid with 8 rocks.
 * RockSample(11, 11), an 11 x 11 grid with 11 rocks
@@ -23,11 +24,11 @@ The following maps are available:
 
 To run the RockSample problem:
 
-    `python run_pomdp.py 1`
+    python run_pomdp.py 1
     
 To run the Tiger sample problem: 
 
-    `python run_pomdp.py 2`
+    python run_pomdp.py 2
     
 See `pompdy/README.md` for more implementation details.
 
@@ -50,10 +51,10 @@ Optional, for extended functionality:
 * pygame 1.9.1 
 
 ## TODO ##
-[] Add more unit tests
-[] Add additional benchmark problems 
-[] Add GPU support (MCTS-GPU)
-[] Supply an easy-to-use configuration schema to specify a POMDP and auto-generate the classes
-[] Add ways of creating/learning generative models
-[x] Clean up output displayed to the user
-[] Continuous-time POMDPs? DNN-POMDPs? AIXI?
+* [ ] Add more unit tests
+* [ ] Add additional benchmark problems 
+* [ ] Add GPU support (MCTS-GPU)
+* [ ] Supply an easy-to-use configuration schema to specify a POMDP and auto-generate the classes
+* [ ] Add ways of creating/learning generative models
+* [x] Clean up output displayed to the user
+* [ ] Continuous-time POMDPs? DNN-POMDPs? AIXI?
