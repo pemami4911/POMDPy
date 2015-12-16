@@ -5,7 +5,7 @@
     <title>POMDPy by pemami4911</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
@@ -19,7 +19,10 @@
     </section>
 
     <section class="main-content">
-      <p><img src="https://travis-ci.org/pemami4911/POMDPy.svg?branch=master" alt="Build"></p>
+      <h2>
+<a id="pomdpy" class="anchor" href="#pomdpy" aria-hidden="true"><span class="octicon octicon-link"></span></a>POMDPy</h2>
+
+<p><img src="https://travis-ci.org/pemami4911/POMDPy.svg?branch=master" alt="Build"></p>
 
 <p>This open-source project contains a framework for implementing discrete or continuous POMDPs in Python. The organization of the code was inspired by <a href="http://robotics.itee.uq.edu.au/%7Ehannakur/dokuwiki/doku.php?id=wiki:tapir">TAPIR</a> and the <a href="http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html">POMCP</a> algorithm.</p>
 
@@ -41,16 +44,26 @@ From the root directory of the project, run</p>
 <h2>
 <a id="running-a-sample" class="anchor" href="#running-a-sample" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running a sample</h2>
 
-<p>You can optionally tweak the system and RockSample configuration files, which are located in the config folder.
-The default RockSample Problem is RockSample(7, 8), a 7 x 7 grid with 8 rocks.</p>
+<p>You can optionally tweak the system and RockSample configuration files <code>system-config.json</code> and <code>rock_problem-config.json</code>, which are located in <code>pompdy/config</code>.
+The following maps are available:</p>
 
-<p>To run the RockSample Problem, simply enter</p>
+<ul>
+<li>RockSample(7, 8), a 7 x 7 grid with 8 rocks.</li>
+<li>RockSample(11, 11), an 11 x 11 grid with 11 rocks</li>
+<li>RockSample(15, 15), a 15 x 15 grid with 15 rocks</li>
+</ul>
 
-<pre><code>python src/run_pomdp.py
+<p>To run the RockSample problem:</p>
+
+<pre><code>python run_pomdp.py 1
 </code></pre>
 
-<p>The TigerProblem can be run by changing the value of the "SampleProblem" variable in src/run_pomdp.py to 2.
-See src/README.md for more implementation details.</p>
+<p>To run the Tiger sample problem: </p>
+
+<pre><code>python run_pomdp.py 2
+</code></pre>
+
+<p>See <code>pompdy/README.md</code> for more implementation details.</p>
 
 <h2>
 <a id="running-tests" class="anchor" href="#running-tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running tests</h2>
@@ -82,10 +95,13 @@ See src/README.md for more implementation details.</p>
 <a id="todo" class="anchor" href="#todo" aria-hidden="true"><span class="octicon octicon-link"></span></a>TODO</h2>
 
 <ul>
-<li>Unit Test coverage is currently minimal, so this area is going to be expanded upon soon</li>
-<li>The current test-problems are the RockSample and TigerProblem. More test problems are being worked on </li>
-<li>An extension for GPU-MCTS is being planned. The NumbaPro Python module seems to be a good bet for this</li>
-<li>The PyGame sim is currently not supported, due to recent changes</li>
+<li>[ ] Add more unit tests</li>
+<li>[ ] Add additional benchmark problems </li>
+<li>[ ] Add GPU support (MCTS-GPU)</li>
+<li>[ ] Supply an easy-to-use configuration schema to specify a POMDP and auto-generate the classes</li>
+<li>[ ] Add ways of creating/learning generative models</li>
+<li>[x] Clean up output displayed to the user</li>
+<li>[ ] Continuous-time POMDPs? DNN-POMDPs? AIXI?</li>
 </ul>
 
       <footer class="site-footer">
@@ -99,4 +115,3 @@ See src/README.md for more implementation details.</p>
   
   </body>
 </html>
-
