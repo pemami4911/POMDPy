@@ -159,12 +159,12 @@ class Policy(threading.Thread):
 
                 pygame.time.wait(1000)
 if __name__ == '__main__':
-    import solver.Solver
+    import agent.Solver
     import rock_model
 
     model = rock_model.RockModel("RockProblemSim")
-    solver = solver.Solver(model)
+    agent = agent.Solver(model)
 
-    sim = Simulator(model, solver)
+    sim = Simulator(model, agent)
     sim.main()
 

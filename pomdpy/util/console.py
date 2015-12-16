@@ -21,11 +21,11 @@ def print_divider(size):
         print "========"
 
 
-def console(verbosity_level, module, func, msg):
+def console(verbosity_level, module, msg):
     if verbosity_level > VERBOSITY:
         return
     else:
-        print module + '.' + func + ' - ' + msg
+        print module + ' - ' + msg
 
 
 # Pass a function that handles printing

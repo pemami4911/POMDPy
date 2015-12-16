@@ -13,10 +13,19 @@ To implement a POMDP with discrete states, actions, observations, and rewards, t
     You may want to to provide a .txt of .cfg containing a map or other data that encapsulate
     the environment and hence the transition probabilities for the world which the POMDP lives in.
    
-Continuous POMDPs are not yet supported.
- 
-Point.py, ActionMapping.py, ActionPool.py, ObservationPool.py,
-ObservationMapping.py, etc. in the POMDP package can all be extended to support a continuous POMDP.
+Support for POMDPs with continuous state/action/observation spaces is on the way.  
+
+## Solvers ##
+
+* [POMCP](http://papers.nips.cc/paper/4031-monte-carlo-planning-in-large-pomdps.pdf): Monte-Carlo Tree Search with the UCB1 algorithm for efficient exploration of the belief space 
+
+### Coming soon ###
+
+****POMDP auto-generator tool:**** This will allow the user/agent to generate the code necessary to use POMDPy from a schema (yaml or JSON). The goal 
+is to make generating POMDPs to solve high-level planning tasks in real-time possible. The difficulty will be in learning the generative model 
+that will be used to simulate the system.
+
+****Parallel-MCTS:**** [See paper here](https://dke.maastrichtuniversity.nl/m.winands/documents/multithreadedMCTS2.pdf) 
 
 ## Belief Tree structure ##
 

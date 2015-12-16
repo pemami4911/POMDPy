@@ -1,6 +1,6 @@
 __author__ = 'patrickemami'
 
-__all__ = ['MCTS', 'solver']
+__all__ = ['mcts.py', 'solver']
 
-import MCTS
-from solver import Solver, Results
+from mcts import MCTS
+from solver import Solver
