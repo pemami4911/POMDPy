@@ -25,8 +25,6 @@ Support for POMDPs with continuous state/action/observation spaces is on the way
 is to make generating POMDPs to solve high-level planning tasks in real-time possible. The difficulty will be in learning the generative model 
 that will be used to simulate the system.
 
-****Parallel-MCTS:**** [See paper here](https://dke.maastrichtuniversity.nl/m.winands/documents/multithreadedMCTS2.pdf) 
-
 ## Belief Tree structure ##
 
 Parent BeliefNode -> ActionMapping -> ActionMappingEntry -> ActionNode -> ObservationMap -> ObservationMappingEntry -> Child BeliefNode

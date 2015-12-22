@@ -27,8 +27,7 @@ def ucb_action(mcts, current_node, greedy):
 
         current_q = action_entry.mean_q_value
 
-        # TODO epsilon-greedy? Act randomly with probability 1/epsilon?
-        # If the UCB coefficient is 0, this is just pure Q learning
+        # If the UCB coefficient is 0, this is greedy Q selection
         if not greedy:
             current_q += mcts.find_fast_ucb(N, action_entry.visit_count, log_n)
 

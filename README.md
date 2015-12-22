@@ -53,7 +53,6 @@ Optional, for extended functionality:
 ## TODO ##
 * [ ] Add more unit tests
 * [ ] Add additional benchmark problems 
-* [ ] Add GPU support (MCTS-GPU)
 * [ ] Supply an easy-to-use configuration schema to specify a POMDP and auto-generate the classes
 * [ ] Add ways of creating/learning generative models
 * [x] Clean up output displayed to the user

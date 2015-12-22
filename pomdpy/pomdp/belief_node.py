@@ -35,11 +35,14 @@ class BeliefNode:
             self.parent_entry = None
             self.depth = 0
 
-        # Add this node to the index in the tree.
-        # self.solver.policy.add_node(self)
-
-    def copy(self, id=None, parent_entry=None):
-        return BeliefNode(self.solver, id, parent_entry)
+    def copy(self):
+        bn = BeliefNode(self.solver, self.id, self.parent_entry)
+        # copy the data
+        bn.data = self.data.copy()
+        # share a reference to the action map
+        bn.action_map = self.action_map
+        bn.state_particles = self.state_particles
+        return bn
 
     # Randomly select a History Entry
     def sample_particle(self):

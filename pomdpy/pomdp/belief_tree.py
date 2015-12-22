@@ -12,9 +12,9 @@ class BeliefTree(belief_structure.BeliefStructure):
     * simply owns a root node and handles pruning
     """
 
-    def __init__(self, solver):
+    def __init__(self, agent):
         super(BeliefTree, self).__init__()
-        self.solver = solver
+        self.agent = agent
         self.root = None
 
     def prune_tree(self, bt):
@@ -86,7 +86,7 @@ class BeliefTree(belief_structure.BeliefStructure):
         :return:
         """
         self.prune_tree(self)
-        self.root = belief_node.BeliefNode(self.solver, None, None)
+        self.root = belief_node.BeliefNode(self.agent, None, None)
         return self.root
 
     def reset_root_data(self):
@@ -94,7 +94,7 @@ class BeliefTree(belief_structure.BeliefStructure):
         Completely resets the root data
         :return:
         """
-        self.root.data = self.solver.model.create_root_historical_data(self.solver)
+        self.root.data = self.agent.model.create_root_historical_data(self.agent)
 
     def reset_data(self, root_data=None):
         """
@@ -106,6 +106,6 @@ class BeliefTree(belief_structure.BeliefStructure):
         else:
             self.root.data.reset()
 
-    def initialize(self):
+    def initialize(self, init_value=None):
         self.reset_root_data()
-        self.root.action_map = self.solver.action_pool.create_action_mapping(self.root)
+        self.root.action_map = self.agent.action_pool.create_action_mapping(self.root)

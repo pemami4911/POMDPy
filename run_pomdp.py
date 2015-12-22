@@ -4,11 +4,13 @@ __author__ = 'patrickemami'
 import sys
 from pomdpy import Agent
 from pomdpy.solvers import MCTS
+from pomdpy.solvers import SARSA
 from pomdpy.log import init_logger
 from examples.rock_problem import RockModel
 from examples.tiger_problem import TigerModel
 
 SAMPLE_PROBLEM = sys.argv[1]
+SOLVER = sys.argv[2]
 
 if __name__ == '__main__':
 
@@ -17,7 +19,10 @@ if __name__ == '__main__':
     if SAMPLE_PROBLEM == "1":
         simulator = RockModel("Rock Problem")
         simulator.draw_env()
-        agent = Agent(simulator, MCTS)
+        if SOLVER != "1":
+            agent = Agent(simulator, SARSA)
+        else:
+            agent = Agent(simulator, MCTS)
         agent.discounted_return()
         agent.logger.info("Map: " + simulator.rock_config["map_file"])
     elif SAMPLE_PROBLEM == "2":

@@ -11,7 +11,6 @@ from pomdpy.discrete_pomdp import DiscreteActionPool
 
 
 class TigerModel(model.Model):
-
     def __init__(self, problem_name="Tiger Problem", num_doors=2):
         super(TigerModel, self).__init__(problem_name)
         self.tiger_door = None
@@ -24,6 +23,7 @@ class TigerModel(model.Model):
         print 'The tiger is behind door ' + str(self.tiger_door + 1)
 
     ''' --------- Abstract Methods --------- '''
+
     def is_terminal(self, state):
         if state.door_open:
             return True
@@ -40,8 +40,27 @@ class TigerModel(model.Model):
             random_configuration.reverse()
         return TigerState(False, random_configuration)
 
+    def get_all_states(self):
+        """
+        Door is closed + either tiger is believed to be behind door 0 or door 1
+        :return:
+        """
+        return [[False, 0, 1], [False, 1, 0]], self.num_states
+
     def get_all_actions(self):
-        return [TigerAction(ActionType.LISTEN), TigerAction(ActionType.OPEN_DOOR_1), TigerAction(ActionType.OPEN_DOOR_2)]
+        """
+        Three unique actions
+        :return:
+        """
+        return [TigerAction(ActionType.LISTEN), TigerAction(ActionType.OPEN_DOOR_1),
+                TigerAction(ActionType.OPEN_DOOR_2)], 3
+
+    def get_all_observations(self):
+        """
+        Either the roar of the tiger is heard coming from door 0 or door 1
+        :return:
+        """
+        return [0, 1], 2
 
     def get_legal_actions(self, _):
         return self.get_all_actions()
@@ -49,7 +68,7 @@ class TigerModel(model.Model):
     def is_valid(self, _):
         return True
 
-    def reset_for_sim(self):
+    def reset_for_simulation(self):
         pass
 
     def reset_for_run(self):
@@ -62,13 +81,15 @@ class TigerModel(model.Model):
         return 10
 
     ''' Factory methods '''
+
     def create_action_pool(self):
         return DiscreteActionPool(self)
 
-    def create_root_historical_data(self, solver):
+    def create_root_historical_data(self, agent):
         return TigerData()
 
     ''' --------- BLACK BOX GENERATION --------- '''
+
     def generate_step(self, state, action):
         if action is None:
             return None
@@ -87,9 +108,9 @@ class TigerModel(model.Model):
             return state, True
 
         if action.bin_number > 0:
-             return TigerState(True, state.door_prizes), True
+            return TigerState(True, state.door_prizes), True
         else:
-             print "make_next_state - Illegal action was used"
+            print "make_next_state - Illegal action was used"
         return None, False
 
     def make_reward(self, action, next_state):

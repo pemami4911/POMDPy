@@ -15,8 +15,9 @@ class BeliefStructure(object):
         """
 
     @abc.abstractmethod
-    def initialize(self):
+    def initialize(self, init_value=None):
         """
-        Carry out initializations
+        Carry out initializations of each element of the belief structure,
+        setting each element to init_value
         :return:
         """
