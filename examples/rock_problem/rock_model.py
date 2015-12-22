@@ -245,7 +245,7 @@ class RockModel(Model):
                 total += 10
         return total
 
-    def reset_for_sim(self):
+    def reset_for_simulation(self):
         self.good_samples = 0.0
         self.num_reused_nodes = 0
         self.num_bad_rocks_sampled = 0
@@ -254,11 +254,54 @@ class RockModel(Model):
 
     def reset_for_run(self):
         self.actual_rock_states = self.sample_rocks()
-        console(2, module,  "Actual rock states = " + str(self.actual_rock_states))
+        console(2, module, "Actual rock states = " + str(self.actual_rock_states))
 
-    ''' --------------- get next position and state ---------------'''
+    def update(self, step_result):
+        if step_result.action.bin_number == ActionType.SAMPLE:
+            rock_no = self.get_cell_type(step_result.next_state.position)
+            self.unique_rocks_sampled.append(rock_no)
+            self.num_times_sampled = 0.0
+            self.sampled_rock_yet = True
 
-    def make_adjacent_position(self, pos, action_type):
+    def get_all_states(self):
+        """
+        :return: Forgo returning all states to save memory, return the number of states as 2nd arg
+        """
+        return None, self.num_states
+
+    def get_all_observations(self):
+        """
+        :return: Return a dictionary of all observations and the number of observations
+        """
+        return {
+            "Empty": 0,
+            "Bad": 1,
+            "Good": 2
+        }, 3
+
+    def get_all_actions(self):
+        """
+        :return: Return a list of all actions along with the length
+        """
+        all_actions = []
+        for code in range(0, 5 + self.n_rocks):
+            all_actions.append(RockAction(code))
+        return all_actions, all_actions.__len__()
+
+    def create_action_pool(self):
+        return DiscreteActionPool(self)
+
+    def create_root_historical_data(self, solver):
+        self.create_new_rock_data()
+        return PositionAndRockData(self, self.start_position.copy(), self.all_rock_data, solver)
+
+    def create_new_rock_data(self):
+        self.all_rock_data = []
+        for i in range(0, self.n_rocks):
+            self.all_rock_data.append(RockData())
+
+    @staticmethod
+    def make_adjacent_position(pos, action_type):
         if action_type is ActionType.NORTH:
             pos.i -= 1
         elif action_type is ActionType.EAST:
@@ -291,8 +334,6 @@ class RockModel(Model):
                 pos = old_position
                 is_legal = False
         return pos, is_legal
-
-    ''' --------------- Black Box Dynamics stuff --------------'''
 
     def make_next_state(self, state, action):
         action_type = action.bin_number
@@ -390,7 +431,6 @@ class RockModel(Model):
             else:
                 # self.logger.warning("Invalid sample action on non-existent rock while making reward!")
                 return -self.illegal_move_penalty
-
         return 0
 
     def generate_reward(self, state, action):
@@ -413,8 +453,6 @@ class RockModel(Model):
 
         return result, is_legal
 
-    ''' ------------ particle generation -----------------'''
-
     def generate_particles_uninformed(self, previous_belief, action, obs, n_particles):
         old_pos = previous_belief.get_states()[0].position
 
@@ -425,8 +463,6 @@ class RockModel(Model):
             if obs == result.observation:
                 particles.append(result.next_state)
         return particles
-
-    ''' --------------- pretty printing methods --------------- '''
 
     def disp_cell(self, rs_cell_type):
         if rs_cell_type >= RSCellType.ROCK:
@@ -447,30 +483,3 @@ class RockModel(Model):
         for row in self.env_map:
             map(self.disp_cell, row)
             print '\n'
-
-    ''' --------------- model customizations --------------- '''
-
-    def update(self, step_result):
-        if step_result.action.bin_number == ActionType.SAMPLE:
-            rock_no = self.get_cell_type(step_result.next_state.position)
-            self.unique_rocks_sampled.append(rock_no)
-            self.num_times_sampled = 0.0
-            self.sampled_rock_yet = True
-
-    def get_all_actions(self):
-        all_actions = []
-        for code in range(0, 5 + self.n_rocks):
-            all_actions.append(RockAction(code))
-        return all_actions
-
-    def create_action_pool(self):
-        return DiscreteActionPool(self)
-
-    def create_root_historical_data(self, solver):
-        self.create_new_rock_data()
-        return PositionAndRockData(self, self.start_position.copy(), self.all_rock_data, solver)
-
-    def create_new_rock_data(self):
-        self.all_rock_data = []
-        for i in range(0, self.n_rocks):
-            self.all_rock_data.append(RockData())

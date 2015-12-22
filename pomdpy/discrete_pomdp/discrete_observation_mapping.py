@@ -11,9 +11,9 @@ class DiscreteObservationMap(ObservationMapping):
     * to its associated entry in the mapping
     * The dictionary returns None if an observation is not yet stored in the dictionary
     """
-    def __init__(self, action_node, solver):
+    def __init__(self, action_node, agent):
         super(DiscreteObservationMap, self).__init__(action_node)
-        self.solver = solver
+        self.agent = agent
         self.child_map = {}
         self.total_visit_count = 0
 
@@ -28,7 +28,7 @@ class DiscreteObservationMap(ObservationMapping):
         entry = DiscreteObservationMapEntry()
         entry.map = self
         entry.observation = disc_observation
-        entry.child_node = BeliefNode(self.solver, None, entry)
+        entry.child_node = BeliefNode(self.agent, None, entry)
         self.child_map.__setitem__(entry.observation, entry)
         return entry.child_node
 

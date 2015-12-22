@@ -30,7 +30,7 @@ class Model(object):
         self.sys_cfg = json.load(open(config_parser.sys_cfg, "r"))
 
     @abc.abstractmethod
-    def reset_for_sim(self):
+    def reset_for_simulation(self):
         """
         The Simulator (Model) should be reset before each simulation
         :return:
@@ -79,9 +79,21 @@ class Model(object):
         """
 
     @abc.abstractmethod
+    def get_all_states(self):
+        """
+        :return: list of enumerated states (discrete) or range of states (continuous)
+        """
+
+    @abc.abstractmethod
     def get_all_actions(self):
         """
-        :return: list of Concrete Discrete/Continuous Actions
+        :return: list of enumerated actions (discrete) or range of actions (continuous)
+        """
+
+    @abc.abstractmethod
+    def get_all_observations(self):
+        """
+        :return: list of enumerated observations (discrete) or range of observations (continuous)
         """
 
     @abc.abstractmethod

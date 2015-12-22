@@ -47,8 +47,11 @@ class TigerState(DiscreteState):
     def hash(self):
         pass
 
-    ''' Concatenate both lists '''
     def as_list(self):
+        """
+        Concatenate both lists
+        :return:
+        """
         return self.door_open + self.door_prizes
 
     def to_string(self):

@@ -13,8 +13,8 @@ class DiscreteObservationPool(ObservationPool):
     a simple factory for instances of DiscreteObservationMap.
     """
 
-    def __init__(self, solver):
-        self.solver = solver
+    def __init__(self, agent):
+        self.agent = agent
 
     def create_observation_mapping(self, action_node):
-        return DiscreteObservationMap(action_node, self.solver)
+        return DiscreteObservationMap(action_node, self.agent)

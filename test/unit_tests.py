@@ -25,9 +25,9 @@ class TestPOMDPy(unittest.TestCase):
         Testing Greedy Search (Choosing action with the highest Q value)
         :return:
         """
-        maximal = random.choice(self.solver.policy.root.action_map.bin_sequence)
-        self.solver.policy.root.action_map.entries.get(maximal).update_q_value(1.0, 1)
-        assert ucb_action(self.solver, self.solver.policy.root, True).bin_number is maximal
+        maximal = random.choice(self.solver.belief_tree.root.action_map.bin_sequence)
+        self.solver.belief_tree.root.action_map.entries.get(maximal).update_q_value(1.0, 1)
+        assert ucb_action(self.solver, self.solver.belief_tree.root, True).bin_number is maximal
 
     def test_ucb_search(self):
         """
@@ -35,14 +35,14 @@ class TestPOMDPy(unittest.TestCase):
         :return:
         """
         # With equal Q values, action with the lowest count is selected by the UCB algorithm
-        lowest_count_action = random.choice(self.solver.policy.root.action_map.bin_sequence)
-        for i in self.solver.policy.root.action_map.bin_sequence:
+        lowest_count_action = random.choice(self.solver.belief_tree.root.action_map.bin_sequence)
+        for i in self.solver.belief_tree.root.action_map.bin_sequence:
             if i == lowest_count_action:
-                self.solver.policy.root.action_map.entries.get(i).update_visit_count(90)
+                self.solver.belief_tree.root.action_map.entries.get(i).update_visit_count(90)
             else:
-                self.solver.policy.root.action_map.entries.get(i).update_visit_count(100 + i)
-            self.solver.policy.root.action_map.entries.get(i).mean_q_value = 0.0
-        assert ucb_action(self.solver, self.solver.policy.root, False).bin_number is lowest_count_action
+                self.solver.belief_tree.root.action_map.entries.get(i).update_visit_count(100 + i)
+            self.solver.belief_tree.root.action_map.entries.get(i).mean_q_value = 0.0
+        assert ucb_action(self.solver, self.solver.belief_tree.root, False).bin_number is lowest_count_action
 
     def test_rollout_strategy(self):
         """
@@ -50,7 +50,7 @@ class TestPOMDPy(unittest.TestCase):
         :return:
         """
         model.reset_for_run()
-        self.solver.rollout_search()
+        self.solver.rollout_search(self.solver.belief_tree.root)
 
 
 if __name__ == '__main__':

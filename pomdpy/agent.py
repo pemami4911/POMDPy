@@ -25,6 +25,39 @@ class Results(object):
         Results.discounted_return.running_total = 0.0
         Results.undiscounted_return.running_total = 0.0
 
+    @staticmethod
+    def show():
+        print_divider("large")
+        print "\tRUN RESULTS"
+        print_divider("large")
+        console(2, module, "Discounted Return statistics")
+        print_divider("medium")
+        Results.discounted_return.show()
+        print_divider("medium")
+        console(2, module, "Un-discounted Return statistics")
+        print_divider("medium")
+        Results.undiscounted_return.show()
+        print_divider("medium")
+        console(2, module, "Time")
+        print_divider("medium")
+        Results.time.show()
+        print_divider("medium")
+
+
+def display_step_result(step_num, step_result):
+    """
+    Pretty prints step result information
+    :param step_num:
+    :param step_result:
+    :return:
+    """
+    print_divider("large")
+    console(2, module, "Step Number = " + str(step_num))
+    console(2, module, "Step Result.Action = " + step_result.action.to_string())
+    console(2, module, "Step Result.Observation = " + step_result.observation.to_string())
+    console(2, module, "Step Result.Next_State = " + step_result.next_state.to_string())
+    console(2, module, "Step Result.Reward = " + str(step_result.reward))
+
 
 class Agent(object):
     """
@@ -48,7 +81,10 @@ class Agent(object):
         self.solver_factory = solver.reset  # Factory method for generating instances of the solver
 
     def discounted_return(self):
-
+        """
+        Encapsulates logging and begins the runs
+        :return:
+        """
         console(2, module, "Main runs")
 
         self.logger.info("Simulations\tRuns\tUndiscounted Return\tUndiscounted Error\t" +
@@ -95,18 +131,20 @@ class Agent(object):
         # Reset the running total for each statistic for this run
         self.results.reset_running_totals()
 
-        # Monte-Carlo start state
-        state = self.model.sample_an_init_state()
-
-        console(2, module, "Initial search state: " + state.to_string())
-
         # Create a new solver
         solver = self.solver_factory(self, self.model)
 
         # Perform sim behaviors that must done for each run
         self.model.reset_for_run()
 
-        console(2, module, "num of particles generated = " + str(solver.policy.root.state_particles.__len__()))
+        console(2, module, "num of particles generated = " + str(solver.belief_tree.root.state_particles.__len__()))
+
+        if solver.on_policy:
+            solver.policy_iteration()
+
+        # Monte-Carlo start state
+        state = self.model.sample_an_init_state()
+        console(2, module, "Initial search state: " + state.to_string())
 
         for i in range(num_steps):
             start_time = time.time()
@@ -123,12 +161,8 @@ class Agent(object):
             discount *= self.model.sys_cfg["discount"]
             state = step_result.next_state
 
-            print_divider("large")
-            console(2, module, "Step Number = " + str(i))
-            console(2, module, "Step Result.Action = " + step_result.action.to_string())
-            console(2, module, "Step Result.Observation = " + step_result.observation.to_string())
-            console(2, module, "Step Result.Next_State = " + step_result.next_state.to_string())
-            console(2, module, "Step Result.Reward = " + str(step_result.reward))
+            # show the step result
+            display_step_result(i, step_result)
 
             if not step_result.is_terminal:
                 solver.update(step_result)
@@ -150,23 +184,9 @@ class Agent(object):
         self.results.discounted_return.add(self.results.discounted_return.running_total)
         self.results.undiscounted_return.add(self.results.undiscounted_return.running_total)
 
-        # Pretty Print
+        # Pretty Print results
         print_divider("large")
         solver.history.show()
-        print_divider("large")
-        print "\tRUN RESULTS"
-        print_divider("large")
-        console(2, module, "Discounted Return statistics")
-        print_divider("medium")
-        self.results.discounted_return.show()
-        print_divider("medium")
-        console(2, module, "Un-discounted Return statistics")
-        print_divider("medium")
-        self.results.undiscounted_return.show()
-        print_divider("medium")
-        console(2, module, "Time")
-        print_divider("medium")
-        self.results.time.show()
-        print_divider("medium")
+        self.results.show()
         console(2, module, "Max possible total Un-discounted Return: " + str(self.model.get_max_undiscounted_return()))
         print_divider("medium")

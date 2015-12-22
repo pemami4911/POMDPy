@@ -15,7 +15,7 @@ class DiscreteActionPool(ActionPool):
         """
         :param model:
         """
-        self.all_actions = model.get_all_actions()
+        self.all_actions = model.get_all_actions()[0]
 
     def create_action_mapping(self, belief_node):
         return DiscreteActionMapping(belief_node, self, self.create_bin_sequence(belief_node))
@@ -26,7 +26,8 @@ class DiscreteActionPool(ActionPool):
     def sample_random_action(self):
         return np.random.choice(self.all_actions)
 
-    def create_bin_sequence(self, belief_node):
+    @staticmethod
+    def create_bin_sequence(belief_node):
         """
         Default behavior is to make available only the legal actions for each action node
         :param belief_node:
