@@ -1,5 +1,3 @@
-__author__ = 'patrickemami'
-
 import logging
 import json
 import numpy as np
@@ -12,6 +10,7 @@ from pomdpy.discrete_pomdp import DiscreteActionPool, DiscreteObservationPool
 from pomdpy.pomdp import Model, StepResult
 from rock_position_history import RockData, PositionAndRockData
 
+__author__ = 'patrickemami'
 module = "RockModel"
 
 
@@ -286,7 +285,7 @@ class RockModel(Model):
         all_actions = []
         for code in range(0, 5 + self.n_rocks):
             all_actions.append(RockAction(code))
-        return all_actions, all_actions.__len__()
+        return all_actions
 
     def create_action_pool(self):
         return DiscreteActionPool(self)

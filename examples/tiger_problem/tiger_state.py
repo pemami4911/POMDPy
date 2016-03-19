@@ -1,6 +1,5 @@
-__author__ = 'patrickemami'
-
 from pomdpy.discrete_pomdp import DiscreteState
+__author__ = 'patrickemami'
 
 
 class TigerState(DiscreteState):
