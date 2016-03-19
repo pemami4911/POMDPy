@@ -20,7 +20,7 @@
 
     <section class="main-content">
       <h2>
-<a id="pomdpy" class="anchor" href="#pomdpy" aria-hidden="true"><span class="octicon octicon-link"></span></a>POMDPy</h2>
+<a id="pomdpy" class="anchor" href="#pomdpy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POMDPy</h2>
 
 <p><img src="https://travis-ci.org/pemami4911/POMDPy.svg?branch=master" alt="Build"></p>
 
@@ -33,7 +33,7 @@
 <p>This is project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments or suggestions, feel free to send me a pull request or send me an email at <a href="mailto:pemami@ufl.edu">pemami@ufl.edu</a>.  </p>
 
 <h2>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
 
 <p>Download the files as a zip or clone into the repository.
 From the root directory of the project, run</p>
@@ -42,7 +42,7 @@ From the root directory of the project, run</p>
 </code></pre>
 
 <h2>
-<a id="running-a-sample" class="anchor" href="#running-a-sample" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running a sample</h2>
+<a id="running-a-sample" class="anchor" href="#running-a-sample" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running a sample</h2>
 
 <p>You can optionally tweak the system and RockSample configuration files <code>system-config.json</code> and <code>rock_problem-config.json</code>, which are located in <code>pompdy/config</code>.
 The following maps are available:</p>
@@ -51,22 +51,30 @@ The following maps are available:</p>
 <li>RockSample(7, 8), a 7 x 7 grid with 8 rocks.</li>
 <li>RockSample(11, 11), an 11 x 11 grid with 11 rocks</li>
 <li>RockSample(15, 15), a 15 x 15 grid with 15 rocks</li>
+<li>As well as some others, such as (7, 2), (7, 3), (12, 12), and more. It is easy to make new maps</li>
 </ul>
 
-<p>To run the RockSample problem:</p>
+<p>To run the RockSample problem with MCTS:</p>
 
-<pre><code>python run_pomdp.py 1
+<pre><code>python run_pomdp.py 1 1
 </code></pre>
 
-<p>To run the Tiger sample problem: </p>
+<p>To run the RockSample problem with SARSA:</p>
 
-<pre><code>python run_pomdp.py 2
+<pre><code>python run_pomdp.py 1 2
 </code></pre>
+
+<p>To run the Tiger sample problem with MCTS: </p>
+
+<pre><code>python run_pomdp.py 2 1
+</code></pre>
+
+<p>Support for the Tiger sample problem with SARSA is not done yet- feel free to submit a pull request! </p>
 
 <p>See <code>pompdy/README.md</code> for more implementation details.</p>
 
 <h2>
-<a id="running-tests" class="anchor" href="#running-tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running tests</h2>
+<a id="running-tests" class="anchor" href="#running-tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running tests</h2>
 
 <p>Unit tests can be ran with </p>
 
@@ -74,7 +82,7 @@ The following maps are available:</p>
 </code></pre>
 
 <h2>
-<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dependencies</h2>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependencies</h2>
 
 <p>This project uses:</p>
 
@@ -92,12 +100,11 @@ The following maps are available:</p>
 </ul>
 
 <h2>
-<a id="todo" class="anchor" href="#todo" aria-hidden="true"><span class="octicon octicon-link"></span></a>TODO</h2>
+<a id="todo" class="anchor" href="#todo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>TODO</h2>
 
 <ul>
 <li>[ ] Add more unit tests</li>
 <li>[ ] Add additional benchmark problems </li>
-<li>[ ] Add GPU support (MCTS-GPU)</li>
 <li>[ ] Supply an easy-to-use configuration schema to specify a POMDP and auto-generate the classes</li>
 <li>[ ] Add ways of creating/learning generative models</li>
 <li>[x] Clean up output displayed to the user</li>
