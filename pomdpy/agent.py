@@ -92,13 +92,13 @@ class Agent(object):
 
         self.multi_run()
 
-        console(2, module, "Simulations = " + self.model.sys_cfg["num_sims"])
-        console(2, module, "Runs = " + self.results.time.count)
-        console(2, module, "Undiscounted Return = " + self.results.undiscounted_return.mean + " +- " +
-                self.results.undiscounted_return.std_err())
-        console(2, module, "Discounted Return = " + self.results.discounted_return.mean +
-                " +- " + self.results.discounted_return.std_err())
-        console(2, module, "Time = " + self.results.time.mean)
+        console(2, module, "Simulations = " + str(self.model.sys_cfg["num_sims"]))
+        console(2, module, "Runs = " + str(self.results.time.count))
+        console(2, module, "Undiscounted Return = " + str(self.results.undiscounted_return.mean) + " +- " +
+                str(self.results.undiscounted_return.std_err()))
+        console(2, module, "Discounted Return = " + str(self.results.discounted_return.mean) +
+                " +- " + str(self.results.discounted_return.std_err()))
+        console(2, module, "Time = " + str(self.results.time.mean))
 
         self.logger.info(str(self.model.sys_cfg["num_sims"]) + '\t' + str(self.results.time.count) + '\t' +
                          '\t' + str(self.results.undiscounted_return.mean) + '\t' +

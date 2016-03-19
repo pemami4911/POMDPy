@@ -1,9 +1,7 @@
-__author__ = 'patrickemami'
-
 import numpy as np
-
 from pomdpy.pomdp import HistoricalData
 from tiger_action import ActionType
+__author__ = 'patrickemami'
 
 
 class TigerData(HistoricalData):

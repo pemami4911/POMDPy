@@ -138,17 +138,18 @@ class Solver(object):
             action_mapping_entry = belief_node.action_map.get_entry(step_result.action.bin_number)
             q_value = action_mapping_entry.mean_q_value
 
-            q_value = q_value + (step_result.reward + self.model.sys_cfg[
-                "discount"] * delayed_reward - q_value) * self.step_size
+            q_value += (step_result.reward + self.model.sys_cfg["discount"] * delayed_reward - q_value) * self.step_size
 
             action_mapping_entry.update_visit_count(1)
             action_mapping_entry.update_q_value(q_value)
 
-    def rollout(self, start_state, starting_legal_actions):
+    def rollout(self, start_state, legal_actions):
         """
         Iterative random rollout search to finish expanding the episode starting at "start_state"
         """
-        legal_actions = list(starting_legal_actions)
+        if not isinstance(legal_actions, list):
+            legal_actions = list(legal_actions)
+
         state = start_state.copy()
         is_terminal = False
         total_reward = 0.0

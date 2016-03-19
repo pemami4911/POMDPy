@@ -1,13 +1,12 @@
-__author__ = 'patrickemami'
-
 import numpy as np
-
 from pomdpy.pomdp import model
 from tiger_action import *
 from tiger_state import TigerState
 from tiger_observation import TigerObservation
 from tiger_data import TigerData
 from pomdpy.discrete_pomdp import DiscreteActionPool
+from pomdpy.discrete_pomdp import DiscreteObservationPool
+__author__ = 'patrickemami'
 
 
 class TigerModel(model.Model):
@@ -33,6 +32,9 @@ class TigerModel(model.Model):
     def sample_an_init_state(self):
         return self.sample_state_uninformed()
 
+    def create_observation_pool(self, solver):
+        return DiscreteObservationPool(solver)
+
     # TODO test
     def sample_state_uninformed(self):
         random_configuration = [0, 1]
@@ -53,7 +55,7 @@ class TigerModel(model.Model):
         :return:
         """
         return [TigerAction(ActionType.LISTEN), TigerAction(ActionType.OPEN_DOOR_1),
-                TigerAction(ActionType.OPEN_DOOR_2)], 3
+                TigerAction(ActionType.OPEN_DOOR_2)]
 
     def get_all_observations(self):
         """
@@ -92,7 +94,10 @@ class TigerModel(model.Model):
 
     def generate_step(self, state, action):
         if action is None:
+            print "ERROR: Tried to generate a step with a null action"
             return None
+        elif type(action) is int:
+            action = TigerAction(action)
 
         result = model.StepResult()
         result.next_state, is_legal = self.make_next_state(state, action)
@@ -104,6 +109,9 @@ class TigerModel(model.Model):
         return result, is_legal
 
     def make_next_state(self, state, action):
+        if isinstance(action, list):
+            return None, False
+
         if action.bin_number == ActionType.LISTEN:
             return state, True
 
@@ -127,7 +135,7 @@ class TigerModel(model.Model):
         if self.is_terminal(next_state):
             assert action.bin_number > 0
             if action.bin_number - self.num_doors + 1 == self.tiger_door:
-                ''' You chose the door with the tiger :( '''
+                ''' You chose the door with the tiger '''
                 return -20
             else:
                 ''' You chose the door with the reward! '''

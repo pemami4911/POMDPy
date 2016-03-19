@@ -1,10 +1,8 @@
-__author__ = 'patrickemami'
-
 import abc
 import json
 import random
-
 from pomdpy.util import config_parser
+__author__ = 'patrickemami'
 
 
 class Model(object):

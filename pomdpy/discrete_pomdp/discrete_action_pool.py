@@ -1,8 +1,7 @@
-__author__ = 'Patrick'
-
 from pomdpy.pomdp import ActionPool
 from pomdpy.discrete_pomdp import DiscreteActionMapping
 import numpy as np
+__author__ = 'Patrick'
 
 
 class DiscreteActionPool(ActionPool):
@@ -15,7 +14,7 @@ class DiscreteActionPool(ActionPool):
         """
         :param model:
         """
-        self.all_actions = model.get_all_actions()[0]
+        self.all_actions = model.get_all_actions()
 
     def create_action_mapping(self, belief_node):
         return DiscreteActionMapping(belief_node, self, self.create_bin_sequence(belief_node))

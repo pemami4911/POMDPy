@@ -1,6 +1,5 @@
-__author__ = 'patrickemami'
-
 from pomdpy.discrete_pomdp import DiscreteAction
+__author__ = 'patrickemami'
 
 
 class ActionType(object):

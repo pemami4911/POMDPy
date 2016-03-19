@@ -1,9 +1,8 @@
-__author__ = 'patrickemami'
-
 import random
 import json
 import numpy as np
 from pomdpy.util import config_parser
+__author__ = 'patrickemami'
 
 config = json.load(open(config_parser.sys_cfg, "r"))
 
