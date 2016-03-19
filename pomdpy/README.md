@@ -18,6 +18,7 @@ Support for POMDPs with continuous state/action/observation spaces is on the way
 ## Solvers ##
 
 * [POMCP](http://papers.nips.cc/paper/4031-monte-carlo-planning-in-large-pomdps.pdf): Monte-Carlo Tree Search with the UCB1 algorithm for efficient exploration of the belief space 
+* [SARSA](https://webdocs.cs.ualberta.ca/~sutton/book/ebook/node64.html)
 
 ### Coming soon ###
 
