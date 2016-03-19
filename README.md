@@ -53,7 +53,7 @@ This project uses:
 * numpy 1.9.2
 * pytest 2.7.0
 
-Optional, for extended functionality:
+Used for plotting results [NOT CURRENTLY FUNCTIONAL]:
 
 * matplotlib 1.4.3
 
