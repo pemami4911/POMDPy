@@ -34,7 +34,7 @@ To run the RockSample problem with SARSA:
     
 To run the Tiger sample problem with MCTS: 
 
-    python run_pomdp.py 2
+    python run_pomdp.py 2 1
     
 Support for the Tiger sample problem with SARSA is not done yet- feel free to submit a pull request! 
     
