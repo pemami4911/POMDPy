@@ -56,7 +56,6 @@ This project uses:
 Optional, for extended functionality:
 
 * matplotlib 1.4.3
-* pygame 1.9.1 
 
 ## TODO ##
 * [ ] Add more unit tests
