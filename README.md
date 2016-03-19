@@ -21,14 +21,22 @@ The following maps are available:
 * RockSample(7, 8), a 7 x 7 grid with 8 rocks.
 * RockSample(11, 11), an 11 x 11 grid with 11 rocks
 * RockSample(15, 15), a 15 x 15 grid with 15 rocks
+* As well as some others, such as (7, 2), (7, 3), (12, 12), and more. It is easy to make new maps
 
-To run the RockSample problem:
+To run the RockSample problem with MCTS:
 
-    python run_pomdp.py 1
+    python run_pomdp.py 1 1
     
-To run the Tiger sample problem: 
+To run the RockSample problem with SARSA:
+
+    python run_pomdp.py 1 2
+
+    
+To run the Tiger sample problem with MCTS: 
 
     python run_pomdp.py 2
+    
+Support for the Tiger sample problem with SARSA is not done yet- feel free to submit a pull request! 
     
 See `pompdy/README.md` for more implementation details.
 
