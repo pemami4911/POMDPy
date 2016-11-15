@@ -1,62 +1,10 @@
-__author__ = 'patrickemami'
-
 import time
 import logging
 from pomdpy.pomdp import Statistic
-from pomdpy.pomdp.history import Histories
+from pomdpy.pomdp.history import Histories, HistoryEntry
 from pomdpy.util import console, print_divider
 
 module = "agent"
-
-
-class Results(object):
-    """
-    Maintain the statistics for each run
-    """
-    time = Statistic("Total time")
-    reward = Statistic("Total reward")
-    discounted_return = Statistic("Discounted Reward")
-    undiscounted_return = Statistic("Undiscounted Reward")
-
-    @staticmethod
-    def reset_running_totals():
-        Results.time.running_total = 0.0
-        Results.reward.running_total = 0.0
-        Results.discounted_return.running_total = 0.0
-        Results.undiscounted_return.running_total = 0.0
-
-    @staticmethod
-    def show():
-        print_divider("large")
-        print "\tRUN RESULTS"
-        print_divider("large")
-        console(2, module, "Discounted Return statistics")
-        print_divider("medium")
-        Results.discounted_return.show()
-        print_divider("medium")
-        console(2, module, "Un-discounted Return statistics")
-        print_divider("medium")
-        Results.undiscounted_return.show()
-        print_divider("medium")
-        console(2, module, "Time")
-        print_divider("medium")
-        Results.time.show()
-        print_divider("medium")
-
-
-def display_step_result(step_num, step_result):
-    """
-    Pretty prints step result information
-    :param step_num:
-    :param step_result:
-    :return:
-    """
-    print_divider("large")
-    console(2, module, "Step Number = " + str(step_num))
-    console(2, module, "Step Result.Action = " + step_result.action.to_string())
-    console(2, module, "Step Result.Observation = " + step_result.observation.to_string())
-    console(2, module, "Step Result.Next_State = " + step_result.next_state.to_string())
-    console(2, module, "Step Result.Reward = " + str(step_result.reward))
 
 
 class Agent(object):
@@ -65,7 +13,7 @@ class Agent(object):
     and storing statistics on that run
     """
 
-    def __init__(self, model, solver):
+    def __init__(self, model, solver, use_sims):
         """
         Initialize the POMDPY agent
         :param model:
@@ -74,7 +22,9 @@ class Agent(object):
         """
         self.logger = logging.getLogger('POMDPy.Solver')
         self.model = model
-        self.results = Results()
+        self.use_sims = use_sims
+        self.run_results = Results()
+        self.experiment_results = Results()
         self.histories = Histories()
         self.action_pool = self.model.create_action_pool()
         self.observation_pool = self.model.create_observation_pool(self)
@@ -82,111 +32,244 @@ class Agent(object):
 
     def discounted_return(self):
         """
-        Encapsulates logging and begins the runs
+        logging and runs
         :return:
         """
-        console(2, module, "Main runs")
-
-        self.logger.info("Simulations\tRuns\tUndiscounted Return\tUndiscounted Error\t" +
-                         "\tDiscounted Return\tDiscounted Error\tTime")
-
         self.multi_run()
 
-        console(2, module, "Simulations = " + str(self.model.sys_cfg["num_sims"]))
-        console(2, module, "Runs = " + str(self.results.time.count))
-        console(2, module, "Undiscounted Return = " + str(self.results.undiscounted_return.mean) + " +- " +
-                str(self.results.undiscounted_return.std_err()))
-        console(2, module, "Discounted Return = " + str(self.results.discounted_return.mean) +
-                " +- " + str(self.results.discounted_return.std_err()))
-        console(2, module, "Time = " + str(self.results.time.mean))
+        console(2, module, 'runs: ' + str(self.model.sys_cfg['num_runs']))
+        console(2, module, 'ave undiscounted return: ' + str(self.experiment_results.undiscounted_return.mean) +
+                ' +- ' + str(self.experiment_results.undiscounted_return.std_err()))
+        console(2, module, 'ave discounted return: ' + str(self.experiment_results.discounted_return.mean) +
+                ' +- ' + str(self.experiment_results.discounted_return.std_err()))
+        console(2, module, 'ave time/run: ' + str(self.experiment_results.time.mean))
 
-        self.logger.info(str(self.model.sys_cfg["num_sims"]) + '\t' + str(self.results.time.count) + '\t' +
-                         '\t' + str(self.results.undiscounted_return.mean) + '\t' +
-                         str(self.results.undiscounted_return.std_err()) + '\t' +
-                         '\t' + str(self.results.discounted_return.mean) + '\t' +
-                         str(self.results.discounted_return.std_err()) + '\t' +
-                         '\t' + str(self.results.time.mean))
+        self.logger.info('env: ' + self.model.problem_name + '\t' +
+                         'runs: ' + str(self.model.sys_cfg['num_runs']) + '\t' +
+                         'ave undiscounted return: ' + str(self.experiment_results.undiscounted_return.mean) + ' +- ' +
+                         str(self.experiment_results.undiscounted_return.std_err()) + '\t' +
+                         'ave discounted return: ' + str(self.experiment_results.discounted_return.mean) +
+                         ' +- ' + str(self.experiment_results.discounted_return.std_err()) +
+                         '\t' + 'ave time/run: ' + str(self.experiment_results.time.mean))
 
     def multi_run(self):
-        num_runs = self.model.sys_cfg["num_runs"]
+        num_runs = self.model.sys_cfg['num_runs']
+
+        eps = self.model.sys_cfg['epsilon_start']
+        solver = self.solver_factory(self, self.model)
 
         for i in range(num_runs):
+            # Reset the run stats
+            self.run_results = Results()
 
-            console(2, module, "Starting run " +
-                    str(i + 1) + " with " + str(self.model.sys_cfg["num_sims"]) + " simulations")
+            # Perform behaviors that must done for each run
+            self.model.reset_for_run()
 
-            self.run()
-            total_time = self.results.time.mean * self.results.time.count
+            if self.use_sims:
+                eps = self.run_sims(i, eps)
+            else:
+                eps = self.run_episodic(solver, i + 1, eps)
 
-            if total_time > self.model.sys_cfg["max_time_out"]:
-                console(2, module, "Timed out after " + str(i) + " runs in " + total_time + " seconds")
+            if self.experiment_results.time.running_total > self.model.sys_cfg['max_time_out']:
+                console(2, module, 'Timed out after ' + str(i) + ' runs in ' +
+                        self.experiment_results.time.running_total + ' seconds')
+                break
 
-    def run(self, num_steps=None):
+    def run_sims(self, run_num, eps):
         run_start_time = time.time()
-        discount = 1.0
-
-        if num_steps is None:
-            num_steps = self.model.sys_cfg["num_steps"]
-
-        # Reset the running total for each statistic for this run
-        self.results.reset_running_totals()
+        max_steps = self.model.sys_cfg['max_steps']
 
         # Create a new solver
         solver = self.solver_factory(self, self.model)
 
-        # Perform sim behaviors that must done for each run
-        self.model.reset_for_run()
-
-        console(2, module, "num of particles generated = " + str(solver.belief_tree.root.state_particles.__len__()))
-
-        if solver.on_policy:
-            solver.policy_iteration()
-
         # Monte-Carlo start state
-        state = self.model.sample_an_init_state()
-        console(2, module, "Initial search state: " + state.to_string())
+        state = solver.belief_tree_index.sample_particle()
+        console(2, module, 'Initial belief state: ' + state.to_string())
 
-        for i in range(num_steps):
+        reward = 0
+        discounted_reward = 0
+        discount = 1.0
+
+        for i in xrange(max_steps):
+
+            # update epsilon
+            if (run_num % self.model.sys_cfg['epsilon_update_frequency']) == 0:
+                if eps > self.model.sys_cfg['epsilon_end']:
+                    eps -= self.model.sys_cfg['epsilon_delta']
+
             start_time = time.time()
 
             # action will be of type Discrete Action
-            action = solver.select_action()
+            action = solver.select_action(eps, start_time)
 
             step_result, is_legal = self.model.generate_step(state, action)
 
-            self.results.reward.add(step_result.reward)
-            self.results.undiscounted_return.running_total += step_result.reward
-            self.results.discounted_return.running_total += (step_result.reward * discount)
+            reward += step_result.reward
+            discounted_reward += discount * step_result.reward
 
-            discount *= self.model.sys_cfg["discount"]
+            discount *= self.model.sys_cfg['discount']
             state = step_result.next_state
 
             # show the step result
-            display_step_result(i, step_result)
+            self.display_step_result(i, step_result)
 
             if not step_result.is_terminal:
                 solver.update(step_result)
 
             # Extend the history sequence
             new_hist_entry = solver.history.add_entry()
-            new_hist_entry.reward = step_result.reward
-            new_hist_entry.action = step_result.action
-            new_hist_entry.observation = step_result.observation
-            new_hist_entry.register_entry(new_hist_entry, None, step_result.next_state)
+            HistoryEntry.update_history_entry(new_hist_entry, step_result.reward,
+                                              step_result.action, step_result.observation, step_result.next_state)
 
             if step_result.is_terminal:
-                console(2, module, "Terminated after episode step " + str(i))
+                console(3, module, 'Terminated after episode step ' + str(i + 1))
                 break
 
-            console(2, module, "MCTS step forward took " + str(time.time() - start_time) + " seconds")
-
-        self.results.time.add(time.time() - run_start_time)
-        self.results.discounted_return.add(self.results.discounted_return.running_total)
-        self.results.undiscounted_return.add(self.results.undiscounted_return.running_total)
+        self.run_results.time.add(time.time() - run_start_time)
+        self.run_results.update_reward_results(reward, discounted_reward)
 
         # Pretty Print results
-        print_divider("large")
+        # print_divider('large')
         solver.history.show()
-        self.results.show()
-        console(2, module, "Max possible total Un-discounted Return: " + str(self.model.get_max_undiscounted_return()))
-        print_divider("medium")
+        self.run_results.show(run_num)
+        console(3, module, 'Total possible undiscounted return: ' + str(self.model.get_max_undiscounted_return()))
+        print_divider('medium')
+
+        self.experiment_results.time.add(self.run_results.time.running_total)
+        self.experiment_results.undiscounted_return.count += (self.run_results.undiscounted_return.count - 1)
+        self.experiment_results.undiscounted_return.add(self.run_results.undiscounted_return.running_total)
+        self.experiment_results.discounted_return.count += (self.run_results.discounted_return.count - 1)
+        self.experiment_results.discounted_return.add(self.run_results.discounted_return.running_total)
+
+        return eps
+
+    def run_episodic(self, solver, run_num, eps):
+        """
+        Play 1 episode
+        :param solver:
+        :param run_num:
+        :param eps:
+        :return:
+        """
+        run_start_time = time.time()
+
+        max_steps = self.model.sys_cfg['max_steps']
+
+        # simulate one episode
+        solver.simulate(solver.belief_tree_index.sample_particle(), eps, run_start_time)
+
+        # update epsilon
+        if (run_num % self.model.sys_cfg['epsilon_update_frequency']) == 0:
+            if eps > self.model.sys_cfg['epsilon_end']:
+                eps -= self.model.sys_cfg['epsilon_delta']
+
+        if (run_num % self.model.sys_cfg['test_frequency']) == 0:
+            state = solver.belief_tree_index.sample_particle()
+            # console(2, module, 'Initial belief state: ' + state.to_string())
+            discount = 1.0
+            # save the pointer to the root to reset
+            root = solver.belief_tree_index.copy()
+            # Reset the history
+            solver.history = solver.agent.histories.create_sequence()
+
+            reward = 0
+            discounted_reward = 0
+
+            for i in xrange(max_steps):
+
+                start_time = time.time()
+
+                # action will be of type Discrete Action
+                action = solver.select_action(eps, start_time)
+
+                step_result, is_legal = self.model.generate_step(state, action)
+
+                reward += step_result.reward
+                discounted_reward += discount * step_result.reward
+
+                discount *= self.model.sys_cfg['discount']
+                state = step_result.next_state
+
+                # show the step result
+                self.display_step_result(i, step_result)
+
+                if not step_result.is_terminal:
+                    solver.update(step_result, prune=False)
+
+                # Extend the history sequence
+                new_hist_entry = solver.history.add_entry()
+                HistoryEntry.update_history_entry(new_hist_entry, step_result.reward,
+                                                  step_result.action, step_result.observation, step_result.next_state)
+
+                if step_result.is_terminal:
+                    console(3, module, 'Terminated after episode step ' + str(i + 1))
+                    break
+
+            solver.belief_tree_index = root
+
+            self.run_results.time.add(time.time() - run_start_time)
+            self.run_results.update_reward_results(reward, discounted_reward)
+
+            # Pretty Print results
+            solver.history.show()
+            self.run_results.show(run_num)
+            console(3, module, 'Total possible undiscounted return: ' + str(self.model.get_max_undiscounted_return()))
+            print_divider('medium')
+
+            self.experiment_results.time.add(self.run_results.time.running_total)
+            self.experiment_results.undiscounted_return.count += (self.run_results.undiscounted_return.count - 1)
+            self.experiment_results.undiscounted_return.add(self.run_results.undiscounted_return.running_total)
+            self.experiment_results.discounted_return.count += (self.run_results.discounted_return.count - 1)
+            self.experiment_results.discounted_return.add(self.run_results.discounted_return.running_total)
+
+        return eps
+
+    @staticmethod
+    def display_step_result(step_num, step_result):
+        """
+        Pretty prints step result information
+        :param step_num:
+        :param step_result:
+        :return:
+        """
+        console(3, module, 'Step Number = ' + str(step_num))
+        console(3, module, 'Step Result.Action = ' + step_result.action.to_string())
+        console(3, module, 'Step Result.Observation = ' + step_result.observation.to_string())
+        console(3, module, 'Step Result.Next_State = ' + step_result.next_state.to_string())
+        console(3, module, 'Step Result.Reward = ' + str(step_result.reward))
+
+
+class Results(object):
+    """
+    Maintain the statistics for each run
+    """
+    def __init__(self):
+        self.time = Statistic('Time')
+        self.discounted_return = Statistic('discounted return')
+        self.undiscounted_return = Statistic('undiscounted return')
+
+    def update_reward_results(self, r, dr):
+        self.undiscounted_return.add(r)
+        self.discounted_return.add(dr)
+
+    def reset_running_totals(self):
+        self.time.running_total = 0.0
+        self.discounted_return.running_total = 0.0
+        self.undiscounted_return.running_total = 0.0
+
+    def show(self, run_id):
+        print_divider('large')
+        print '\tRUN #' + str(run_id) + ' RESULTS'
+        print_divider('large')
+        console(2, module, 'discounted return statistics')
+        print_divider('medium')
+        self.discounted_return.show()
+        print_divider('medium')
+        console(2, module, 'undiscounted return statistics')
+        print_divider('medium')
+        self.undiscounted_return.show()
+        print_divider('medium')
+        console(2, module, 'Time')
+        print_divider('medium')
+        self.time.show()
+        print_divider('medium')

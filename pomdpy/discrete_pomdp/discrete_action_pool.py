@@ -1,7 +1,6 @@
 from pomdpy.pomdp import ActionPool
 from pomdpy.discrete_pomdp import DiscreteActionMapping
 import numpy as np
-__author__ = 'Patrick'
 
 
 class DiscreteActionPool(ActionPool):

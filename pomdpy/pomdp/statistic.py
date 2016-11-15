@@ -1,5 +1,3 @@
-__author__ = 'patrickemami'
-
 import numpy as np
 
 
@@ -17,6 +15,7 @@ class Statistic(object):
         self.running_total = 0.0
 
     def add(self, val):
+        self.running_total += val
         mean_old = self.mean
         count_old = self.count
 

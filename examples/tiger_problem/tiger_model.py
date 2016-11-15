@@ -6,7 +6,6 @@ from tiger_observation import TigerObservation
 from tiger_data import TigerData
 from pomdpy.discrete_pomdp import DiscreteActionPool
 from pomdpy.discrete_pomdp import DiscreteObservationPool
-__author__ = 'patrickemami'
 
 
 class TigerModel(model.Model):
@@ -15,11 +14,9 @@ class TigerModel(model.Model):
         self.tiger_door = None
         self.num_doors = num_doors
         self.num_states = num_doors
-        self.set_init()
 
-    def set_init(self):
-        self.tiger_door = np.random.randint(0, self.num_doors)
-        print 'The tiger is behind door ' + str(self.tiger_door + 1)
+    def start_scenario(self):
+        self.tiger_door = np.random.randint(0, self.num_doors) + 1
 
     ''' --------- Abstract Methods --------- '''
 
@@ -71,9 +68,12 @@ class TigerModel(model.Model):
         return True
 
     def reset_for_simulation(self):
+        self.start_scenario()
         pass
 
+    # Reset every "episode"
     def reset_for_run(self):
+        self.start_scenario()
         pass
 
     def update(self, sim_data):
@@ -108,7 +108,8 @@ class TigerModel(model.Model):
 
         return result, is_legal
 
-    def make_next_state(self, state, action):
+    @staticmethod
+    def make_next_state(state, action):
         if isinstance(action, list):
             return None, False
 
@@ -123,7 +124,6 @@ class TigerModel(model.Model):
 
     def make_reward(self, action, next_state):
         """
-        :param state:
         :param action:
         :param next_state:
         :return: reward
@@ -134,22 +134,22 @@ class TigerModel(model.Model):
 
         if self.is_terminal(next_state):
             assert action.bin_number > 0
-            if action.bin_number - self.num_doors + 1 == self.tiger_door:
+            if action.bin_number == self.tiger_door:
                 ''' You chose the door with the tiger '''
                 return -20
             else:
-                ''' You chose the door with the reward! '''
+                ''' You chose the door with the prize! '''
                 return +10
         else:
             print "make_reward - Illegal action was used"
             return 0
 
     def make_observation(self, action, next_state):
-        '''
+        """
         :param action:
         :param next_state:
         :return:
-        '''
+        """
         if action.bin_number > 0:
             '''
             No new information is gained by opening a door
@@ -158,7 +158,7 @@ class TigerModel(model.Model):
             '''
             return TigerObservation(None)
         else:
-            obs = ([0, 1], [1, 0])[self.tiger_door == 0]
+            obs = ([0, 1], [1, 0])[self.tiger_door == 1]
             probability_correct = np.random.uniform(0, 1)
             if probability_correct <= 0.85:
                 next_state.door_prizes = list(obs)
@@ -168,4 +168,3 @@ class TigerModel(model.Model):
                 next_state.door_prizes = list(obs)
                 obs.reverse()
                 return TigerObservation(obs)
-

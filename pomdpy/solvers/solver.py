@@ -1,10 +1,7 @@
-__author__ = 'patrickemami'
-
 import time
 import random
 import abc
 from pomdpy.util import console
-from pomdpy.pomdp import Statistic
 from pomdpy.pomdp.belief_tree import BeliefTree
 
 module = "Solver"
@@ -14,20 +11,20 @@ class Solver(object):
     """
     All POMDP solvers must implement the interface specified below
     Ex. See MCTS (Monte-Carlo Tree Search)
+
+    Provides a belief search tree and supports on- and off-policy methods
     """
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, agent, on_policy=False):
+    def __init__(self, agent):
         self.agent = agent
         self.model = self.agent.model
         # runner owns Histories, the collection of History Sequences.
-        # There is one sequence per run of the MCTS algorithm
+        # There is one sequence per run of the algorithm
         self.history = self.agent.histories.create_sequence()
         # flag for determining whether the solver is an on/off-policy learning algorithm
-        self.on_policy = on_policy
         self.disable_tree = False
-        self.step_size = self.model.sys_cfg["step_size"]
-        self.total_reward_stats = Statistic("Total Reward")
+
         self.belief_tree = BeliefTree(agent)
 
         # Initialize the Belief Tree
@@ -40,52 +37,26 @@ class Solver(object):
             particle = self.model.sample_an_init_state()
             self.belief_tree.root.state_particles.append(particle)
 
-        self.policy_iterator = self.belief_tree.root.copy()
+        self.belief_tree_index = self.belief_tree.root.copy()
 
-    def policy_iteration(self):
+    def monte_carlo_approx(self, eps, start_time):
         """
-        Template-method pattern
+        Approximate Q(b, pi(b)) via monte carlo simulations, where b is the belief node pointed to by
+        the belief tree index, and pi(b) is the action selected by the current behavior policy. For SARSA, this is
+        simply pi(b) where pi is induced by current Q values. For Q-Learning, this is max_a Q(b',a')
 
-        For on-policy learning algorithms such as SARSA, this method will carry out the
-        policy iteration. Afterwards, the learned policy can be evaluated by consecutive calls to
-        select_action(), which specifies the action selection rule
-
-        For off-policy learning algorithms such as Q-learning, this method will repeatedly be called
-        at each step of the policy traversal
-
-        The policy iterator does not advance
-
+        Does not advance the policy index
         :return:
         """
-        start_time = time.time()
-
-        self.total_reward_stats.clear()
-
-        # save the state of the current belief
-        # only passing a reference to the action map
-        current_belief = self.policy_iterator.copy()
-
         for i in range(self.model.sys_cfg["num_sims"]):
             # Reset the Simulator
             self.model.reset_for_simulation()
-
-            state = self.policy_iterator.sample_particle()
-
-            console(3, module, "Starting simulation at random state = " + state.to_string())
-
-            approx_value = self.simulate(state, start_time, i)
-
-            self.total_reward_stats.add(approx_value)
-
-            console(3, module, "Approximation of the value function = " + str(approx_value))
-
-            # reset the policy iterator
-            self.policy_iterator = current_belief
+            self.simulate(self.belief_tree_index.sample_particle(), eps, start_time)
 
     @abc.abstractmethod
-    def simulate(self, state, start_time, sim_num):
+    def simulate(self, belief_state, eps, start_time):
         """
-        Initialize the policy iteration algorithm with implementation specific details
+        Does a monte-carlo simulation from "belief_state" to approximate Q(b, pi(b))
         :return:
         """
 
@@ -98,19 +69,24 @@ class Solver(object):
         """
 
     @abc.abstractmethod
-    def select_action(self):
+    def select_action(self, eps, start_time):
         """
         Call methods specific to the implementation of the solver
         to select an action
         :return:
         """
 
-    @abc.abstractmethod
     def prune(self, belief_node):
         """
-        Override to add implementation-specific prune operations, if desired
+        Prune the siblings of the chosen belief node and
+        set that node as the new "root"
+        :param belief_node: node whose siblings will be removed
         :return:
         """
+        start_time = time.time()
+        self.belief_tree.prune_siblings(belief_node)
+        elapsed = time.time() - start_time
+        console(2, module, "Time spent pruning = " + str(elapsed) + " seconds")
 
     def rollout_search(self, belief_node):
         """
@@ -136,9 +112,11 @@ class Solver(object):
                 delayed_reward = 0
 
             action_mapping_entry = belief_node.action_map.get_entry(step_result.action.bin_number)
+
             q_value = action_mapping_entry.mean_q_value
 
-            q_value += (step_result.reward + self.model.sys_cfg["discount"] * delayed_reward - q_value) * self.step_size
+            # Random policy
+            q_value += (step_result.reward + self.model.sys_cfg["discount"] * delayed_reward - q_value)
 
             action_mapping_entry.update_visit_count(1)
             action_mapping_entry.update_q_value(q_value)
@@ -152,7 +130,7 @@ class Solver(object):
 
         state = start_state.copy()
         is_terminal = False
-        total_reward = 0.0
+        discounted_reward_sum = 0.0
         discount = 1.0
         num_steps = 0
 
@@ -160,7 +138,7 @@ class Solver(object):
             legal_action = random.choice(legal_actions)
             step_result, is_legal = self.model.generate_step(state, legal_action)
             is_terminal = step_result.is_terminal
-            total_reward += step_result.reward * discount
+            discounted_reward_sum += step_result.reward * discount
             discount *= self.model.sys_cfg["discount"]
             # advance to next state
             state = step_result.next_state
@@ -168,14 +146,14 @@ class Solver(object):
             legal_actions = self.model.get_legal_actions(state)
             num_steps += 1
 
-        return total_reward
+        return discounted_reward_sum
 
-    def update(self, step_result):
+    def update(self, step_result, prune=True):
         """
         Feed back the step result, updating the belief_tree,
         extending the history, updating particle sets, etc
 
-        Advance the policy iterator to point to the next belief node in the episode
+        Advance the policy index to point to the next belief node in the episode
 
         :return:
         """
@@ -183,12 +161,12 @@ class Solver(object):
         # This is important in case there are certain actions that change the state of the simulator
         self.model.update(step_result)
 
-        child_belief_node = self.policy_iterator.get_child(step_result.action, step_result.observation)
+        child_belief_node = self.belief_tree_index.get_child(step_result.action, step_result.observation)
 
         # If the child_belief_node is None because the step result randomly produced a different observation,
         # grab any of the beliefs extending from the belief node's action node
         if child_belief_node is None:
-            action_node = self.policy_iterator.action_map.get_action_node(step_result.action)
+            action_node = self.belief_tree_index.action_map.get_action_node(step_result.action)
             if action_node is None:
                 # I grabbed a child belief node that doesn't have an action node. Use rollout from here on out.
                 console(2, module, "Reached branch with no leaf nodes, using random rollout to finish the episode")
@@ -209,13 +187,13 @@ class Solver(object):
             num_to_add = self.model.sys_cfg["max_particle_count"] - child_belief_node.state_particles.__len__()
 
             # Generate particles for the new root node
-            child_belief_node.state_particles += self.model.generate_particles(self.policy_iterator, step_result.action,
+            child_belief_node.state_particles += self.model.generate_particles(self.belief_tree_index, step_result.action,
                                                                                step_result.observation, num_to_add,
-                                                                               self.policy_iterator.state_particles)
+                                                                               self.belief_tree_index.state_particles)
 
             # If that failed, attempt to create a new state particle set
             if child_belief_node.state_particles.__len__() == 0:
-                child_belief_node.state_particles += self.model.generate_particles_uninformed(self.policy_iterator,
+                child_belief_node.state_particles += self.model.generate_particles_uninformed(self.belief_tree_index,
                                                                                               step_result.action,
                                                                                               step_result.observation,
                                                                                               self.model.sys_cfg[
@@ -227,5 +205,7 @@ class Solver(object):
             self.disable_tree = True
             return
 
-        self.policy_iterator = child_belief_node
-        self.prune(self.policy_iterator)
+        self.belief_tree_index = child_belief_node
+        if prune:
+            self.prune(self.belief_tree_index)
+

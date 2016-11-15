@@ -1,12 +1,9 @@
-__author__ = 'patrickemami'
-
 import logging
 import logging.handlers
 from pomdpy.util import config_parser
 
 
 def init_logger():
-
     my_logger = logging.getLogger('POMDPy')
 
     # default log format has time, module name, and message

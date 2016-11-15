@@ -1,5 +1,4 @@
 from pomdpy.pomdp import ObservationMapping, ObservationMappingEntry, BeliefNode
-__author__ = 'patrickemami'
 
 
 class DiscreteObservationMap(ObservationMapping):

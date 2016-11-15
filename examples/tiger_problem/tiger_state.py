@@ -1,5 +1,4 @@
 from pomdpy.discrete_pomdp import DiscreteState
-__author__ = 'patrickemami'
 
 
 class TigerState(DiscreteState):
@@ -11,7 +10,7 @@ class TigerState(DiscreteState):
     until an "open door" action is taken. This aspect of the state is *clearly* fully observable
 
     The list "door_prizes" contains 0's for doors that have tigers behind them, and 1's
-    for doors that have rewards behind them. This part of the state is obscured. Listening
+    for doors that have prizes behind them. This part of the state is obscured. Listening
     actions are necessary to increase confidence in choosing the right door. A single TigerState represents a
     "guess" of the true belief state - which is the probability distribution over all states
 

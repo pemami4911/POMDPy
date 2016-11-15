@@ -4,10 +4,7 @@ __author__ = 'patrickemami'
 
 # PyGame
 import pygame
-
 from rock_model import RSCellType
-
-
 # multi-threading
 import threading
 
@@ -41,6 +38,7 @@ GOOD_ROCKS_LOCK = threading.Lock()
 # starting agent position
 AGENT_POS = None
 AGENT_LOCK = threading.Lock()
+
 
 class Simulator(object):
     """
@@ -81,7 +79,7 @@ class Simulator(object):
 
         while not self.exit:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT: # close
+                if event.type == pygame.QUIT:  # close
                     self.exit = True
 
             # draw screen
@@ -115,49 +113,52 @@ class Simulator(object):
 
 
 class Policy(threading.Thread):
-        """'
-        Generates a policy, and then draws it on the grid
-        """
-        def __init__(self, solver):
+    """'
+    Generates a policy, and then draws it on the grid
+    """
 
-            threading.Thread.__init__(self)
+    def __init__(self, solver):
 
-            self.solver = solver
+        threading.Thread.__init__(self)
 
-        def run(self):
+        self.solver = solver
 
-            global AGENT_POS
-            global GOOD_ROCKS_LIST
+    def run(self):
 
-            # TODO
-            for policy, total_reward, num_reused_nodes in self.solver.generate_policy():
-                print " # -------------- RESET ----------------- # "
-                for belief, action, reward in policy:
+        global AGENT_POS
+        global GOOD_ROCKS_LIST
 
-                    if action.bin_number == 4:
-                        print "###############"
-                        action.print_action()
-                        print "###############"
-                    else:
-                        action.print_action()
+        # TODO
+        for policy, total_reward, num_reused_nodes in self.solver.generate_policy():
+            print " # -------------- RESET ----------------- # "
+            for belief, action, reward in policy:
 
-                    good_rocks, bad_rocks = belief.separate_rocks()
+                if action.bin_number == 4:
+                    print "###############"
+                    action.print_action()
+                    print "###############"
+                else:
+                    action.print_action()
 
-                    print "Belief state: Good Rocks: ", good_rocks
-                    print "Belief state: Bad Rocks: ", bad_rocks
-                    print "Immediate reward: ", reward
+                good_rocks, bad_rocks = belief.separate_rocks()
 
-                    AGENT_LOCK.acquire()
-                    AGENT_POS = (belief.position.i, belief.position.j)
-                    AGENT_LOCK.release()
+                print "Belief state: Good Rocks: ", good_rocks
+                print "Belief state: Bad Rocks: ", bad_rocks
+                print "Immediate reward: ", reward
 
-                    GOOD_ROCKS_LOCK.acquire()
-                    GOOD_ROCKS_LIST = good_rocks
-                    GOOD_ROCKS_LOCK.release()
+                AGENT_LOCK.acquire()
+                AGENT_POS = (belief.position.i, belief.position.j)
+                AGENT_LOCK.release()
 
-                    pygame.time.wait(100)
+                GOOD_ROCKS_LOCK.acquire()
+                GOOD_ROCKS_LIST = good_rocks
+                GOOD_ROCKS_LOCK.release()
 
-                pygame.time.wait(1000)
+                pygame.time.wait(100)
+
+            pygame.time.wait(1000)
+
+
 if __name__ == '__main__':
     import agent.Solver
     import rock_model
@@ -167,4 +168,3 @@ if __name__ == '__main__':
 
     sim = Simulator(model, agent)
     sim.main()
-

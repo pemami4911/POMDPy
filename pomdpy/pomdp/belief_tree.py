@@ -1,5 +1,3 @@
-__author__ = 'patrickemami'
-
 import belief_node
 import belief_structure
 
@@ -11,11 +9,41 @@ class BeliefTree(belief_structure.BeliefStructure):
     * Most of the work is done in the individual classes for the mappings and nodes; this class
     * simply owns a root node and handles pruning
     """
-
     def __init__(self, agent):
         super(BeliefTree, self).__init__()
         self.agent = agent
         self.root = None
+
+    # --------- TREE MODIFICATION ------- #
+    def reset(self):
+        """
+        Reset the tree
+        :return:
+        """
+        self.prune_tree(self)
+        self.root = belief_node.BeliefNode(self.agent, None, None)
+        return self.root
+
+    def reset_root_data(self):
+        """
+        Completely resets the root data
+        :return:
+        """
+        self.root.data = self.agent.model.create_root_historical_data(self.agent)
+
+    def reset_data(self, root_data=None):
+        """
+        Keeps information from the provided root node
+        :return:
+        """
+        if root_data is not None:
+            self.root.data.reset(root_data)
+        else:
+            self.root.data.reset()
+
+    def initialize(self, init_value=None):
+        self.reset_root_data()
+        self.root.action_map = self.agent.action_pool.create_action_mapping(self.root)
 
     def prune_tree(self, bt):
         """
@@ -78,34 +106,3 @@ class BeliefTree(belief_structure.BeliefStructure):
                     # if the belief node is not the new root of the belief tree, prune it
                     if obs_mapping_entry.child_node is not bn:
                         self.prune_node(obs_mapping_entry.child_node)
-
-    # --------- TREE MODIFICATION ------- #
-    def reset(self):
-        """
-        Reset the tree
-        :return:
-        """
-        self.prune_tree(self)
-        self.root = belief_node.BeliefNode(self.agent, None, None)
-        return self.root
-
-    def reset_root_data(self):
-        """
-        Completely resets the root data
-        :return:
-        """
-        self.root.data = self.agent.model.create_root_historical_data(self.agent)
-
-    def reset_data(self, root_data=None):
-        """
-        Keeps information from the provided root node
-        :return:
-        """
-        if root_data is not None:
-            self.root.data.reset(root_data)
-        else:
-            self.root.data.reset()
-
-    def initialize(self, init_value=None):
-        self.reset_root_data()
-        self.root.action_map = self.agent.action_pool.create_action_mapping(self.root)

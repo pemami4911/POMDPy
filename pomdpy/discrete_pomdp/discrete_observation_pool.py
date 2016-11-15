@@ -1,6 +1,5 @@
 from pomdpy.pomdp import ObservationPool
 from discrete_observation_mapping import DiscreteObservationMap
-__author__ = 'patrickemami'
 
 
 class DiscreteObservationPool(ObservationPool):

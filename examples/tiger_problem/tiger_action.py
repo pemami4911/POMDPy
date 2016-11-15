@@ -1,4 +1,5 @@
 from pomdpy.discrete_pomdp import DiscreteAction
+
 __author__ = 'patrickemami'
 
 
@@ -39,5 +40,3 @@ class TigerAction(DiscreteAction):
             print "Opening door 2"
         else:
             print "Unknown action type"
-
-

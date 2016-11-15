@@ -1,5 +1,3 @@
-__author__ = 'patrickemami'
-
 import abc
 import itertools
 import numpy

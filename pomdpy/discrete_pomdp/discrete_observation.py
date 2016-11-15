@@ -1,5 +1,3 @@
-__author__ = 'patrickemami'
-
 import abc
 from pomdpy.pomdp import Point
 

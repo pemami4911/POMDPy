@@ -1,6 +1,5 @@
 import abc
 from pomdpy.pomdp.point import Point
-__author__ = 'patrickemami'
 
 
 class DiscreteAction(Point):

@@ -1,15 +1,13 @@
 #!/usr/bin/env python
-__author__ = 'patrickemami'
-
 from pomdpy import Agent
-from pomdpy.solvers import MCTS
+from pomdpy.solvers import POMCP
 from examples.rock_problem import RockModel
 from pomdpy.action_selection import ucb_action
 import random
 import unittest
 
 model = RockModel("unit_tests")
-agent = Agent(model, MCTS)
+agent = Agent(model, POMCP, True)
 
 
 class TestPOMDPy(unittest.TestCase):

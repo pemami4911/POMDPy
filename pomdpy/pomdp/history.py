@@ -1,6 +1,3 @@
-__author__ = 'patrickemami'
-
-import time  # sleep
 from pomdpy.util import print_divider
 
 
@@ -41,9 +38,17 @@ class HistoryEntry:
         if state is not None:
             self.state = state
 
-    def register_entry(self, current_entry, node, state):
+    @staticmethod
+    def register_entry(current_entry, node, state):
         current_entry.register_state(state)
         current_entry.register_node(node)
+
+    @staticmethod
+    def update_history_entry(h, r, a, o, s):
+        h.reward = r
+        h.action = a
+        h.observation = o
+        h.register_entry(h, None, s)
 
 
 class HistorySequence:
@@ -73,11 +78,11 @@ class HistorySequence:
         return new_entry
 
     def remove_entry(self, history_entry):
-        print "Deleted entry from sequence"
         del self.entry_sequence[history_entry.id]
 
     def show(self):
-        print "Displaying history sequence..."
+        print_divider("medium")
+        print "\tDisplaying history sequence"
         for entry in self.entry_sequence:
             print_divider("medium")
             print "id: ", entry.id
@@ -85,7 +90,6 @@ class HistorySequence:
             print "observation: ", entry.observation.to_string()
             print "next state: ", entry.state.to_string()
             print "reward: ", entry.reward
-        time.sleep(2)  # pause for 2 seconds
 
 
 class Histories(object):

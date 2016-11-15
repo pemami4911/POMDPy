@@ -1,7 +1,6 @@
 import numpy as np
 from pomdpy.pomdp import HistoricalData
 from tiger_action import ActionType
-__author__ = 'patrickemami'
 
 
 class TigerData(HistoricalData):
@@ -60,16 +59,11 @@ class TigerData(HistoricalData):
             next_data.door_probabilities = [p1_posterior, p2_posterior]
         return next_data
 
-    def generate_legal_actions(self):
-        '''
+    @staticmethod
+    def generate_legal_actions():
+        """
         At each non-terminal state, the agent can listen or choose to open the door based on the current door probabilities
         :return:
-        '''
-        bins = [ActionType.LISTEN]
+        """
+        return [ActionType.LISTEN, ActionType.OPEN_DOOR_1, ActionType.OPEN_DOOR_2]
 
-        if np.random.uniform(0, 1) <= self.door_probabilities[0]:
-            bins = bins + [ActionType.OPEN_DOOR_2]
-        else:
-            bins = bins + [ActionType.OPEN_DOOR_1]
-
-        return bins

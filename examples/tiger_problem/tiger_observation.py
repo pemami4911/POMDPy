@@ -1,5 +1,4 @@
 from pomdpy.discrete_pomdp import DiscreteObservation
-__author__ = 'patrickemami'
 
 
 class TigerObservation(DiscreteObservation):

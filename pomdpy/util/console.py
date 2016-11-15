@@ -1,5 +1,3 @@
-__author__ = 'patrickemami'
-
 """
 CONSOLE LOGGING VERBOSITY LEVELS
 ---------------------------------
@@ -9,7 +7,8 @@ CONSOLE LOGGING VERBOSITY LEVELS
 3 - LOUD
 4 - DEBUG
 """
-VERBOSITY = 2
+
+VERBOSITY = 3
 
 
 def print_divider(size):

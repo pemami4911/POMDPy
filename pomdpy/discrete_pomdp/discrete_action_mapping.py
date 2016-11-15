@@ -166,7 +166,7 @@ class DiscreteActionMappingEntry(ActionMappingEntry):
 
         # Average the Q value by taking the Total Q value of this entry divided by the
         # number of times this action has been tried
-        self.mean_q_value = self.total_q_value / self.map.total_visit_count
+        self.mean_q_value = self.total_q_value / self.visit_count
 
         return self.mean_q_value != old_mean_q
 
