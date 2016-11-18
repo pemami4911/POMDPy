@@ -8,7 +8,7 @@ CONSOLE LOGGING VERBOSITY LEVELS
 4 - DEBUG
 """
 
-VERBOSITY = 3
+VERBOSITY = 2
 
 
 def print_divider(size):

@@ -3,6 +3,7 @@ import logging
 from pomdpy.pomdp import Statistic
 from pomdpy.pomdp.history import Histories, HistoryEntry
 from pomdpy.util import console, print_divider
+from pomdpy.solvers import POMCP, SARSA
 
 module = "agent"
 
@@ -13,7 +14,7 @@ class Agent(object):
     and storing statistics on that run
     """
 
-    def __init__(self, model, solver, use_sims):
+    def __init__(self, model, solver):
         """
         Initialize the POMDPY agent
         :param model:
@@ -22,7 +23,6 @@ class Agent(object):
         """
         self.logger = logging.getLogger('POMDPy.Solver')
         self.model = model
-        self.use_sims = use_sims
         self.run_results = Results()
         self.experiment_results = Results()
         self.histories = Histories()
@@ -65,9 +65,9 @@ class Agent(object):
             # Perform behaviors that must done for each run
             self.model.reset_for_run()
 
-            if self.use_sims:
-                eps = self.run_sims(i, eps)
-            else:
+            if isinstance(self.solver_factory, POMCP):
+                eps = self.run_mcts(i + 1, eps)
+            elif isinstance(self.solver_factory, SARSA):
                 eps = self.run_episodic(solver, i + 1, eps)
 
             if self.experiment_results.time.running_total > self.model.sys_cfg['max_time_out']:
@@ -75,7 +75,7 @@ class Agent(object):
                         self.experiment_results.time.running_total + ' seconds')
                 break
 
-    def run_sims(self, run_num, eps):
+    def run_mcts(self, run_num, eps):
         run_start_time = time.time()
         max_steps = self.model.sys_cfg['max_steps']
 

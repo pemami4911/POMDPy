@@ -1,5 +1,3 @@
-__author__ = 'patrickemami'
-
 import matplotlib
 import matplotlib.pyplot as plt
 

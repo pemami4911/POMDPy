@@ -17,20 +17,13 @@ From the root directory of the project, run
 
 ## POMCP and SARSA ##
 
-So far, there are implementations of POMCP and SARSA. The main difference between the two algorithms is that POMCP uses the off-policy Q-Learning
-algorithm and the UCB action-selection strategy. SARSA uses an on-policy variant of TD-Learning. 
+So far, there are implementations of POMCP (Q-learning and PO-UCT with MCTS) and SARSA. The main difference between the two algorithms is that POMCP uses the off-policy Q-Learning
+algorithm and the UCT action-selection strategy. SARSA uses an on-policy variant of TD-Learning. 
 
-Both algorithms use Monte-Carlo Tree Search, in that both build a belief tree that encodes the policy. 
-
-There are two variants to these algorithms; one way to run them is in an episodic manner, such that the agent samples an initial 
-start state and then interacts with the environment until it reaches a terminal state, at which point an action-value backup 
-occurs. After `test_frequency` episodes, the agent will test out how well it has approximated the true action-value function. 
-
-The other variant is an anytime version of POMCP/SARSA, where the agent will start at the root of the belief tree and simulate `num_sims` trajectories 
-from its current place in the tree. Then, after this exploration step, it will greedily move to a new belief node. The agent is effectively 
-carrying out monte-carlo approximations of the action-value functions for the actions leading out of the current belief node.
-The agent will prune the siblings of the node that was selected to prevent the program from eating up too much memory.
-This variant is more akin to the algorithm described in Silver's POMCP paper. 
+Both algorithms encode the action-value function as a belief search tree. POMCP is an anytime planner that approximates the action-value
+estimates of the current belief via Monte-Carlo before taking a step. This is known as Monte-Carlo Tree Search (MCTS).
+SARSA is episodic, in that the agent repeatedly carries out full episodes 
+and uses the generated history of experiences to back-up the action-value estimates up the taken path to the root of the belief tree. 
 
 ## Running an example ##
 Currently, you can test POMCP and SARSA on the classic Tiger and RockSample POMDPs. 
