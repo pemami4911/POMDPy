@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-
 from pomdpy import Agent
-from pomdpy.solvers import POMCP
-from pomdpy.solvers import SARSA
+from pomdpy.solvers import POMCP, SARSA, ValueIteration
 from pomdpy.log import init_logger
 from examples.rock_problem import RockModel
 from examples.tiger_problem import TigerModel
@@ -12,7 +10,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Set the run parameters.')
     parser.add_argument('--env', type=str, help='Specify the env to solve {RockProblem|TigerProblem}')
-    parser.add_argument('--solver', type=str, help='Specify the solver to use {POMCP|SARSA}')
+    parser.add_argument('--solver', type=str, help='Specify the solver to use {POMCP|SARSA|ValueIteration}')
     args = parser.parse_args()
 
     init_logger()
@@ -21,6 +19,8 @@ if __name__ == '__main__':
         solver = SARSA
     elif args.solver == 'POMCP':
         solver = POMCP
+    elif args.solver == 'ValueIteration':
+        solver = ValueIteration
     else:
         raise ValueError('solver not supported')
 

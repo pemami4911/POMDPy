@@ -1,6 +1,6 @@
-import numpy as np
 from pomdpy.pomdp import HistoricalData
 from tiger_action import ActionType
+import numpy as np
 
 
 class TigerData(HistoricalData):
@@ -11,14 +11,15 @@ class TigerData(HistoricalData):
         P( X = 0 ) = p
         P( X = 1 ) = 1 - p
     """
-    def __init__(self):
+    def __init__(self, model):
+        self.model = model
         self.listen_count = 0
         ''' Initially there is an equal probability of the tiger being in either door'''
         self.door_probabilities = [0.5, 0.5]
         self.legal_actions = self.generate_legal_actions
 
     def copy(self):
-        dat = TigerData()
+        dat = TigerData(self.model)
         dat.listen_count = self.listen_count
         dat.door_probabilities = self.door_probabilities
         return dat
@@ -40,23 +41,9 @@ class TigerData(HistoricalData):
             '''
 
             ''' ------- Bayes update of belief state -------- '''
-            probability_correct = 0.85
-            probability_incorrect = 1.0 - probability_correct
-            p1_prior = self.door_probabilities[0]
-            p2_prior = self.door_probabilities[1]
 
-            # Observation 1 - the roar came from door 0
-            if observation.source_of_roar[0]:
-                observation_probability = (probability_correct * p1_prior) + (probability_incorrect * p2_prior)
-                p1_posterior = (probability_correct * p1_prior)/observation_probability
-                p2_posterior = (probability_incorrect * p2_prior)/observation_probability
-            # Observation 2 - the roar came from door 1
-            else:
-                observation_probability = (probability_incorrect * p1_prior) + (probability_correct * p2_prior)
-                p1_posterior = probability_incorrect * p1_prior / observation_probability
-                p2_posterior = probability_correct * p2_prior / observation_probability
-
-            next_data.door_probabilities = [p1_posterior, p2_posterior]
+            next_data.door_probabilities = self.model.belief_update(np.array([self.door_probabilities]), action,
+                                                                    observation)
         return next_data
 
     @staticmethod

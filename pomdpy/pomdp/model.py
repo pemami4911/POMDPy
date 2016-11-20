@@ -1,6 +1,7 @@
 import abc
 import json
 import random
+import numpy as np
 from pomdpy.util import config_parser
 
 
@@ -76,10 +77,43 @@ class Model(object):
         """
 
     @abc.abstractmethod
+    def sample_state_informed(self, belief):
+        """
+        :param belief:
+        :return:
+        """
+
+    @staticmethod
+    def get_initial_belief_state():
+        """
+        Return an np.array of initial belief probabilities for each state
+        :return:
+        """
+        pass
+
+    @abc.abstractmethod
+    def belief_update(self, old_belief, action, observation):
+        """
+        Use bayes filter to update belief distribution
+        :param old_belief:
+        :param action
+        :param observation
+        :return:
+        """
+
+    @abc.abstractmethod
     def get_all_states(self):
         """
         :return: list of enumerated states (discrete) or range of states (continuous)
         """
+
+    @staticmethod
+    def get_transition_matrix():
+        """
+        Transition probability matrix, for value iteration
+        :return:
+        """
+        pass
 
     @abc.abstractmethod
     def get_all_actions(self):
@@ -92,6 +126,22 @@ class Model(object):
         """
         :return: list of enumerated observations (discrete) or range of observations (continuous)
         """
+
+    @staticmethod
+    def get_observation_matrix():
+        """
+        Observation probability matrix
+        :return:
+        """
+        pass
+
+    @staticmethod
+    def get_reward_matrix():
+        """
+        Return reward matrix
+        :return:
+        """
+        pass
 
     @abc.abstractmethod
     def get_legal_actions(self, state):

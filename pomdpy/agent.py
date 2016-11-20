@@ -3,7 +3,7 @@ import logging
 from pomdpy.pomdp import Statistic
 from pomdpy.pomdp.history import Histories, HistoryEntry
 from pomdpy.util import console, print_divider
-from pomdpy.solvers import POMCP, SARSA
+from pomdpy.solvers import POMCP, SARSA, ValueIteration
 
 module = "agent"
 
@@ -56,7 +56,7 @@ class Agent(object):
         num_runs = self.model.sys_cfg['num_runs']
 
         eps = self.model.sys_cfg['epsilon_start']
-        solver = self.solver_factory(self, self.model)
+        solver = self.solver_factory(self)
 
         for i in range(num_runs):
             # Reset the run stats
@@ -65,10 +65,12 @@ class Agent(object):
             # Perform behaviors that must done for each run
             self.model.reset_for_run()
 
-            if isinstance(self.solver_factory, POMCP):
+            if isinstance(solver, POMCP):
                 eps = self.run_mcts(i + 1, eps)
-            elif isinstance(self.solver_factory, SARSA):
+            elif isinstance(solver, SARSA):
                 eps = self.run_episodic(solver, i + 1, eps)
+            elif isinstance(solver, ValueIteration):
+                self.run_value_iteration(solver, i + 1)
 
             if self.experiment_results.time.running_total > self.model.sys_cfg['max_time_out']:
                 console(2, module, 'Timed out after ' + str(i) + ' runs in ' +
@@ -80,11 +82,10 @@ class Agent(object):
         max_steps = self.model.sys_cfg['max_steps']
 
         # Create a new solver
-        solver = self.solver_factory(self, self.model)
+        solver = self.solver_factory(self)
 
         # Monte-Carlo start state
         state = solver.belief_tree_index.sample_particle()
-        console(2, module, 'Initial belief state: ' + state.to_string())
 
         reward = 0
         discounted_reward = 0
@@ -100,7 +101,7 @@ class Agent(object):
             start_time = time.time()
 
             # action will be of type Discrete Action
-            action = solver.select_action(eps, start_time)
+            action = solver.select_eps_greedy_action(eps, start_time)
 
             step_result, is_legal = self.model.generate_step(state, action)
 
@@ -180,7 +181,7 @@ class Agent(object):
                 start_time = time.time()
 
                 # action will be of type Discrete Action
-                action = solver.select_action(eps, start_time)
+                action = solver.select_eps_greedy_action(eps, start_time)
 
                 step_result, is_legal = self.model.generate_step(state, action)
 
@@ -223,6 +224,66 @@ class Agent(object):
             self.experiment_results.discounted_return.add(self.run_results.discounted_return.running_total)
 
         return eps
+
+    def run_value_iteration(self, solver, run_num):
+        run_start_time = time.time()
+        max_steps = self.model.sys_cfg['max_steps']
+
+        reward = 0
+        discounted_reward = 0
+        discount = 1.0
+        T = max_steps
+
+        solver.value_iteration(self.model.get_transition_matrix(),
+                               self.model.get_observation_matrix(),
+                               self.model.get_reward_matrix(),
+                               self.model.get_initial_belief_state(),
+                               T)
+
+        b = self.model.get_initial_belief_state()
+        state = self.model.sample_an_init_state()
+
+        for i in xrange(T):
+
+            action = solver.select_action(b)
+
+            step_result, is_legal = self.model.generate_step(state, action)
+
+            b = self.model.belief_update(b, action, step_result.observation)
+
+            reward += step_result.reward
+            discounted_reward += discount * step_result.reward
+
+            discount *= self.model.sys_cfg["discount"]
+
+            state = self.model.sample_state_informed(b)
+
+            # show the step result
+            self.display_step_result(i, step_result)
+
+            # Extend the history sequence
+            new_hist_entry = solver.history.add_entry()
+            HistoryEntry.update_history_entry(new_hist_entry, step_result.reward,
+                                              step_result.action, step_result.observation, step_result.next_state)
+
+            if step_result.is_terminal:
+                console(3, module, 'Terminated after episode step ' + str(i + 1))
+                break
+
+        self.run_results.time.add(time.time() - run_start_time)
+        self.run_results.update_reward_results(reward, discounted_reward)
+
+        # Pretty Print results
+        solver.history.show()
+        self.run_results.show(run_num)
+        console(3, module, 'Total possible undiscounted return: ' + str(self.model.get_max_undiscounted_return()))
+        print_divider('medium')
+
+        self.experiment_results.time.add(self.run_results.time.running_total)
+        self.experiment_results.undiscounted_return.count += (self.run_results.undiscounted_return.count - 1)
+        self.experiment_results.undiscounted_return.add(self.run_results.undiscounted_return.running_total)
+        self.experiment_results.discounted_return.count += (self.run_results.discounted_return.count - 1)
+        self.experiment_results.discounted_return.add(self.run_results.discounted_return.running_total)
 
     @staticmethod
     def display_step_result(step_num, step_result):

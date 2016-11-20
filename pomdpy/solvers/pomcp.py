@@ -2,12 +2,12 @@ import time
 import numpy as np
 from pomdpy.util import console
 from pomdpy.action_selection import ucb_action
-from solver import Solver
+from belief_tree_solver import BeliefTreeSolver
 
 module = "pomcp"
 
 
-class POMCP(Solver):
+class POMCP(BeliefTreeSolver):
     """
     Monte-Carlo Tree Search implementation, from POMCP
     """
@@ -16,7 +16,7 @@ class POMCP(Solver):
     UCB_N = 10000
     UCB_n = 100
 
-    def __init__(self, agent, model):
+    def __init__(self, agent):
         """
         Initialize an instance of the POMCP solver
         :param agent:
@@ -33,16 +33,17 @@ class POMCP(Solver):
                 if n is 0:
                     self.fast_UCB[N][n] = np.inf
                 else:
-                    self.fast_UCB[N][n] = model.sys_cfg["ucb_coefficient"] * np.sqrt(np.log(N + 1) / n)
+                    self.fast_UCB[N][n] = agent.model.sys_cfg["ucb_coefficient"] * np.sqrt(np.log(N + 1) / n)
 
     @staticmethod
-    def reset(agent, model):
+    def reset(agent):
         """
         Generate a new POMCP solver
 
+        :param agent:
         Implementation of abstract method
         """
-        return POMCP(agent, model)
+        return POMCP(agent)
 
     def find_fast_ucb(self, total_visit_count, action_map_entry_visit_count, log_n):
         """
@@ -61,14 +62,14 @@ class POMCP(Solver):
         else:
             return self.model.sys_cfg["ucb_coefficient"] * np.sqrt(log_n / action_map_entry_visit_count)
 
-    def select_action(self, eps, start_time):
+    def select_eps_greedy_action(self, eps, start_time):
         """
         Starts off the Monte-Carlo Tree Search and returns the selected action. If the belief tree
                 data structure is disabled, random rollout is used.
         """
         if self.disable_tree:
             self.rollout_search(self.belief_tree_index)
-        elif self.agent.use_sims:
+        else:
             self.monte_carlo_approx(eps, start_time)
         return ucb_action(self, self.belief_tree_index, True)
 

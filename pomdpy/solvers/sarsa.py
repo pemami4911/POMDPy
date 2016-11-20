@@ -1,4 +1,4 @@
-from solver import Solver
+from belief_tree_solver import BeliefTreeSolver
 from pomdpy.action_selection import e_greedy
 from pomdpy.util import console
 import time
@@ -6,7 +6,7 @@ import time
 module = "SARSA"
 
 
-class SARSA(Solver):
+class SARSA(BeliefTreeSolver):
     """
     Implementation of the on-policy SARSA learning algorithm
     """
@@ -15,21 +15,21 @@ class SARSA(Solver):
         super(SARSA, self).__init__(agent)
 
     @staticmethod
-    def reset(agent, model):
+    def reset(agent):
         return SARSA(agent)
 
-    def select_action(self, eps, start_time):
+    def select_eps_greedy_action(self, eps, start_time):
         """
         Return an action given the current belief, as marked by the belief tree iterator, using an epsilon-greedy policy.
 
         If necessary, first carry out a rollout_search to expand the episode
+        :param eps:
+        :param start_time:
         :return:
         """
         if self.disable_tree:
             self.rollout_search(self.belief_tree_index)
-        elif self.agent.use_sims:
-            # Get a monte carlo approximation of Q(b,a) for all a
-            self.monte_carlo_approx(eps, start_time)
+
         return e_greedy(self.belief_tree_index, eps)
 
     def simulate(self, belief_state, eps, start_time):
@@ -45,6 +45,7 @@ class SARSA(Solver):
         
         :param belief_state:
         :param eps:
+        :param start_time
         """
 
         # save the state of the current belief

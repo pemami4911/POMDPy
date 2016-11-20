@@ -10,7 +10,6 @@ from pomdpy.discrete_pomdp import DiscreteActionPool, DiscreteObservationPool
 from pomdpy.pomdp import Model, StepResult
 from rock_position_history import RockData, PositionAndRockData
 
-__author__ = 'patrickemami'
 module = "RockModel"
 
 
@@ -401,6 +400,9 @@ class RockModel(Model):
             observation = True
 
         return RockObservation(observation, False)
+
+    def belief_update(self, old_belief, action, observation):
+        pass
 
     def make_reward(self, state, action, next_state, is_legal):
         if not is_legal:

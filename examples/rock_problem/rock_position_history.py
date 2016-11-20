@@ -48,7 +48,8 @@ class PositionAndRockData(HistoricalData):
         else:
             self.legal_actions = self.generate_legal_actions
 
-    def copy_rock_data(self, other_data):
+    @staticmethod
+    def copy_rock_data(other_data):
         new_rock_data = []
         [new_rock_data.append(RockData()) for _ in other_data]
         for i, j in itertools.izip(other_data, new_rock_data):

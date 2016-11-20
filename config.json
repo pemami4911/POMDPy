@@ -5,9 +5,9 @@
 "epsilon_delta":0.05,
 "epsilon_update_frequency":1,
 "test_frequency":100,
-"max_steps":200,
+"max_steps":5,
 "num_sims":500,
-"num_runs":10,
+"num_runs":5,
 "num_start_states":500,
 "maximum_depth":100,
 "max_time_out":43200,
@@ -16,5 +16,5 @@
 "ucb_coefficient":3.0,
 "min_particle_count":500,
 "max_particle_count":500,
-"verbosity":2
+"verbosity":3
 }
