@@ -74,5 +74,4 @@ This project uses:
 * [ ] Random baseline solver
 * [ ] Add more unit tests
 * [ ] Add additional benchmark problems 
-* [x] Clean up output displayed to the user
 * [ ] Continuous-action/state space POMDPs
