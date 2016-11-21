@@ -47,11 +47,11 @@ The following maps are available:
 
 To run the RockSample problem with POMCP:
 
-   `./main.py --env RockProblem --solver POMCP --max_steps 200 --epsilon_start 1.0 --epsilon_decay 0.01 --n_runs 10 --n_sims 500  --preferred_actions --seed 123`
+    ./main.py --env RockProblem --solver POMCP --max_steps 200 --epsilon_start 1.0 --epsilon_decay 0.01 --n_runs 10 --n_sims 500  --preferred_actions --seed 123
         
 To run the Tiger problem with SARSA: 
 
-    `./main.py --env TigerProblem --solver SARSA --max_steps 5 --epsilon_start 0.5 --n_runs 100 --seed 123`
+    ./main.py --env TigerProblem --solver SARSA --max_steps 5 --epsilon_start 0.5 --n_runs 100 --seed 123
        
 See `pompdy/README.md` for details about implementing new POMDP benchmark problems.
 
