@@ -96,6 +96,8 @@ class RockModel(Model):
         self.n_rows = int(dimensions[0])
         self.n_cols = int(dimensions[1])
 
+        self.problem_name += self.rock_config['map_file']
+
         self.initialize()
 
     # initialize the maps of the grid
@@ -126,7 +128,7 @@ class RockModel(Model):
             self.env_map.append(tmp)
         # Total number of distinct states
         self.num_states = pow(2, self.n_rocks)
-        self.min_val = -self.illegal_move_penalty / (1 - self.sys_cfg['discount'])
+        self.min_val = -self.illegal_move_penalty / (1 - self.discount)
         self.max_val = self.good_rock_reward * self.n_rocks + self.exit_reward
 
     ''' ===================================================================  '''
@@ -156,6 +158,9 @@ class RockModel(Model):
             if self.get_cell_type(pos) is not RSCellType.OBSTACLE:
                 return RockState(pos, self.sample_rocks())
         return None
+
+    def sample_state_informed(self, belief):
+        return belief.sample_particle()
 
     def sample_position(self):
         i = np.random.random_integers(0, self.n_rows - 1)

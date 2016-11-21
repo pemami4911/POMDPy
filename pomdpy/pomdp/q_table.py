@@ -1,5 +1,3 @@
-__author__ = 'patrickemami'
-
 from belief_structure import BeliefStructure
 
 

@@ -152,7 +152,7 @@ class TigerModel(model.Model):
         result = model.StepResult()
         result.next_state, is_legal = self.make_next_state(state, action)
         result.action = action.copy()
-        result.observation = self.make_observation(action, result.next_state)
+        result.observation = self.make_observation(action)
         result.reward = self.make_reward(action, result.next_state)
         result.is_terminal = self.is_terminal(result.next_state)
 
@@ -160,9 +160,6 @@ class TigerModel(model.Model):
 
     @staticmethod
     def make_next_state(state, action):
-        if isinstance(action, list):
-            return None, False
-
         if action.bin_number == ActionType.LISTEN:
             return state, True
 
@@ -194,10 +191,9 @@ class TigerModel(model.Model):
             print "make_reward - Illegal action was used"
             return 0
 
-    def make_observation(self, action, next_state):
+    def make_observation(self, action):
         """
         :param action:
-        :param next_state:
         :return:
         """
         if action.bin_number > 0:
@@ -211,11 +207,8 @@ class TigerModel(model.Model):
             obs = ([0, 1], [1, 0])[self.tiger_door == 1]
             probability_correct = np.random.uniform(0, 1)
             if probability_correct <= 0.85:
-                next_state.door_prizes = list(obs)
-                next_state.door_prizes.reverse()
                 return TigerObservation(obs)
             else:
-                next_state.door_prizes = list(obs)
                 obs.reverse()
                 return TigerObservation(obs)
 

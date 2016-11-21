@@ -16,7 +16,7 @@ class BeliefTreeSolver(Solver):
     Provides a belief search tree and supports on- and off-policy methods
     """
     def __init__(self, agent):
-        super(BeliefTreeSolver).__init__(agent.model)
+        super(BeliefTreeSolver, self).__init__(agent)
         # The agent owns Histories, the collection of History Sequences.
         # There is one sequence per run of the algorithm
         self.history = agent.histories.create_sequence()
@@ -31,7 +31,7 @@ class BeliefTreeSolver(Solver):
 
         # generate state particles for root node belief state estimation
         # This is for simulation
-        for i in range(self.model.sys_cfg["num_start_states"]):
+        for i in range(self.model.n_start_states):
             particle = self.model.sample_an_init_state()
             self.belief_tree.root.state_particles.append(particle)
 
@@ -44,17 +44,22 @@ class BeliefTreeSolver(Solver):
         simply pi(b) where pi is induced by current Q values. For Q-Learning, this is max_a Q(b',a')
 
         Does not advance the policy index
+        :param eps
+        :param start_time
         :return:
         """
-        for i in range(self.model.sys_cfg["num_sims"]):
+        for i in range(self.model.n_sims):
             # Reset the Simulator
             self.model.reset_for_simulation()
-            self.simulate(self.belief_tree_index.sample_particle(), eps, start_time)
+            self.simulate(self.belief_tree_index, eps, start_time)
 
     @abc.abstractmethod
-    def simulate(self, belief_state, eps, start_time):
+    def simulate(self, belief, eps, start_time):
         """
-        Does a monte-carlo simulation from "belief_state" to approximate Q(b, pi(b))
+        Does a monte-carlo simulation from "belief" to approximate Q(b, pi(b))
+        :param belief
+        :param eps
+        :param start_time
         :return:
         """
 
@@ -63,6 +68,8 @@ class BeliefTreeSolver(Solver):
         """
         Call methods specific to the implementation of the solver
         to select an action
+        :param eps
+        :param start_time
         :return:
         """
 
@@ -76,7 +83,7 @@ class BeliefTreeSolver(Solver):
         start_time = time.time()
         self.belief_tree.prune_siblings(belief_node)
         elapsed = time.time() - start_time
-        console(2, module, "Time spent pruning = " + str(elapsed) + " seconds")
+        console(3, module, "Time spent pruning = " + str(elapsed) + " seconds")
 
     def rollout_search(self, belief_node):
         """
@@ -97,7 +104,7 @@ class BeliefTreeSolver(Solver):
             if not step_result.is_terminal:
                 child_node, added = belief_node.create_or_get_child(step_result.action, step_result.observation)
                 child_node.state_particles.append(step_result.next_state)
-                delayed_reward = self.rollout(step_result.next_state, child_node.data.generate_legal_actions())
+                delayed_reward = self.rollout(child_node)
             else:
                 delayed_reward = 0
 
@@ -106,30 +113,34 @@ class BeliefTreeSolver(Solver):
             q_value = action_mapping_entry.mean_q_value
 
             # Random policy
-            q_value += (step_result.reward + self.model.sys_cfg["discount"] * delayed_reward - q_value)
+            q_value += (step_result.reward + self.model.discount * delayed_reward - q_value)
 
             action_mapping_entry.update_visit_count(1)
             action_mapping_entry.update_q_value(q_value)
 
-    def rollout(self, start_state, legal_actions):
+    def rollout(self, belief_node):
         """
-        Iterative random rollout search to finish expanding the episode starting at "start_state"
+        Iterative random rollout search to finish expanding the episode starting at belief_node
+        :param belief_node:
+        :return:
         """
+        legal_actions = belief_node.data.generate_legal_actions()
+
         if not isinstance(legal_actions, list):
             legal_actions = list(legal_actions)
 
-        state = start_state.copy()
+        state = belief_node.sample_particle()
         is_terminal = False
         discounted_reward_sum = 0.0
         discount = 1.0
         num_steps = 0
 
-        while num_steps < self.model.sys_cfg["maximum_depth"] and not is_terminal:
+        while num_steps < self.model.max_depth and not is_terminal:
             legal_action = random.choice(legal_actions)
             step_result, is_legal = self.model.generate_step(state, legal_action)
             is_terminal = step_result.is_terminal
             discounted_reward_sum += step_result.reward * discount
-            discount *= self.model.sys_cfg["discount"]
+            discount *= self.model.discount
             # advance to next state
             state = step_result.next_state
             # generate new set of legal actions from the new state
@@ -172,9 +183,9 @@ class BeliefTreeSolver(Solver):
                     break
 
         # If the new root does not yet have the max possible number of particles add some more
-        if child_belief_node.state_particles.__len__() < self.model.sys_cfg["max_particle_count"]:
+        if child_belief_node.state_particles.__len__() < self.model.max_particle_count:
 
-            num_to_add = self.model.sys_cfg["max_particle_count"] - child_belief_node.state_particles.__len__()
+            num_to_add = self.model.max_particle_count - child_belief_node.state_particles.__len__()
 
             # Generate particles for the new root node
             child_belief_node.state_particles += self.model.generate_particles(self.belief_tree_index, step_result.action,
@@ -186,8 +197,7 @@ class BeliefTreeSolver(Solver):
                 child_belief_node.state_particles += self.model.generate_particles_uninformed(self.belief_tree_index,
                                                                                               step_result.action,
                                                                                               step_result.observation,
-                                                                                              self.model.sys_cfg[
-                                                                                                  "min_particle_count"])
+                                                                                        self.model.min_particle_count)
 
         # Failed to continue search- ran out of particles
         if child_belief_node is None or child_belief_node.state_particles.__len__() == 0:

@@ -23,9 +23,7 @@ if __name__ == '__main__':
             b_ub = np.array([-DELTA])
 
             res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub, bounds=(0, None))
-            print('Is av' + str(i) + ' dominated by av' + str(j) + '?')
-            print('Optimal value: ', res.fun, '\nX: ', res.x)
 
             if res.x[2] > 0.0:
-                print 'dominated'
+                print('alpha-vector ' + str(i) + ' is dominated by alpha-vector ' + str(j))
 

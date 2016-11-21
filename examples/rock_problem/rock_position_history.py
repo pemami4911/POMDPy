@@ -43,7 +43,7 @@ class PositionAndRockData(HistoricalData):
         self.all_rock_data = all_rock_data
 
         # Holds reference to the function for generating legal actions
-        if self.model.sys_cfg["preferred_actions"] is "True":
+        if self.model.preferred_actions:
             self.legal_actions = self.generate_smart_actions
         else:
             self.legal_actions = self.generate_legal_actions

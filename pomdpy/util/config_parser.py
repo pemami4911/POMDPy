@@ -3,13 +3,11 @@ import os
 # important directories
 CFG_DIR = 'config'
 ROCK_CFG_FILE = 'rock_problem_config.json'
-SYS_CFG_FILE = 'config.json'
 LOG_DIR = 'log'
 LOG_FILE = 'POMDPy.log'
 
 my_dir = os.path.dirname(__file__)
 rock_cfg = os.path.join(my_dir, '..', CFG_DIR, ROCK_CFG_FILE)
-sys_cfg = os.path.join(my_dir, '..', '..', SYS_CFG_FILE)
 log_path = os.path.join(my_dir, '..', LOG_DIR, LOG_FILE)
 
 

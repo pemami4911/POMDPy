@@ -5,6 +5,7 @@ from itertools import product
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class AlphaVector(object):
@@ -12,10 +13,8 @@ class AlphaVector(object):
         self.action = a
         self.v = v
 
-    def __deepcopy__(self, x):
-        x.action = self.action
-        x.v = self.v
-        return x
+    def copy(self):
+        return AlphaVector(self.action, self.v)
 
 
 class ValueIteration(Solver):
@@ -33,17 +32,16 @@ class ValueIteration(Solver):
     def reset(agent):
         return ValueIteration(agent)
 
-    def value_iteration(self, t, o, r, b0, horizon):
+    def value_iteration(self, t, o, r, horizon):
         """
         Solve the POMDP by computing all alpha vectors
         :param t: transition probability matrix
         :param o: observation probability matrix
         :param r: immediate rewards matrix
-        :param b0: initial belief state
         :param horizon: integer valued scalar represented the number of planning steps
         :return:
         """
-        discount = self.model.sys_cfg['discount']
+        discount = self.model.discount
         actions = len(self.model.get_all_actions())  # |A| actions
         states = self.model.num_states  # |S| states
         observations = len(self.model.get_all_observations())  # |Z| observations
@@ -83,7 +81,7 @@ class ValueIteration(Solver):
                 self.gamma.remove(dummy)
                 first = False
             self.prune(states)
-            self.plot_gamma()
+            #  self.plot_gamma(title='V(b) for horizon T = ' + str(k + 1))
 
     @staticmethod
     def compute_indices(k, m):
@@ -142,13 +140,14 @@ class ValueIteration(Solver):
 
         self.gamma = Q
 
-    def plot_gamma(self):
+    def plot_gamma(self, title):
         """
         Plot the current set of alpha vectors over the belief simplex
         :return:
         """
         fig = plt.figure()
-        ax = fig.gca(projection='3d')
+        ax = Axes3D(fig)
+        plt.title(title)
         pts = 20
         x = np.linspace(0., 1., num=pts)
         y = np.linspace(0., 1., num=pts)
@@ -161,8 +160,7 @@ class ValueIteration(Solver):
                 for j in xrange(pts):
                     Z[i][j] = np.dot(av.v, np.array([x[i], y[j]]))
 
-            ax.plot_surface(X, Y, Z, rstride=1, cstride=1, color=cmap(color_idx),
-                                   linewidth=0, antialiased=False)
+            ax.plot_surface(X, Y, Z, rstride=1, cstride=1, color=cmap(color_idx), linewidth=0, antialiased=False)
             color_idx += 1
         plt.xlabel('p1')
         plt.ylabel('p2')
@@ -195,6 +193,7 @@ class ValueIteration(Solver):
         for av in vector_set:
             v = np.dot(av.v, belief)
             if v > max_v:
+                max_v = v
                 best = av
         if best is None:
             raise ValueError('Vector set should not be empty')

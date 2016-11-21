@@ -1,5 +1,3 @@
-__author__ = 'patrickemami'
-
 from pomdpy.discrete_pomdp import DiscreteAction
 
 
@@ -29,8 +27,6 @@ class RockAction(DiscreteAction):
         else:
             self.rock_no = 0
 
-
-    # Override
     def copy(self):
         return RockAction(self.bin_number)
 
@@ -66,3 +62,6 @@ class RockAction(DiscreteAction):
         else:
             action = "UNDEFINED ACTION"
         return action
+
+    def distance_to(self, other_point):
+        pass
