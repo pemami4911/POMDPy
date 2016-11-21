@@ -58,18 +58,20 @@ class Agent(object):
         eps = self.model.epsilon_start
         solver = self.solver_factory(self)
 
+        # Perform behaviors that must done for each run
+        self.model.reset_for_run()
+
         for i in range(num_runs):
             # Reset the run stats
             self.run_results = Results()
 
-            # Perform behaviors that must done for each run
-            self.model.reset_for_run()
-
             if isinstance(solver, POMCP):
+                self.model.reset_for_run()
                 eps = self.run_mcts(i + 1, eps)
             elif isinstance(solver, SARSA):
                 eps = self.run_episodic(solver, i + 1, eps)
             elif isinstance(solver, ValueIteration):
+                self.model.reset_for_run()
                 self.run_value_iteration(solver, i + 1)
 
             if self.experiment_results.time.running_total > self.model.max_timeout:

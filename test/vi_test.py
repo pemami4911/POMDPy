@@ -25,5 +25,5 @@ if __name__ == '__main__':
             res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub, bounds=(0, None))
 
             if res.x[2] > 0.0:
-                print('alpha-vector ' + str(i) + ' is dominated by alpha-vector ' + str(j))
-
+                assert np.array_equal(i, np.array([-40, -5]))
+                assert np.array_equal(j, np.array([40, 55]))

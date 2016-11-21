@@ -54,11 +54,6 @@ To run the Tiger problem with SARSA:
     ./main.py --env TigerProblem --solver SARSA --max_steps 5 --epsilon_start 0.5 --n_runs 100 --seed 123
        
 See `pompdy/README.md` for details about implementing new POMDP benchmark problems.
-
-## Running tests ##
-Unit tests can be ran with 
-    
-    py.test test/unit_tests.py
     
 ## Dependencies ##
 
