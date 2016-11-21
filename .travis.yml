@@ -26,4 +26,5 @@ install:
   - python setup.py install
 
 script:
-  ./test/run_sarsa
+  - pwd
+  - ./test/run_sarsa
