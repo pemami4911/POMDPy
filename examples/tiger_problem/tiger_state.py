@@ -21,7 +21,7 @@ class TigerState(DiscreteState):
         door_open = False, door_prizes[0] = 1, and door_prizes[1] = 0
 
         --------------------------------------------------------------
-        This isn't really another "state", just used for showing that the Markov Chain has reached an absorbing state
+        Placeholder for showing that the Markov Chain has reached an absorbing state ->
 
         door_open = True, door_prizes[0] = X, and door_prizes[1] = X
     """

@@ -43,12 +43,13 @@ class PositionAndRockData(HistoricalData):
         self.all_rock_data = all_rock_data
 
         # Holds reference to the function for generating legal actions
-        if self.model.sys_cfg["preferred_actions"] is "True":
+        if self.model.preferred_actions:
             self.legal_actions = self.generate_smart_actions
         else:
             self.legal_actions = self.generate_legal_actions
 
-    def copy_rock_data(self, other_data):
+    @staticmethod
+    def copy_rock_data(other_data):
         new_rock_data = []
         [new_rock_data.append(RockData()) for _ in other_data]
         for i, j in itertools.izip(other_data, new_rock_data):

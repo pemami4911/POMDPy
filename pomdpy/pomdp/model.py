@@ -1,7 +1,6 @@
 import abc
-import json
 import random
-from pomdpy.util import config_parser
+import numpy as np
 
 
 class Model(object):
@@ -22,9 +21,27 @@ class Model(object):
     """
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, problem_name):
-        self.problem_name = problem_name
-        self.sys_cfg = json.load(open(config_parser.sys_cfg, "r"))
+    def __init__(self, args):
+        self.problem_name = args.env
+
+        self.discount = args.discount
+        self.epsilon_start = args.epsilon_start
+        self.epsilon_end = args.epsilon_end
+        self.epsilon_decay = args.epsilon_decay
+        self.max_steps = args.max_steps
+        self.n_sims = args.n_sims
+        self.n_runs = args.n_runs
+        self.test_run = args.test_run
+        self.max_timeout = args.max_timeout
+        self.ucb_coefficient = args.ucb_coefficient
+        self.n_start_states = args.n_start_states
+        self.min_particle_count = args.min_particle_count
+        self.max_particle_count = args.max_particle_count
+        self.max_depth = args.max_depth
+        self.preferred_actions = args.preferred_actions
+        self.action_selection_timeout = args.action_selection_timeout
+
+        np.random.seed(args.seed)
 
     @abc.abstractmethod
     def reset_for_simulation(self):
@@ -76,10 +93,43 @@ class Model(object):
         """
 
     @abc.abstractmethod
+    def sample_state_informed(self, belief):
+        """
+        :param belief:
+        :return:
+        """
+
+    @staticmethod
+    def get_initial_belief_state():
+        """
+        Return an np.array of initial belief probabilities for each state
+        :return:
+        """
+        pass
+
+    @abc.abstractmethod
+    def belief_update(self, old_belief, action, observation):
+        """
+        Use bayes filter to update belief distribution
+        :param old_belief:
+        :param action
+        :param observation
+        :return:
+        """
+
+    @abc.abstractmethod
     def get_all_states(self):
         """
         :return: list of enumerated states (discrete) or range of states (continuous)
         """
+
+    @staticmethod
+    def get_transition_matrix():
+        """
+        Transition probability matrix, for value iteration
+        :return:
+        """
+        pass
 
     @abc.abstractmethod
     def get_all_actions(self):
@@ -92,6 +142,22 @@ class Model(object):
         """
         :return: list of enumerated observations (discrete) or range of observations (continuous)
         """
+
+    @staticmethod
+    def get_observation_matrix():
+        """
+        Observation probability matrix
+        :return:
+        """
+        pass
+
+    @staticmethod
+    def get_reward_matrix():
+        """
+        Return reward matrix
+        :return:
+        """
+        pass
 
     @abc.abstractmethod
     def get_legal_actions(self, state):

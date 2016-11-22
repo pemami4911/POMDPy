@@ -32,6 +32,3 @@ class DiscreteAction(Point):
         Returns a proper copy of the Discrete Action
         :return:
         """
-
-    def distance_to(self, other_discrete_action):
-        pass

@@ -11,27 +11,34 @@ This project has been conducted strictly for research purposes. If you would lik
 
 ## Installation ##
 Download the files as a zip or clone into the repository.
+
+    git clone https://github.com/pemami4911/POMDPy.git
+    
 From the root directory of the project, run
  
-    python setup.py install
+    pip install -r requirements.txt
+    python setup.py install 
 
-## POMCP and SARSA ##
+## Supported Solvers ##
 
-So far, there are implementations of POMCP (Q-learning and PO-UCT with MCTS) and SARSA. The main difference between the two algorithms is that POMCP uses the off-policy Q-Learning
-algorithm and the UCT action-selection strategy. SARSA uses an on-policy variant of TD-Learning. 
+* [POMCP](https://github.com/pemami4911/POMDPy/blob/master/pomdpy/solvers/pomcp.py)
+* [SARSA](https://github.com/pemami4911/POMDPy/blob/master/pomdpy/solvers/sarsa.py)
+* [Value Iteration](https://github.com/pemami4911/POMDPy/blob/master/pomdpy/solvers/value_iteration.py)
 
-Both algorithms encode the action-value function as a belief search tree. POMCP is an anytime planner that approximates the action-value
-estimates of the current belief via Monte-Carlo before taking a step. This is known as Monte-Carlo Tree Search (MCTS).
+The main difference between POMCP and SARSA is that POMCP uses the off-policy Q-Learning
+algorithm and the UCT action-selection strategy. SARSA uses an on-policy variant of TD-Learning. **Both algorithms 
+encode the action-value function as a belief search tree.** POMCP is an anytime planner that approximates the action-value
+estimates of the current belief via Monte-Carlo simulations before taking a step. This is known as Monte-Carlo Tree Search (MCTS).
 SARSA is episodic, in that the agent repeatedly carries out full episodes 
 and uses the generated history of experiences to back-up the action-value estimates up the taken path to the root of the belief tree. 
+
+I have also implemented exact Value Iteration with Lark's pruning algorithm. This can only be used on the Tiger Problem. 
 
 ## Running an example ##
 Currently, you can test POMCP and SARSA on the classic Tiger and RockSample POMDPs. 
 
 You can optionally edit the RockSample configuration file `rock_problem_config.json` to change the map size or environment parameters.
 This file is located in `pompdy/config`.
-
-Edit the run parameters in `config.json`.
 The following maps are available:
 * RockSample(7, 8), a 7 x 7 grid with 8 rocks.
 * RockSample(11, 11), an 11 x 11 grid with 11 rocks
@@ -40,35 +47,26 @@ The following maps are available:
 
 To run the RockSample problem with POMCP:
 
-    python run_pomdp.py --env RockProblem --solver POMCP --use_sims
+    ./main.py --env RockProblem --solver POMCP --max_steps 200 --epsilon_start 1.0 --epsilon_decay 0.01 --n_runs 10 --n_sims 500  --preferred_actions --seed 123
         
-To run the episodic Tiger problem with SARSA: 
+To run the Tiger problem with SARSA: 
 
-    python run_pomdp.py --env TigerProblem --solver SARSA
+    ./main.py --env TigerProblem --solver SARSA --max_steps 5 --epsilon_start 0.5 --n_runs 100 --seed 123
        
-See `pompdy/README.md` for more implementation details.
-
-## Running tests ##
-Unit tests can be ran with 
-    
-    py.test test/unit_tests.py
+See `pompdy/README.md` for details about implementing new POMDP benchmark problems.
     
 ## Dependencies ##
 
 This project uses:
 
 * Python 2.7.9
-* numpy 1.9.2
+* numpy 1.11.2
+* matplotlib 1.4.3
+* scipy 0.15.1
 * pytest 2.7.0
 
-Used for plotting results [NOT CURRENTLY FUNCTIONAL]:
-
-* matplotlib 1.4.3
-
 ## TODO ##
+* [ ] Random baseline solver
 * [ ] Add more unit tests
 * [ ] Add additional benchmark problems 
-* [ ] Supply an easy-to-use configuration schema to specify a POMDP and auto-generate the classes
-* [ ] Add ways of creating/learning generative models
-* [x] Clean up output displayed to the user
-* [ ] Continuous-time POMDPs? DNN-POMDPs? AIXI?
+* [ ] Continuous-action/state space POMDPs

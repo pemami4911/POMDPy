@@ -2,12 +2,12 @@ import time
 import numpy as np
 from pomdpy.util import console
 from pomdpy.action_selection import ucb_action
-from solver import Solver
+from belief_tree_solver import BeliefTreeSolver
 
 module = "pomcp"
 
 
-class POMCP(Solver):
+class POMCP(BeliefTreeSolver):
     """
     Monte-Carlo Tree Search implementation, from POMCP
     """
@@ -16,7 +16,7 @@ class POMCP(Solver):
     UCB_N = 10000
     UCB_n = 100
 
-    def __init__(self, agent, model):
+    def __init__(self, agent):
         """
         Initialize an instance of the POMCP solver
         :param agent:
@@ -33,16 +33,17 @@ class POMCP(Solver):
                 if n is 0:
                     self.fast_UCB[N][n] = np.inf
                 else:
-                    self.fast_UCB[N][n] = model.sys_cfg["ucb_coefficient"] * np.sqrt(np.log(N + 1) / n)
+                    self.fast_UCB[N][n] = agent.model.ucb_coefficient * np.sqrt(np.log(N + 1) / n)
 
     @staticmethod
-    def reset(agent, model):
+    def reset(agent):
         """
         Generate a new POMCP solver
 
+        :param agent:
         Implementation of abstract method
         """
-        return POMCP(agent, model)
+        return POMCP(agent)
 
     def find_fast_ucb(self, total_visit_count, action_map_entry_visit_count, log_n):
         """
@@ -59,38 +60,40 @@ class POMCP(Solver):
         if action_map_entry_visit_count == 0:
             return np.inf
         else:
-            return self.model.sys_cfg["ucb_coefficient"] * np.sqrt(log_n / action_map_entry_visit_count)
+            return self.model.ucb_coefficient * np.sqrt(log_n / action_map_entry_visit_count)
 
-    def select_action(self, eps, start_time):
+    def select_eps_greedy_action(self, eps, start_time):
         """
         Starts off the Monte-Carlo Tree Search and returns the selected action. If the belief tree
                 data structure is disabled, random rollout is used.
         """
         if self.disable_tree:
             self.rollout_search(self.belief_tree_index)
-        elif self.agent.use_sims:
+        else:
             self.monte_carlo_approx(eps, start_time)
         return ucb_action(self, self.belief_tree_index, True)
 
-    def simulate(self, state, eps, start_time):
+    def simulate(self, belief_node, eps, start_time):
         """
-        :param state:
+        :param belief_node:
         :return:
         """
-        return self.traverse(state, self.belief_tree_index, 0, start_time)
+        return self.traverse(belief_node, 0, start_time)
 
-    def traverse(self, state, belief_node, tree_depth, start_time):
+    def traverse(self, belief_node, tree_depth, start_time):
         delayed_reward = 0
 
+        state = belief_node.sample_particle()
+
         # Time expired
-        if time.time() - start_time > self.model.sys_cfg["action_selection_time_out"]:
+        if time.time() - start_time > self.model.action_selection_timeout:
             console(4, module, "action selection timeout")
             return 0
 
         action = ucb_action(self, belief_node, False)
 
         # Search horizon reached
-        if tree_depth >= self.model.sys_cfg["maximum_depth"]:
+        if tree_depth >= self.model.max_depth:
             console(4, module, "Search horizon reached")
             return 0
 
@@ -100,16 +103,16 @@ class POMCP(Solver):
         if child_belief_node is None and not step_result.is_terminal and belief_node.action_map.total_visit_count > 0:
             child_belief_node, added = belief_node.create_or_get_child(action, step_result.observation)
 
-        if not step_result.is_terminal:
+        if not step_result.is_terminal or not is_legal:
             tree_depth += 1
             if child_belief_node is not None:
                 # Add S' to the new belief node
                 # Add a state particle with the new state
-                if child_belief_node.state_particles.__len__() < self.model.sys_cfg["max_particle_count"]:
+                if child_belief_node.state_particles.__len__() < self.model.max_particle_count:
                     child_belief_node.state_particles.append(step_result.next_state)
-                delayed_reward = self.traverse(step_result.next_state, child_belief_node, tree_depth, start_time)
+                delayed_reward = self.traverse(child_belief_node, tree_depth, start_time)
             else:
-                delayed_reward = self.rollout(state, belief_node.data.generate_legal_actions())
+                delayed_reward = self.rollout(belief_node)
             tree_depth -= 1
         else:
             console(4, module, "Reached terminal state.")
@@ -121,7 +124,7 @@ class POMCP(Solver):
         q_value = action_mapping_entry.mean_q_value
 
         # off-policy Q learning update rule
-        q_value += (step_result.reward + (self.model.sys_cfg["discount"] * delayed_reward) - q_value)
+        q_value += (step_result.reward + (self.model.discount * delayed_reward) - q_value)
 
         action_mapping_entry.update_visit_count(1)
         action_mapping_entry.update_q_value(q_value)

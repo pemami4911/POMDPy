@@ -1,9 +1,5 @@
 import random
-import json
 import numpy as np
-from pomdpy.util import config_parser
-
-config = json.load(open(config_parser.sys_cfg, "r"))
 
 
 # UCB1 action selection algorithm

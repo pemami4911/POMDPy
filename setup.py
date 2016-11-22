@@ -1,9 +1,7 @@
-__author__ = 'Patrick Emami'
-
 from setuptools import setup, find_packages
 
-VERSION = '1.0.2'
-DESCRIPTION = 'A Python Framework for implementing Discrete and Continuous POMDPs'
+VERSION = '1.1.0'
+DESCRIPTION = 'POMDPy: POMDPs in Python'
 
 setup(name='POMDPy',
       version=VERSION,
@@ -13,8 +11,9 @@ setup(name='POMDPy',
       url='http://pemami4911.github.io/POMDPy/',
       packages=find_packages(),
       package_data={
-          'pomdpy': ['config/*.json', 'config/*.txt']
+          'pomdpy': ['config/*.json', 'config/*.txt'],
+          'test': ['*.sh']
           },
-      license='MIT',
-      install_requires='numpy'
+      license='MIT License',
+      install_requires=['numpy==1.11.2', 'matplotlib>=1.4.3', 'pytest==2.7.0', 'scipy>=0.15.1']
       )

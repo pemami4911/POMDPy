@@ -1,7 +1,5 @@
 from pomdpy.discrete_pomdp import DiscreteAction
 
-__author__ = 'patrickemami'
-
 
 class ActionType(object):
     """
@@ -40,3 +38,6 @@ class TigerAction(DiscreteAction):
             print "Opening door 2"
         else:
             print "Unknown action type"
+
+    def distance_to(self, other_point):
+        pass

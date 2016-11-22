@@ -1,5 +1,3 @@
-__author__ = 'patrickemami'
-
 import abc
 
 
@@ -20,5 +18,6 @@ class Point(object):
     def distance_to(self, other_point):
         """
         Returns the distance from this point to another point
+        :param other_point:
         :return:
         """
