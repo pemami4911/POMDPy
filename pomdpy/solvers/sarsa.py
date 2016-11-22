@@ -65,7 +65,7 @@ class SARSA(BeliefTreeSolver):
 
         action_mapping_entry = self.belief_tree_index.action_map.get_entry(action.bin_number)
 
-        if step_result.is_terminal or depth >= self.model.max_depth:
+        if step_result.is_terminal or depth >= self.model.max_depth or not is_legal:
             action_mapping_entry.update_visit_count(1)
             action_mapping_entry.update_q_value(step_result.reward)
             return step_result.reward

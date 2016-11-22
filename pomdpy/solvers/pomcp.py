@@ -103,7 +103,7 @@ class POMCP(BeliefTreeSolver):
         if child_belief_node is None and not step_result.is_terminal and belief_node.action_map.total_visit_count > 0:
             child_belief_node, added = belief_node.create_or_get_child(action, step_result.observation)
 
-        if not step_result.is_terminal:
+        if not step_result.is_terminal or not is_legal:
             tree_depth += 1
             if child_belief_node is not None:
                 # Add S' to the new belief node

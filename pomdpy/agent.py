@@ -58,7 +58,6 @@ class Agent(object):
         eps = self.model.epsilon_start
         solver = self.solver_factory(self)
 
-        # Perform behaviors that must done for each run
         self.model.reset_for_run()
 
         for i in range(num_runs):
@@ -66,13 +65,13 @@ class Agent(object):
             self.run_results = Results()
 
             if isinstance(solver, POMCP):
-                self.model.reset_for_run()
                 eps = self.run_mcts(i + 1, eps)
+                self.model.reset_for_run()
             elif isinstance(solver, SARSA):
                 eps = self.run_episodic(solver, i + 1, eps)
             elif isinstance(solver, ValueIteration):
-                self.model.reset_for_run()
                 self.run_value_iteration(solver, i + 1)
+                self.model.reset_for_run()
 
             if self.experiment_results.time.running_total > self.model.max_timeout:
                 console(2, module, 'Timed out after ' + str(i) + ' runs in ' +
@@ -114,7 +113,7 @@ class Agent(object):
             # show the step result
             self.display_step_result(i, step_result)
 
-            if not step_result.is_terminal:
+            if not step_result.is_terminal or not is_legal:
                 solver.update(step_result)
 
             # Extend the history sequence
@@ -122,7 +121,7 @@ class Agent(object):
             HistoryEntry.update_history_entry(new_hist_entry, step_result.reward,
                                               step_result.action, step_result.observation, step_result.next_state)
 
-            if step_result.is_terminal:
+            if step_result.is_terminal or not is_legal:
                 console(3, module, 'Terminated after episode step ' + str(i + 1))
                 break
 
@@ -191,7 +190,7 @@ class Agent(object):
                 # show the step result
                 self.display_step_result(i, step_result)
 
-                if not step_result.is_terminal:
+                if not step_result.is_terminal or not is_legal:
                     solver.update(step_result, prune=False)
 
                 # Extend the history sequence
@@ -199,7 +198,7 @@ class Agent(object):
                 HistoryEntry.update_history_entry(new_hist_entry, step_result.reward,
                                                   step_result.action, step_result.observation, step_result.next_state)
 
-                if step_result.is_terminal:
+                if step_result.is_terminal or not is_legal:
                     console(3, module, 'Terminated after episode step ' + str(i + 1))
                     break
 
