@@ -12,7 +12,7 @@
   <body>
     <section class="page-header">
       <h1 class="project-name">POMDPy</h1>
-      <h2 class="project-tagline">A framework for implementing discrete or continuous POMDPs in Python. Monte-Carlo Tree Search is used as the default POMDP solver (modeled after the popular POMCP solver).</h2>
+      <h2 class="project-tagline">POMDPs in Python</h2>
       <a href="https://github.com/pemami4911/POMDPy" class="btn">View on GitHub</a>
       <a href="https://github.com/pemami4911/POMDPy/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/pemami4911/POMDPy/tarball/master" class="btn">Download .tar.gz</a>
@@ -24,62 +24,73 @@
 
 <p><img src="https://travis-ci.org/pemami4911/POMDPy.svg?branch=master" alt="Build"></p>
 
-<p>This open-source project contains a framework for implementing discrete or continuous POMDPs in Python. The organization of the code was inspired by <a href="http://robotics.itee.uq.edu.au/%7Ehannakur/dokuwiki/doku.php?id=wiki:tapir">TAPIR</a> and the <a href="http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html">POMCP</a> algorithm.</p>
+<p>This open-source project contains a framework for implementing discrete action/state POMDPs in Python. This work was inspired by <a href="http://robotics.itee.uq.edu.au/%7Ehannakur/dokuwiki/doku.php?id=wiki:tapir">TAPIR</a> and the <a href="http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html">POMCP</a> algorithm.</p>
 
 <p><a href="http://www.pomdp.org/tutorial/index.shtml">What the heck is a POMDP?</a></p>
 
 <p>Here's David Silver and Joel Veness's paper on POMCP, a ground-breaking POMDP solver. <a href="http://papers.nips.cc/paper/4031-monte-carlo-planning-in-large-pomdps.pdf">Monte-Carlo Planning in Large POMDPs</a></p>
 
-<p>This is project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments or suggestions, feel free to send me a pull request or send me an email at <a href="mailto:pemami@ufl.edu">pemami@ufl.edu</a>.  </p>
+<p>This project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments or suggestions, feel free to send me a pull request or send me an email at <a href="mailto:pemami@ufl.edu">pemami@ufl.edu</a>.  </p>
 
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
 
-<p>Download the files as a zip or clone into the repository.
-From the root directory of the project, run</p>
+<p>Download the files as a zip or clone into the repository.</p>
 
-<pre><code>python setup.py install
+<pre><code>git clone https://github.com/pemami4911/POMDPy.git
+</code></pre>
+
+<p>From the root directory of the project, run</p>
+
+<pre><code>pip install -r requirements.txt
+python setup.py install 
 </code></pre>
 
 <h2>
-<a id="running-a-sample" class="anchor" href="#running-a-sample" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running a sample</h2>
+<a id="supported-solvers" class="anchor" href="#supported-solvers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Supported Solvers</h2>
 
-<p>You can optionally tweak the system and RockSample configuration files <code>system-config.json</code> and <code>rock_problem-config.json</code>, which are located in <code>pompdy/config</code>.
+<ul>
+<li><a href="https://github.com/pemami4911/POMDPy/blob/master/pomdpy/solvers/pomcp.py">POMCP</a></li>
+<li><a href="https://github.com/pemami4911/POMDPy/blob/master/pomdpy/solvers/sarsa.py">SARSA</a></li>
+<li><a href="https://github.com/pemami4911/POMDPy/blob/master/pomdpy/solvers/value_iteration.py">Value Iteration</a></li>
+</ul>
+
+<p>The main difference between POMCP and SARSA is that POMCP uses the off-policy Q-Learning
+algorithm and the UCT action-selection strategy. SARSA uses an on-policy variant of TD-Learning. <strong>Both algorithms 
+encode the action-value function as a belief search tree.</strong> POMCP is an anytime planner that approximates the action-value
+estimates of the current belief via Monte-Carlo simulations before taking a step. This is known as Monte-Carlo Tree Search (MCTS).
+SARSA is episodic, in that the agent repeatedly carries out full episodes 
+and uses the generated history of experiences to back-up the action-value estimates up the taken path to the root of the belief tree. </p>
+
+<p>I have also implemented exact Value Iteration with Lark's pruning algorithm. This can only be used on the Tiger Problem. </p>
+
+<h2>
+<a id="running-an-example" class="anchor" href="#running-an-example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running an example</h2>
+
+<p>Currently, you can test POMCP and SARSA on the classic Tiger and RockSample POMDPs. </p>
+
+<p>You can optionally edit the RockSample configuration file <code>rock_problem_config.json</code> to change the map size or environment parameters.
+This file is located in <code>pompdy/config</code>.
 The following maps are available:</p>
 
 <ul>
 <li>RockSample(7, 8), a 7 x 7 grid with 8 rocks.</li>
 <li>RockSample(11, 11), an 11 x 11 grid with 11 rocks</li>
 <li>RockSample(15, 15), a 15 x 15 grid with 15 rocks</li>
-<li>As well as some others, such as (7, 2), (7, 3), (12, 12), and more. It is easy to make new maps</li>
+<li>As well as a few others, such as (7, 2), (7, 3), (12, 12), and more. It is fairly easy to make new maps.</li>
 </ul>
 
-<p>To run the RockSample problem with MCTS:</p>
+<p>To run the RockSample problem with POMCP:</p>
 
-<pre><code>python run_pomdp.py 1 1
+<pre><code>./main.py --env RockProblem --solver POMCP --max_steps 200 --epsilon_start 1.0 --epsilon_decay 0.01 --n_runs 10 --n_sims 500  --preferred_actions --seed 123
 </code></pre>
 
-<p>To run the RockSample problem with SARSA:</p>
+<p>To run the Tiger problem with SARSA: </p>
 
-<pre><code>python run_pomdp.py 1 2
+<pre><code>./main.py --env TigerProblem --solver SARSA --max_steps 5 --epsilon_start 0.5 --n_runs 100 --seed 123
 </code></pre>
 
-<p>To run the Tiger sample problem with MCTS: </p>
-
-<pre><code>python run_pomdp.py 2 1
-</code></pre>
-
-<p>Support for the Tiger sample problem with SARSA is not done yet- feel free to submit a pull request! </p>
-
-<p>See <code>pompdy/README.md</code> for more implementation details.</p>
-
-<h2>
-<a id="running-tests" class="anchor" href="#running-tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running tests</h2>
-
-<p>Unit tests can be ran with </p>
-
-<pre><code>py.test test/unit_tests.py
-</code></pre>
+<p>See <code>pompdy/README.md</code> for details about implementing new POMDP benchmark problems.</p>
 
 <h2>
 <a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependencies</h2>
@@ -88,27 +99,19 @@ The following maps are available:</p>
 
 <ul>
 <li>Python 2.7.9</li>
-<li>numpy 1.9.2</li>
-<li>pytest 2.7.0</li>
-</ul>
-
-<p>Optional, for extended functionality:</p>
-
-<ul>
+<li>numpy 1.11.2</li>
 <li>matplotlib 1.4.3</li>
-<li>pygame 1.9.1 </li>
+<li>scipy 0.15.1</li>
 </ul>
 
 <h2>
 <a id="todo" class="anchor" href="#todo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>TODO</h2>
 
 <ul>
+<li>[ ] Random baseline solver</li>
 <li>[ ] Add more unit tests</li>
 <li>[ ] Add additional benchmark problems </li>
-<li>[ ] Supply an easy-to-use configuration schema to specify a POMDP and auto-generate the classes</li>
-<li>[ ] Add ways of creating/learning generative models</li>
-<li>[x] Clean up output displayed to the user</li>
-<li>[ ] Continuous-time POMDPs? DNN-POMDPs? AIXI?</li>
+<li>[ ] Continuous-action/state space POMDPs</li>
 </ul>
 
       <footer class="site-footer">
