@@ -1,4 +1,6 @@
-from belief_structure import BeliefStructure
+from __future__ import absolute_import
+from builtins import range
+from .belief_structure import BeliefStructure
 
 
 class QTable(BeliefStructure):

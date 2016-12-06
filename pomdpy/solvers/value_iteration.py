@@ -1,4 +1,7 @@
-from solver import Solver
+from __future__ import absolute_import
+from builtins import range
+from builtins import object
+from .solver import Solver
 from scipy.optimize import linprog
 import numpy as np
 from itertools import product
@@ -52,7 +55,7 @@ class ValueIteration(Solver):
         self.gamma.add(dummy)
 
         # start with 1 step planning horizon, up to horizon-length planning horizon
-        for k in xrange(horizon):
+        for k in range(horizon):
             # new set of alpha vectors to add to set gamma
             gamma_k = set()
             # Compute the new coefficients for the new alpha-vectors
@@ -92,7 +95,7 @@ class ValueIteration(Solver):
         :return: list of lists, where each list contains m elements, and each element is in [0, k-1].
         Total should be k^m elements
         """
-        x = range(k)
+        x = list(range(k))
         return [p for p in product(x, repeat=m)]
 
     def prune(self, n_states):
@@ -156,8 +159,8 @@ class ValueIteration(Solver):
         cmap = self.get_cmap(len(self.gamma))
         color_idx = 0
         for av in self.gamma:
-            for i in xrange(pts):
-                for j in xrange(pts):
+            for i in range(pts):
+                for j in range(pts):
                     Z[i][j] = np.dot(av.v, np.array([x[i], y[j]]))
 
             ax.plot_surface(X, Y, Z, rstride=1, cstride=1, color=cmap(color_idx), linewidth=0, antialiased=False)

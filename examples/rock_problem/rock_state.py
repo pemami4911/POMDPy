@@ -1,6 +1,5 @@
-__author__ = 'patrickemami'
-
-import itertools
+from __future__ import print_function
+from builtins import range
 from pomdpy.discrete_pomdp import DiscreteState
 
 
@@ -26,7 +25,7 @@ class RockState(DiscreteState):
         assert isinstance(other_rock_state, RockState)
         distance = 0
         # distance = self.position.manhattan_distance(other_rock_state.position)
-        for i, j in itertools.izip(self.rock_states, other_rock_state.rock_states):
+        for i, j in zip(self.rock_states, other_rock_state.rock_states):
             if i != j:
                 distance += 1
         return distance
@@ -62,7 +61,7 @@ class RockState(DiscreteState):
         """
         self.position.print_position()
 
-        print 'Good: {',
+        print('Good: {', end=' ')
         good_rocks = []
         bad_rocks = []
         for i in range(0, self.rock_states.__len__()):
@@ -71,11 +70,11 @@ class RockState(DiscreteState):
             else:
                 bad_rocks.append(i)
         for j in good_rocks:
-            print j,
-        print '}; Bad: {',
+            print(j, end=' ')
+        print('}; Bad: {', end=' ')
         for k in bad_rocks:
-            print k,
-        print '}'
+            print(k, end=' ')
+        print('}')
 
     def as_list(self):
         """

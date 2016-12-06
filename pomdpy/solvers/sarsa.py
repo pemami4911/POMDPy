@@ -1,4 +1,5 @@
-from belief_tree_solver import BeliefTreeSolver
+from __future__ import absolute_import
+from .belief_tree_solver import BeliefTreeSolver
 from pomdpy.action_selection import e_greedy
 from pomdpy.util import console
 import time

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 from pomdpy import Agent
 from pomdpy.solvers import POMCP, SARSA, ValueIteration
 from pomdpy.log import init_logger
@@ -16,6 +17,7 @@ if __name__ == '__main__':
     parser.add_argument('--epsilon_start', default=0.2, type=float)
     parser.add_argument('--epsilon_end', default=0.1, type=float)
     parser.add_argument('--epsilon_decay', default=0.05, type=float)
+    parser.add_argument('--planning_horizon', default=5, type=int, help='Number of lookahead steps for value iteration')
     parser.add_argument('--max_steps', default=200, type=int, help='Max num of steps per episode')
     parser.add_argument('--n_sims', default=500, type=int, help='Num of MC sims to do at each belief node in MCTS')
     parser.add_argument('--n_runs', default=100, type=int, help='Num of runs of the experiment to conduct')
@@ -26,13 +28,13 @@ if __name__ == '__main__':
                                                     'specify whether smart actions should be used')
     parser.add_argument('--ucb_coefficient', default=3.0, type=float, help='Coefficient for UCB algorithm used by MCTS')
     parser.add_argument('--n_start_states', default=2000, type=int, help='Num of state particles to generate for root '
-                                                                        'belief node in MCTS')
+                        'belief node in MCTS')
     parser.add_argument('--min_particle_count', default=1000, type=int, help='Lower bound on num of particles a belief '
-                                                                            'node can have in MCTS')
+                        'node can have in MCTS')
     parser.add_argument('--max_particle_count', default=2000, type=int, help='Upper bound on num of particles a belief '
-                                                                            'node can have in MCTS')
+                        'node can have in MCTS')
     parser.add_argument('--max_depth', default=100, type=int, help='Max depth for a DFS of the belief search tree in '
-                                                                   'MCTS')
+                        'MCTS')
     parser.add_argument('--action_selection_timeout', default=60, type=int, help='Max num of secs for action selection')
 
     parser.set_defaults(preferred_actions=False)
@@ -64,4 +66,4 @@ if __name__ == '__main__':
         agent = Agent(env, solver)
         agent.discounted_return()
     else:
-        print 'Unknown env %s' % args.env
+        print('Unknown env %s' % args.env)

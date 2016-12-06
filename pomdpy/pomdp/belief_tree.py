@@ -1,5 +1,6 @@
-import belief_node
-import belief_structure
+from __future__ import absolute_import
+from . import belief_node
+from . import belief_structure
 
 
 class BeliefTree(belief_structure.BeliefStructure):
@@ -75,7 +76,7 @@ class BeliefTree(belief_structure.BeliefStructure):
             entry.child_node.parent_entry = None
             entry.map = None
             entry.child_node.observation_map.owner = None
-            for observation_entry in entry.child_node.observation_map.child_map.values():
+            for observation_entry in list(entry.child_node.observation_map.child_map.values()):
                 self.prune_node(observation_entry.child_node)
                 observation_entry.map = None
                 observation_entry.child_node = None

@@ -1,4 +1,4 @@
-__author__ = 'patrickemami'
+from builtins import object
 
 
 class ActionNode(object):

@@ -1,13 +1,13 @@
-__author__ = 'patrickemami'
-
+from __future__ import print_function
+from builtins import str
+from builtins import object
 import numpy as np
 
 
 class GridPosition(object):
-
-    '''
+    """
     Supported Constructors - GripPosition(i,j) or GridPosition() - defaults to 0,0
-    '''
+    """
     def __init__(self, i=0, j=0):
         if i is None and j is None:
             self.i = 0
@@ -20,11 +20,11 @@ class GridPosition(object):
         return self.i == other.i and self.j == other.j
 
     def print_position(self):
-        print '(',
-        print self.i,
-        print ',',
-        print self.j,
-        print ')'
+        print('(', end=' ')
+        print(self.i, end=' ')
+        print(',', end=' ')
+        print(self.j, end=' ')
+        print(')')
 
     def to_string(self):
         return '(' + str(self.i) + ',' + str(self.j) + ')'

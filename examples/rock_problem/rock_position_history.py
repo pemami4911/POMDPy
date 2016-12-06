@@ -1,11 +1,17 @@
+from __future__ import absolute_import
+from __future__ import division
+from builtins import str
+from builtins import range
+from past.utils import old_div
+from builtins import object
 import numpy as np
 from pomdpy.pomdp import HistoricalData
-from rock_action import ActionType
+from .rock_action import ActionType
 import itertools
 
 
 # Utility function
-class RockData:
+class RockData(object):
     """
     Stores data about each rock
     """
@@ -52,7 +58,7 @@ class PositionAndRockData(HistoricalData):
     def copy_rock_data(other_data):
         new_rock_data = []
         [new_rock_data.append(RockData()) for _ in other_data]
-        for i, j in itertools.izip(other_data, new_rock_data):
+        for i, j in zip(other_data, new_rock_data):
             j.check_count = i.check_count
             j.chance_good = i.chance_good
             j.goodness_number = i.goodness_number
@@ -126,13 +132,13 @@ class PositionAndRockData(HistoricalData):
                 # print "Had to reset RockData"
                 rock_data = RockData()
             else:
-                rock_data.chance_good = likelihood_good / (likelihood_good + likelihood_bad)
+                rock_data.chance_good = old_div(likelihood_good, (likelihood_good + likelihood_bad))
 
         return next_data
 
     def generate_legal_actions(self):
         legal_actions = []
-        all_actions = xrange(0, 5 + self.model.n_rocks)
+        all_actions = range(0, 5 + self.model.n_rocks)
         new_pos = self.grid_position.copy()
         i = new_pos.i
         j = new_pos.j

@@ -1,9 +1,9 @@
-__author__ = 'patrickemami'
-
+from builtins import object
+from future.utils import with_metaclass
 import abc
 
 
-class ObservationMapping(object):
+class ObservationMapping(with_metaclass(abc.ABCMeta, object)):
     """
     An abstract base class that defines a mapping of observations to subsequent beliefs in the
     belief tree.
@@ -11,7 +11,6 @@ class ObservationMapping(object):
     Each of these edges must also store the statistics for that edge - in this case, this only
     consists of the visit count for that edge.
     """
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, action_node):
         self.owner = action_node
@@ -57,7 +56,7 @@ class ObservationMapping(object):
         :return:
         """
 
-class ObservationMappingEntry(object):
+class ObservationMappingEntry(with_metaclass(abc.ABCMeta, object)):
     """
     An interface that represents an edge in the belief tree between an action node and a
     subsequent belief node; this interface is provided so that observations can be grouped together
@@ -69,7 +68,6 @@ class ObservationMappingEntry(object):
     Apart from grouping observations together, the primary purpose of this entry is to store
     a visit count - i.e. the number of times this edge has been visited during searching.
     """
-    __metaclass__ = abc.ABCMeta
 
 
     @abc.abstractmethod

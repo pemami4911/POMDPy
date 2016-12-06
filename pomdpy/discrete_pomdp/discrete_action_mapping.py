@@ -1,5 +1,6 @@
-__author__ = 'patrickemami'
-
+from __future__ import division
+from builtins import range
+from past.utils import old_div
 from pomdpy.pomdp import ActionMapping, ActionMappingEntry
 from pomdpy.pomdp import ActionNode
 import numpy as np
@@ -71,7 +72,7 @@ class DiscreteActionMapping(ActionMapping):
 
     # Returns a shuffled list of all ActionMappingEntries associated with this mapping
     def get_all_entries(self):
-        all_actions = self.entries.values()
+        all_actions = list(self.entries.values())
         np.random.shuffle(all_actions)
         return all_actions
 
@@ -82,7 +83,7 @@ class DiscreteActionMapping(ActionMapping):
     # Otherwise we sample a new action using the first bin to be tried
     def get_next_action_to_try(self):
         unvisited_entries = []
-        for entry in self.entries.values():
+        for entry in list(self.entries.values()):
             # allow illegal entries
             # if entry.visit_count == 0:
             if entry.is_legal and entry.visit_count == 0:
@@ -101,7 +102,7 @@ class DiscreteActionMapping(ActionMapping):
         self.bin_sequence = self.pool.create_bin_sequence(self.owner)
 
         # reset the entries to false
-        for entry in self.entries.values():
+        for entry in list(self.entries.values()):
             entry.is_legal = False
 
         # Only entries in the sequence are legal
@@ -166,7 +167,7 @@ class DiscreteActionMappingEntry(ActionMappingEntry):
 
         # Average the Q value by taking the Total Q value of this entry divided by the
         # number of times this action has been tried
-        self.mean_q_value = self.total_q_value / self.visit_count
+        self.mean_q_value = old_div(self.total_q_value, self.visit_count)
 
         return self.mean_q_value != old_mean_q
 

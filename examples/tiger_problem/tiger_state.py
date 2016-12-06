@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import str
 from pomdpy.discrete_pomdp import DiscreteState
 
 
@@ -60,5 +62,5 @@ class TigerState(DiscreteState):
         return state + ' (' + str(self.door_prizes[0]) + ', ' + str(self.door_prizes[1]) + ')'
 
     def print_state(self):
-        print self.to_string()
+        print(self.to_string())
 

@@ -1,8 +1,12 @@
+from __future__ import absolute_import
+from __future__ import division
+from builtins import range
+from past.utils import old_div
 import time
 import numpy as np
 from pomdpy.util import console
 from pomdpy.action_selection import ucb_action
-from belief_tree_solver import BeliefTreeSolver
+from .belief_tree_solver import BeliefTreeSolver
 
 module = "pomcp"
 
@@ -33,7 +37,7 @@ class POMCP(BeliefTreeSolver):
                 if n is 0:
                     self.fast_UCB[N][n] = np.inf
                 else:
-                    self.fast_UCB[N][n] = agent.model.ucb_coefficient * np.sqrt(np.log(N + 1) / n)
+                    self.fast_UCB[N][n] = agent.model.ucb_coefficient * np.sqrt(old_div(np.log(N + 1), n))
 
     @staticmethod
     def reset(agent):
@@ -60,7 +64,7 @@ class POMCP(BeliefTreeSolver):
         if action_map_entry_visit_count == 0:
             return np.inf
         else:
-            return self.model.ucb_coefficient * np.sqrt(log_n / action_map_entry_visit_count)
+            return self.model.ucb_coefficient * np.sqrt(old_div(log_n, action_map_entry_visit_count))
 
     def select_eps_greedy_action(self, eps, start_time):
         """

@@ -1,9 +1,9 @@
-__author__ = 'patrickemami'
-
+from builtins import object
+from future.utils import with_metaclass
 import abc
 
 
-class ObservationPool(object):
+class ObservationPool(with_metaclass(abc.ABCMeta, object)):
     """
     Defines the ObservationPool interface, which allows customization of how the mapping for each
     * individual action node is set up.
@@ -12,7 +12,6 @@ class ObservationPool(object):
     * e.g. to keep statistics that are shared across all of the mappings rather than stored on
     * a per-mapping basis.
     """
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def create_observation_mapping(self, action_node):

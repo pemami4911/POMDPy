@@ -1,9 +1,13 @@
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from past.utils import old_div
 import numpy as np
 from pomdpy.pomdp import model
-from tiger_action import *
-from tiger_state import TigerState
-from tiger_observation import TigerObservation
-from tiger_data import TigerData
+from .tiger_action import *
+from .tiger_state import TigerState
+from .tiger_observation import TigerObservation
+from .tiger_data import TigerData
 from pomdpy.discrete_pomdp import DiscreteActionPool
 from pomdpy.discrete_pomdp import DiscreteObservationPool
 
@@ -144,7 +148,7 @@ class TigerModel(model.Model):
 
     def generate_step(self, state, action):
         if action is None:
-            print "ERROR: Tried to generate a step with a null action"
+            print("ERROR: Tried to generate a step with a null action")
             return None
         elif type(action) is int:
             action = TigerAction(action)
@@ -166,7 +170,7 @@ class TigerModel(model.Model):
         if action.bin_number > 0:
             return TigerState(True, state.door_prizes), True
         else:
-            print "make_next_state - Illegal action was used"
+            print("make_next_state - Illegal action was used")
         return None, False
 
     def make_reward(self, action, next_state):
@@ -188,7 +192,7 @@ class TigerModel(model.Model):
                 ''' You chose the door with the prize! '''
                 return +10
         else:
-            print "make_reward - Illegal action was used"
+            print("make_reward - Illegal action was used")
             return 0
 
     def make_observation(self, action):
@@ -224,8 +228,8 @@ class TigerModel(model.Model):
         # Observation 1 - the roar came from door 0
         if observation.source_of_roar[0]:
             observation_probability = (probability_correct * p1_prior) + (probability_incorrect * p2_prior)
-            p1_posterior = (probability_correct * p1_prior)/observation_probability
-            p2_posterior = (probability_incorrect * p2_prior)/observation_probability
+            p1_posterior = old_div((probability_correct * p1_prior),observation_probability)
+            p2_posterior = old_div((probability_incorrect * p2_prior),observation_probability)
         # Observation 2 - the roar came from door 1
         else:
             observation_probability = (probability_incorrect * p1_prior) + (probability_correct * p2_prior)

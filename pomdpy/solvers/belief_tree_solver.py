@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import range
 import time
 import random
 import abc
@@ -174,7 +176,7 @@ class BeliefTreeSolver(Solver):
                 self.disable_tree = True
                 return
 
-            obs_mapping_entries = action_node.observation_map.child_map.values()
+            obs_mapping_entries = list(action_node.observation_map.child_map.values())
 
             for entry in obs_mapping_entries:
                 if entry.child_node is not None:

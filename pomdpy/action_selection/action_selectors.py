@@ -11,7 +11,7 @@ def ucb_action(mcts, current_node, greedy):
     N = mapping.total_visit_count
     log_n = np.log(N + 1)
 
-    actions = mapping.entries.values()
+    actions = list(mapping.entries.values())
     random.shuffle(actions)
     for action_entry in actions:
 
@@ -42,7 +42,7 @@ def e_greedy(current_node, epsilon):
     best_q_value = -np.inf
     mapping = current_node.action_map
 
-    actions = mapping.entries.values()
+    actions = list(mapping.entries.values())
     random.shuffle(actions)
 
     if np.random.uniform(0, 1) < epsilon:

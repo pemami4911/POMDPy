@@ -1,9 +1,8 @@
-__author__ = 'patrickemami'
-
+from builtins import object
 import random
 
 
-class BeliefNode:
+class BeliefNode(object):
     """
     Represents a single node in a belief tree.
     *

@@ -1,5 +1,5 @@
-__author__ = 'patrickemami'
-
+from __future__ import print_function
+from builtins import str
 from pomdpy.discrete_pomdp import DiscreteObservation
 
 
@@ -26,13 +26,13 @@ class RockObservation(DiscreteObservation):
 
     def print_observation(self):
         if self.is_empty:
-            print "EMPTY"
+            print("EMPTY")
         elif self.is_good == 1:
-            print "Good"
+            print("Good")
         elif self.is_good == 2:
-            print "Bad"
+            print("Bad")
         else:
-            print self.is_good
+            print(self.is_good)
 
     def to_string(self):
         if self.is_empty:

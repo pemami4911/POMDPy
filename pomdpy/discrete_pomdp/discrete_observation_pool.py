@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 from pomdpy.pomdp import ObservationPool
-from discrete_observation_mapping import DiscreteObservationMap
+from .discrete_observation_mapping import DiscreteObservationMap
 
 
 class DiscreteObservationPool(ObservationPool):

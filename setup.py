@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.1.0'
+VERSION = '2.0.0'
 DESCRIPTION = 'POMDPy: POMDPs in Python'
 
 setup(name='POMDPy',
@@ -15,5 +15,8 @@ setup(name='POMDPy',
           'test': ['*.sh']
           },
       license='MIT License',
-      install_requires=['numpy==1.11.2', 'matplotlib>=1.4.3', 'pytest==2.7.0', 'scipy>=0.15.1']
-      )
+      classifiers=[
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.5'
+      ]
+)

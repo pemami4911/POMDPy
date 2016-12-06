@@ -1,7 +1,9 @@
+from __future__ import print_function
+from builtins import object
 from pomdpy.util import print_divider
 
 
-class HistoryEntry:
+class HistoryEntry(object):
     """
     * Contains the HistoryEntry class, which represents a single entry in a history sequence.
     *
@@ -51,7 +53,7 @@ class HistoryEntry:
         h.register_entry(h, None, s)
 
 
-class HistorySequence:
+class HistorySequence(object):
     """
     Represents a single history sequence.
     *
@@ -82,14 +84,14 @@ class HistorySequence:
 
     def show(self):
         print_divider("medium")
-        print "\tDisplaying history sequence"
+        print("\tDisplaying history sequence")
         for entry in self.entry_sequence:
             print_divider("medium")
-            print "id: ", entry.id
-            print "action: ", entry.action.to_string()
-            print "observation: ", entry.observation.to_string()
-            print "next state: ", entry.state.to_string()
-            print "reward: ", entry.reward
+            print("id: ", entry.id)
+            print("action: ", entry.action.to_string())
+            print("observation: ", entry.observation.to_string())
+            print("next state: ", entry.state.to_string())
+            print("reward: ", entry.reward)
 
 
 class Histories(object):

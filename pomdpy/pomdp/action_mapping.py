@@ -1,13 +1,12 @@
-__author__ = 'patrickemami'
-
+from builtins import object
+from future.utils import with_metaclass
 import abc
 
 
-class ActionMapping(object):
+class ActionMapping(with_metaclass(abc.ABCMeta, object)):
     """
     Action Mapping abc for discrete and continuous actions
     """
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, belief_node):
         self.owner = belief_node
@@ -71,7 +70,7 @@ class ActionMapping(object):
         """
 
 
-class ActionMappingEntry(object):
+class ActionMappingEntry(with_metaclass(abc.ABCMeta, object)):
     """
     An interface for discrete and continuous actions
     that represents a (belief, action) edge in the belief tree.
@@ -80,7 +79,6 @@ class ActionMappingEntry(object):
     properties of this edge, as well as, more importantly
     update_visit_count(), update_q_value(), which updates the visit count and/or Q-value for this edge
     """
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def update_visit_count(self, delta_n_visits):

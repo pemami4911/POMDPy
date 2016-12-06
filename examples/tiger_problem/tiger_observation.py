@@ -1,3 +1,4 @@
+from __future__ import print_function
 from pomdpy.discrete_pomdp import DiscreteObservation
 
 
@@ -32,11 +33,11 @@ class TigerObservation(DiscreteObservation):
 
     def print_observation(self):
         if self.source_of_roar is None:
-            print "No observation from entering a terminal state"
+            print("No observation from entering a terminal state")
         elif self.source_of_roar[0]:
-            print "Roaring is heard coming from door 1"
+            print("Roaring is heard coming from door 1")
         else:
-            print "Roaring is heard coming from door 2"
+            print("Roaring is heard coming from door 2")
 
     def to_string(self):
         if self.source_of_roar is None:

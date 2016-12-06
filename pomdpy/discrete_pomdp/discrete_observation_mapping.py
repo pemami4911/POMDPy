@@ -36,12 +36,12 @@ class DiscreteObservationMap(ObservationMapping):
 
     def get_child_entries(self):
         return_entries = []
-        for key in self.child_map.keys():
+        for key in list(self.child_map.keys()):
             return_entries.append(self.child_map.get(key))
         return return_entries
 
     def get_entry(self, obs):
-        for i in self.child_map.values():
+        for i in list(self.child_map.values()):
             if obs == i.observation:
                 return i
         return None

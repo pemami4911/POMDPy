@@ -7,24 +7,25 @@ CONSOLE LOGGING VERBOSITY LEVELS
 3 - LOUD
 4 - DEBUG
 """
+from __future__ import print_function
 
 VERBOSITY = 2
 
 
 def print_divider(size):
     if size == "large":
-        print "======================================================================"
+        print("======================================================================")
     elif size == "medium":
-        print "=========================================="
+        print("==========================================")
     else:
-        print "========"
+        print("========")
 
 
 def console(verbosity_level, module, msg):
     if verbosity_level > VERBOSITY:
         return
     else:
-        print module + ' - ' + msg
+        print(module + ' - ' + msg)
 
 
 # Pass a function that handles printing

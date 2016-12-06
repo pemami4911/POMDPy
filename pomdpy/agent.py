@@ -1,3 +1,7 @@
+from __future__ import print_function
+from builtins import str
+from builtins import range
+from builtins import object
 import time
 import logging
 from pomdpy.pomdp import Statistic
@@ -91,7 +95,7 @@ class Agent(object):
         discounted_reward = 0
         discount = 1.0
 
-        for i in xrange(self.model.max_steps):
+        for i in range(self.model.max_steps):
 
             start_time = time.time()
 
@@ -172,7 +176,7 @@ class Agent(object):
             reward = 0
             discounted_reward = 0
 
-            for i in xrange(self.model.max_steps):
+            for i in range(self.model.max_steps):
 
                 start_time = time.time()
 
@@ -231,12 +235,12 @@ class Agent(object):
         solver.value_iteration(self.model.get_transition_matrix(),
                                self.model.get_observation_matrix(),
                                self.model.get_reward_matrix(),
-                               self.model.max_steps)
+                               self.model.planning_horizon)
 
         b = self.model.get_initial_belief_state()
         state = self.model.sample_an_init_state()
 
-        for i in xrange(self.model.max_steps):
+        for i in range(self.model.max_steps):
 
             action, _ = solver.select_action(b, solver.gamma)
 
@@ -313,7 +317,7 @@ class Results(object):
 
     def show(self, run_id):
         print_divider('large')
-        print '\tRUN #' + str(run_id) + ' RESULTS'
+        print('\tRUN #' + str(run_id) + ' RESULTS')
         print_divider('large')
         console(2, module, 'discounted return statistics')
         print_divider('medium')

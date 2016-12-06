@@ -1,3 +1,5 @@
-numpy==1.11.2
+numpy>=1.11
 matplotlib>=1.4.3
 scipy>=0.15.1
+future>=0.16
+tensorflow>=0.12

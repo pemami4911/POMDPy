@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 from pomdpy.pomdp import HistoricalData
-from tiger_action import ActionType
+from .tiger_action import ActionType
 import numpy as np
 
 

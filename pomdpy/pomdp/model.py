@@ -1,9 +1,12 @@
+from __future__ import print_function
+from builtins import object
 import abc
 import random
 import numpy as np
+from future.utils import with_metaclass
 
 
-class Model(object):
+class Model(with_metaclass(abc.ABCMeta, object)):
     """
     * Defines the Model class, which is an abstract class representing a POMDP model to be solved by
     * the solver. The core of the Model class is represented by a "black box" generative model which
@@ -19,7 +22,6 @@ class Model(object):
     * - generate_particles() - this uses previous state particles to create a new set of derived particles
     *           by utilizing the step generator
     """
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, args):
         self.problem_name = args.env
@@ -28,6 +30,7 @@ class Model(object):
         self.epsilon_start = args.epsilon_start
         self.epsilon_end = args.epsilon_end
         self.epsilon_decay = args.epsilon_decay
+        self.planning_horizon = args.planning_horizon
         self.max_steps = args.max_steps
         self.n_sims = args.n_sims
         self.n_runs = args.n_runs
@@ -270,7 +273,7 @@ class Model(object):
         return particles
 
 
-class StepResult:
+class StepResult(object):
     """
      Represents the results of a complete step in the model, including the next state,
      * observation, and reward
@@ -286,14 +289,14 @@ class StepResult:
         self.is_terminal = 0
 
     def print_step_result(self):
-        print "------- Step Result --------"
-        print "Action: ",
+        print("------- Step Result --------")
+        print("Action: ", end=' ')
         self.action.print_action()
-        print "Observation: ",
+        print("Observation: ", end=' ')
         self.observation.print_observation()
-        print "Reward: ",
-        print self.reward
-        print "Next state: ",
+        print("Reward: ", end=' ')
+        print(self.reward)
+        print("Next state: ", end=' ')
         self.next_state.print_state()
-        print "Is terminal: ",
-        print self.is_terminal
+        print("Is terminal: ", end=' ')
+        print(self.is_terminal)

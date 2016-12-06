@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import object
 from pomdpy.discrete_pomdp import DiscreteAction
 
 
@@ -32,19 +34,19 @@ class RockAction(DiscreteAction):
 
     def print_action(self):
         if self.bin_number >= ActionType.CHECK:
-            print "CHECK"
+            print("CHECK")
         elif self.bin_number is ActionType.NORTH:
-            print "NORTH"
+            print("NORTH")
         elif self.bin_number is ActionType.EAST:
-            print "EAST"
+            print("EAST")
         elif self.bin_number is ActionType.SOUTH:
-            print "SOUTH"
+            print("SOUTH")
         elif self.bin_number is ActionType.WEST:
-            print "WEST"
+            print("WEST")
         elif self.bin_number is ActionType.SAMPLE:
-            print "SAMPLE"
+            print("SAMPLE")
         else:
-            print "UNDEFINED ACTION"
+            print("UNDEFINED ACTION")
 
     def to_string(self):
         if self.bin_number >= ActionType.CHECK:

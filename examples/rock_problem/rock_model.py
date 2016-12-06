@@ -1,14 +1,23 @@
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from builtins import str
+from builtins import map
+from builtins import hex
+from builtins import range
+from past.utils import old_div
+from builtins import object
 import logging
 import json
 import numpy as np
 from pomdpy.util import console, config_parser
-from grid_position import GridPosition
-from rock_state import RockState
-from rock_action import RockAction, ActionType
-from rock_observation import RockObservation
+from .grid_position import GridPosition
+from .rock_state import RockState
+from .rock_action import RockAction, ActionType
+from .rock_observation import RockObservation
 from pomdpy.discrete_pomdp import DiscreteActionPool, DiscreteObservationPool
 from pomdpy.pomdp import Model, StepResult
-from rock_position_history import RockData, PositionAndRockData
+from .rock_position_history import RockData, PositionAndRockData
 
 module = "RockModel"
 
@@ -128,7 +137,7 @@ class RockModel(Model):
             self.env_map.append(tmp)
         # Total number of distinct states
         self.num_states = pow(2, self.n_rocks)
-        self.min_val = -self.illegal_move_penalty / (1 - self.discount)
+        self.min_val = old_div(-self.illegal_move_penalty, (1 - self.discount))
         self.max_val = self.good_rock_reward * self.n_rocks + self.exit_reward
 
     ''' ===================================================================  '''
@@ -141,7 +150,7 @@ class RockModel(Model):
 
     def get_sensor_correctness_probability(self, distance):
         assert self.half_efficiency_distance is not 0, self.logger.warning("Tried to divide by 0! Naughty naughty!")
-        return (1 + np.power(2.0, -distance / self.half_efficiency_distance)) * 0.5
+        return (1 + np.power(2.0, old_div(-distance, self.half_efficiency_distance))) * 0.5
 
     ''' ===================================================================  '''
     '''                             Sampling                                 '''
@@ -212,7 +221,7 @@ class RockModel(Model):
 
     def get_legal_actions(self, state):
         legal_actions = []
-        all_actions = xrange(0, 5 + self.n_rocks)
+        all_actions = range(0, 5 + self.n_rocks)
         new_pos = state.position.copy()
         i = new_pos.i
         j = new_pos.j
@@ -445,7 +454,7 @@ class RockModel(Model):
 
     def generate_step(self, state, action):
         if action is None:
-            print "Tried to generate a step with a null action"
+            print("Tried to generate a step with a null action")
             return None
         elif type(action) is int:
             action = RockAction(action)
@@ -470,22 +479,23 @@ class RockModel(Model):
                 particles.append(result.next_state)
         return particles
 
-    def disp_cell(self, rs_cell_type):
+    @staticmethod
+    def disp_cell(rs_cell_type):
         if rs_cell_type >= RSCellType.ROCK:
-            print hex(rs_cell_type - RSCellType.ROCK),
+            print(hex(rs_cell_type - RSCellType.ROCK), end=' ')
             return
 
         if rs_cell_type is RSCellType.EMPTY:
-            print ' . ',
+            print(' . ', end=' ')
         elif rs_cell_type is RSCellType.GOAL:
-            print 'G',
+            print('G', end=' ')
         elif rs_cell_type is RSCellType.OBSTACLE:
-            print 'X',
+            print('X', end=' ')
         else:
-            print 'ERROR-',
-            print rs_cell_type,
+            print('ERROR-', end=' ')
+            print(rs_cell_type, end=' ')
 
     def draw_env(self):
         for row in self.env_map:
-            map(self.disp_cell, row)
-            print '\n'
+            list(map(self.disp_cell, row))
+            print('\n')

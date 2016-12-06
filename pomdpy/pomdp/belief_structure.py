@@ -1,11 +1,9 @@
-__author__ = 'patrickemami'
-
+from builtins import object
+from future.utils import with_metaclass
 import abc
 
 
-class BeliefStructure(object):
-
-    __metaclass__ = abc.ABCMeta
+class BeliefStructure(with_metaclass(abc.ABCMeta, object)):
 
     @abc.abstractmethod
     def reset(self):
