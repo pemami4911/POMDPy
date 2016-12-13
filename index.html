@@ -22,7 +22,7 @@
       <h2>
 <a id="pomdpy" class="anchor" href="#pomdpy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POMDPy</h2>
 
-<p><img src="https://travis-ci.org/pemami4911/POMDPy.svg?branch=master" alt="Build"></p>
+<p><img src="https://travis-ci.org/pemami4911/POMDPy.svg?branch=master" alt="Build">  <img src="https://img.shields.io/badge/python-2.7-blue.svg" alt="Python27">  <img src="https://img.shields.io/badge/python-3.5-blue.svg" alt="Python35"></p>
 
 <p>This open-source project contains a framework for implementing discrete action/state POMDPs in Python. This work was inspired by <a href="http://robotics.itee.uq.edu.au/%7Ehannakur/dokuwiki/doku.php?id=wiki:tapir">TAPIR</a> and the <a href="http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html">POMCP</a> algorithm.</p>
 
@@ -33,18 +33,26 @@
 <p>This project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments or suggestions, feel free to send me a pull request or send me an email at <a href="mailto:pemami@ufl.edu">pemami@ufl.edu</a>.  </p>
 
 <h2>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependencies</h2>
 
 <p>Download the files as a zip or clone into the repository.</p>
 
 <pre><code>git clone https://github.com/pemami4911/POMDPy.git
 </code></pre>
 
-<p>From the root directory of the project, run</p>
+<p>This project uses:</p>
 
-<pre><code>pip install -r requirements.txt
-python setup.py install 
-</code></pre>
+<ul>
+<li>numpy &gt;= 1.11</li>
+<li>matplotlib &gt;= 1.4.3</li>
+<li>scipy &gt;= 0.15.1</li>
+<li>future &gt;= 0.16</li>
+<li>tensorflow &gt;= 0.12</li>
+</ul>
+
+<p>See the <a href="https://www.tensorflow.org/versions/r0.12/get_started/os_setup.html#download-and-setup">Tensorflow docs</a> for information about installing Tensorflow. </p>
+
+<p>The easiest way to satisfy the dependencies is to use Anaconda. You might have to run <code>pip install --upgrade future</code> after installing Anaconda, however. </p>
 
 <h2>
 <a id="supported-solvers" class="anchor" href="#supported-solvers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Supported Solvers</h2>
@@ -93,18 +101,6 @@ The following maps are available:</p>
 <p>See <code>pompdy/README.md</code> for details about implementing new POMDP benchmark problems.</p>
 
 <h2>
-<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependencies</h2>
-
-<p>This project uses:</p>
-
-<ul>
-<li>Python 2.7.9</li>
-<li>numpy 1.11.2</li>
-<li>matplotlib 1.4.3</li>
-<li>scipy 0.15.1</li>
-</ul>
-
-<h2>
 <a id="todo" class="anchor" href="#todo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>TODO</h2>
 
 <ul>
@@ -122,6 +118,16 @@ The following maps are available:</p>
 
     </section>
 
-  
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("82749305");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
