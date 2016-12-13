@@ -6,7 +6,6 @@ from builtins import map
 from builtins import hex
 from builtins import range
 from past.utils import old_div
-from builtins import object
 import logging
 import json
 import numpy as np
@@ -22,7 +21,7 @@ from .rock_position_history import RockData, PositionAndRockData
 module = "RockModel"
 
 
-class RSCellType(object):
+class RSCellType:
     """
     Rocks are enumerated 0, 1, 2, ...
     other cell types should be negative.
@@ -34,8 +33,8 @@ class RSCellType(object):
 
 
 class RockModel(Model):
-    def __init__(self, problem_name):
-        super(RockModel, self).__init__(problem_name)
+    def __init__(self, args):
+        super(RockModel, self).__init__(args)
         # logging utility
         self.logger = logging.getLogger('POMDPy.RockModel')
         self.rock_config = json.load(open(config_parser.rock_cfg, "r"))
@@ -105,8 +104,6 @@ class RockModel(Model):
         self.n_rows = int(dimensions[0])
         self.n_cols = int(dimensions[1])
 
-        self.problem_name += self.rock_config['map_file']
-
         self.initialize()
 
     # initialize the maps of the grid
@@ -166,7 +163,6 @@ class RockModel(Model):
             pos = self.sample_position()
             if self.get_cell_type(pos) is not RSCellType.OBSTACLE:
                 return RockState(pos, self.sample_rocks())
-        return None
 
     def sample_state_informed(self, belief):
         return belief.sample_particle()
@@ -264,7 +260,7 @@ class RockModel(Model):
         self.num_bad_checks = 0
         self.num_good_checks = 0
 
-    def reset_for_run(self):
+    def reset_for_epoch(self):
         self.actual_rock_states = self.sample_rocks()
         console(2, module, "Actual rock states = " + str(self.actual_rock_states))
 

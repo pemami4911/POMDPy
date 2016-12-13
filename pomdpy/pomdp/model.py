@@ -4,6 +4,9 @@ import abc
 import random
 import numpy as np
 from future.utils import with_metaclass
+import pprint
+
+pp = pprint.PrettyPrinter().pprint
 
 
 class Model(with_metaclass(abc.ABCMeta, object)):
@@ -24,27 +27,10 @@ class Model(with_metaclass(abc.ABCMeta, object)):
     """
 
     def __init__(self, args):
-        self.problem_name = args.env
-
-        self.discount = args.discount
-        self.epsilon_start = args.epsilon_start
-        self.epsilon_end = args.epsilon_end
-        self.epsilon_decay = args.epsilon_decay
-        self.planning_horizon = args.planning_horizon
-        self.max_steps = args.max_steps
-        self.n_sims = args.n_sims
-        self.n_runs = args.n_runs
-        self.test_run = args.test_run
-        self.max_timeout = args.max_timeout
-        self.ucb_coefficient = args.ucb_coefficient
-        self.n_start_states = args.n_start_states
-        self.min_particle_count = args.min_particle_count
-        self.max_particle_count = args.max_particle_count
-        self.max_depth = args.max_depth
-        self.preferred_actions = args.preferred_actions
-        self.action_selection_timeout = args.action_selection_timeout
-
-        np.random.seed(args.seed)
+        for k in args:
+            setattr(self, k, args[k])
+        np.random.seed(args['seed'])
+        pp(args)
 
     @abc.abstractmethod
     def reset_for_simulation(self):
@@ -54,9 +40,9 @@ class Model(with_metaclass(abc.ABCMeta, object)):
         """
 
     @abc.abstractmethod
-    def reset_for_run(self):
+    def reset_for_epoch(self):
         """
-        Defines behavior for resetting the simulator before each run
+        Defines behavior for resetting the simulator before each epoch
         :return:
         """
 

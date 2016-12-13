@@ -2,7 +2,7 @@ import os
 
 # important directories
 CFG_DIR = 'config'
-ROCK_CFG_FILE = 'rock_problem_config.json'
+ROCK_CFG_FILE = 'rock_sample_config.json'
 LOG_DIR = 'log'
 LOG_FILE = 'POMDPy.log'
 
