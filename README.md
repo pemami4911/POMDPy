@@ -1,5 +1,5 @@
 ## POMDPy
-![Build](https://travis-ci.org/pemami4911/POMDPy.svg?branch=master)
+![Build](https://travis-ci.org/pemami4911/POMDPy.svg?branch=master)  ![Python27](https://img.shields.io/badge/python-2.7-blue.svg)  ![Python35](https://img.shields.io/badge/python-3.5-blue.svg)
 
 This open-source project contains a framework for implementing discrete action/state POMDPs in Python. This work was inspired by [TAPIR](http://robotics.itee.uq.edu.au/~hannakur/dokuwiki/doku.php?id=wiki:tapir) and the [POMCP](http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html) algorithm.
 
@@ -9,15 +9,22 @@ Here's David Silver and Joel Veness's paper on POMCP, a ground-breaking POMDP so
 
 This project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments or suggestions, feel free to send me a pull request or send me an email at pemami@ufl.edu.  
 
-## Installation ##
+## Dependencies ##
 Download the files as a zip or clone into the repository.
 
     git clone https://github.com/pemami4911/POMDPy.git
-    
-From the root directory of the project, run
- 
-    pip install -r requirements.txt
-    python setup.py install 
+
+This project uses:
+
+* numpy >= 1.11
+* matplotlib >= 1.4.3
+* scipy >= 0.15.1
+* future >= 0.16
+* tensorflow >= 0.12
+
+See the [Tensorflow docs](https://www.tensorflow.org/versions/r0.12/get_started/os_setup.html#download-and-setup) for information about installing Tensorflow. 
+
+The easiest way to satisfy the dependencies is to use Anaconda. You might have to run `pip install --upgrade future` after installing Anaconda, however. 
 
 ## Supported Solvers ##
 
@@ -55,16 +62,6 @@ To run the Tiger problem with SARSA:
        
 See `pompdy/README.md` for details about implementing new POMDP benchmark problems.
     
-## Dependencies ##
-
-This project uses:
-
-* Python 2.7.9
-* numpy 1.11.2
-* matplotlib 1.4.3
-* scipy 0.15.1
-* pytest 2.7.0
-
 ## TODO ##
 * [ ] Random baseline solver
 * [ ] Add more unit tests
