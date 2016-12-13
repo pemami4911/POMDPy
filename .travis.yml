@@ -24,6 +24,7 @@ install:
   - source activate test-environment
   - python setup.py install
   - pip install future --upgrade
+  - pip install tensorflow
 
 script:
   - chmod +x ./test/run_sarsa.sh
