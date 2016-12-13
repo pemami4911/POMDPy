@@ -23,6 +23,7 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy matplotlib scipy
   - source activate test-environment
   - python setup.py install
+  - pip install future --upgrade
 
 script:
   - chmod +x ./test/run_sarsa.sh
