@@ -9,8 +9,10 @@ install:
   # version is the same.
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
       wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+	  export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp27-none-linux_x86_64.whl
     else
       wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+	  export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp35-cp35m-linux_x86_64.whl
     fi
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
@@ -24,7 +26,11 @@ install:
   - source activate test-environment
   - python setup.py install
   - pip install future --upgrade
-  - pip install tensorflow
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+		pip install --upgrade $TF_BINARY_URL
+	elif [[ "$TRAVIS_PYTHON_VERSION" == "3.5" ]]; then
+		pip3 install --upgrade $TF_BINARY_URL
+	fi
 
 script:
   - chmod +x ./test/run_sarsa.sh
