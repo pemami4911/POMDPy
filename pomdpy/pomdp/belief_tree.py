@@ -1,9 +1,9 @@
 from __future__ import absolute_import
-from . import belief_node
-from . import belief_structure
+from pomdpy.pomdp.belief_node import BeliefNode
+from pomdpy.pomdp.belief_structure import BeliefStructure
 
 
-class BeliefTree(belief_structure.BeliefStructure):
+class BeliefTree(BeliefStructure):
     """
     Contains the BeliefTree class, which represents an entire belief tree.
     *
@@ -22,7 +22,7 @@ class BeliefTree(belief_structure.BeliefStructure):
         :return:
         """
         self.prune_tree(self)
-        self.root = belief_node.BeliefNode(self.agent, None, None)
+        self.root = BeliefNode(self.agent, None, None)
         return self.root
 
     def reset_root_data(self):
