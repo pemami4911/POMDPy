@@ -13,11 +13,13 @@ from pomdpy.discrete_pomdp import DiscreteObservationPool
 
 
 class TigerModel(model.Model):
-    def __init__(self, problem_name="Tiger Problem"):
+    def __init__(self, problem_name="Tiger"):
         super(TigerModel, self).__init__(problem_name)
         self.tiger_door = None
         self.num_doors = 2
         self.num_states = 2
+        self.num_actions = 3
+        self.num_observations = 2
 
     def start_scenario(self):
         self.tiger_door = np.random.randint(0, self.num_doors) + 1
@@ -87,7 +89,7 @@ class TigerModel(model.Model):
         self.start_scenario()
 
     # Reset every "episode"
-    def reset_for_run(self):
+    def reset_for_epoch(self):
         self.start_scenario()
 
     def update(self, sim_data):
@@ -146,44 +148,39 @@ class TigerModel(model.Model):
 
     ''' --------- BLACK BOX GENERATION --------- '''
 
-    def generate_step(self, state, action):
+    def generate_step(self, action, state=None):
         if action is None:
             print("ERROR: Tried to generate a step with a null action")
             return None
-        elif type(action) is int:
+        elif not isinstance(action, TigerAction):
             action = TigerAction(action)
 
         result = model.StepResult()
-        result.next_state, is_legal = self.make_next_state(state, action)
+        result.is_terminal = self.make_next_state(action)
         result.action = action.copy()
         result.observation = self.make_observation(action)
-        result.reward = self.make_reward(action, result.next_state)
-        result.is_terminal = self.is_terminal(result.next_state)
+        result.reward = self.make_reward(action, result.is_terminal)
 
-        return result, is_legal
+        return result
 
     @staticmethod
-    def make_next_state(state, action):
+    def make_next_state(action):
         if action.bin_number == ActionType.LISTEN:
-            return state, True
-
-        if action.bin_number > 0:
-            return TigerState(True, state.door_prizes), True
+            return False
         else:
-            print("make_next_state - Illegal action was used")
-        return None, False
+            return True
 
-    def make_reward(self, action, next_state):
+    def make_reward(self, action, is_terminal):
         """
         :param action:
-        :param next_state:
+        :param is_terminal:
         :return: reward
         """
 
         if action.bin_number == ActionType.LISTEN:
             return -1
 
-        if self.is_terminal(next_state):
+        if is_terminal:
             assert action.bin_number > 0
             if action.bin_number == self.tiger_door:
                 ''' You chose the door with the tiger '''

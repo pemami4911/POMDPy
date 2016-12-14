@@ -1,5 +1,5 @@
 ## POMDPy
-![Build](https://travis-ci.org/pemami4911/POMDPy.svg?branch=master)  ![Python27](https://img.shields.io/badge/python-2.7-blue.svg)  ![Python35](https://img.shields.io/badge/python-3.5-blue.svg)
+![Build](https://travis-ci.org/pemami4911/POMDPy.svg?branch=master) ![Python27](https://img.shields.io/badge/python-2.7-blue.svg)  ![Python35](https://img.shields.io/badge/python-3.5-blue.svg)
 
 This open-source project contains a framework for implementing discrete action/state POMDPs in Python. This work was inspired by [TAPIR](http://robotics.itee.uq.edu.au/~hannakur/dokuwiki/doku.php?id=wiki:tapir) and the [POMCP](http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html) algorithm.
 
@@ -39,12 +39,12 @@ estimates of the current belief via Monte-Carlo simulations before taking a step
 SARSA is episodic, in that the agent repeatedly carries out full episodes 
 and uses the generated history of experiences to back-up the action-value estimates up the taken path to the root of the belief tree. 
 
-I have also implemented exact Value Iteration with Lark's pruning algorithm. This can only be used on the Tiger Problem. 
+I have also implemented a full-width planner, value iteration, with Lark's pruning algorithm. This can only be used to solve the Tiger problem. 
 
 ## Running an example ##
-Currently, you can test POMCP and SARSA on the classic Tiger and RockSample POMDPs. 
+**You can run tests with POMCP and SARSA on RockSample, and use value iteration to solve the Tiger example.** 
 
-You can optionally edit the RockSample configuration file `rock_problem_config.json` to change the map size or environment parameters.
+You can optionally edit the RockSample configuration file `rock_sample_config.json` to change the map size or environment parameters.
 This file is located in `pompdy/config`.
 The following maps are available:
 * RockSample(7, 8), a 7 x 7 grid with 8 rocks.
@@ -52,13 +52,13 @@ The following maps are available:
 * RockSample(15, 15), a 15 x 15 grid with 15 rocks
 * As well as a few others, such as (7, 2), (7, 3), (12, 12), and more. It is fairly easy to make new maps.
 
-To run the RockSample problem with POMCP:
+To run RockSample with POMCP:
 
-    ./main.py --env RockProblem --solver POMCP --max_steps 200 --epsilon_start 1.0 --epsilon_decay 0.01 --n_runs 10 --n_sims 500  --preferred_actions --seed 123
+    ./main.py --env RockSample --solver POMCP --max_steps 200 --epsilon_start 1.0 --epsilon_decay 0.01 --n_runs 10 --n_sims 500  --preferred_actions --seed 123
         
-To run the Tiger problem with SARSA: 
+To run the Tiger example with the full-width planning value iteration algorithm: 
 
-    ./main.py --env TigerProblem --solver SARSA --max_steps 5 --epsilon_start 0.5 --n_runs 100 --seed 123
+    ./main.py --env Tiger --solver ValueIteration --planning_horizon 3 --n_runs 10 --max_steps 10 --seed 123
        
 See `pompdy/README.md` for details about implementing new POMDP benchmark problems.
     

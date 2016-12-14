@@ -1,23 +1,10 @@
 from __future__ import absolute_import
-from builtins import range
-from builtins import object
 from .solver import Solver
+from .alpha_vector import AlphaVector
 from scipy.optimize import linprog
 import numpy as np
 from itertools import product
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-import matplotlib.cm as cmx
-from mpl_toolkits.mplot3d import Axes3D
-
-
-class AlphaVector(object):
-    def __init__(self, a, v):
-        self.action = a
-        self.v = v
-
-    def copy(self):
-        return AlphaVector(self.action, self.v)
+from pomdpy.util.plot_alpha_vectors import plot_gamma
 
 
 class ValueIteration(Solver):
@@ -84,7 +71,7 @@ class ValueIteration(Solver):
                 self.gamma.remove(dummy)
                 first = False
             self.prune(states)
-            #  self.plot_gamma(title='V(b) for horizon T = ' + str(k + 1))
+            #  plot_gamma(title='V(b) for horizon T = ' + str(k + 1), self.gamma)
 
     @staticmethod
     def compute_indices(k, m):
@@ -143,62 +130,3 @@ class ValueIteration(Solver):
 
         self.gamma = Q
 
-    def plot_gamma(self, title):
-        """
-        Plot the current set of alpha vectors over the belief simplex
-        :return:
-        """
-        fig = plt.figure()
-        ax = Axes3D(fig)
-        plt.title(title)
-        pts = 20
-        x = np.linspace(0., 1., num=pts)
-        y = np.linspace(0., 1., num=pts)
-        Z = np.zeros(shape=(pts, pts))
-        X, Y = np.meshgrid(x, y)
-        cmap = self.get_cmap(len(self.gamma))
-        color_idx = 0
-        for av in self.gamma:
-            for i in range(pts):
-                for j in range(pts):
-                    Z[i][j] = np.dot(av.v, np.array([x[i], y[j]]))
-
-            ax.plot_surface(X, Y, Z, rstride=1, cstride=1, color=cmap(color_idx), linewidth=0, antialiased=False)
-            color_idx += 1
-        plt.xlabel('p1')
-        plt.ylabel('p2')
-        plt.show()
-
-    @staticmethod
-    def get_cmap(N):
-        """
-        Returns a function that maps each index in 0, 1, ... N-1 to a distinct
-        RGB color.
-        """
-        color_norm = colors.Normalize(vmin=0, vmax=N - 1)
-        scalar_map = cmx.ScalarMappable(norm=color_norm, cmap='hsv')
-
-        def map_index_to_rgb_color(index):
-            return scalar_map.to_rgba(index)
-
-        return map_index_to_rgb_color
-
-    @staticmethod
-    def select_action(belief, vector_set):
-        """
-        Compute optimal action given a belief distribution
-        :param belief: dim(belief) == dim(AlphaVector)
-        :param vector_set
-        :return:
-        """
-        max_v = -np.inf
-        best = None
-        for av in vector_set:
-            v = np.dot(av.v, belief)
-            if v > max_v:
-                max_v = v
-                best = av
-        if best is None:
-            raise ValueError('Vector set should not be empty')
-
-        return best.action, best
