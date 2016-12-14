@@ -1,5 +1,5 @@
 ## POMDPy
--![Build](https://travis-ci.org/pemami4911/POMDPy.svg?branch=master) ![Python27](https://img.shields.io/badge/python-2.7-blue.svg)  ![Python35](https://img.shields.io/badge/python-3.5-blue.svg)
+![Build](https://travis-ci.org/pemami4911/POMDPy.svg?branch=master) ![Python27](https://img.shields.io/badge/python-2.7-blue.svg)  ![Python35](https://img.shields.io/badge/python-3.5-blue.svg)
 
 This open-source project contains a framework for implementing discrete action/state POMDPs in Python. This work was inspired by [TAPIR](http://robotics.itee.uq.edu.au/~hannakur/dokuwiki/doku.php?id=wiki:tapir) and the [POMCP](http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html) algorithm.
 
