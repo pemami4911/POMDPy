@@ -19,7 +19,7 @@ class BaseTFSolver(with_metaclass(abc.ABCMeta)):
         self.tensorboard_log_dir = os.path.join(my_dir, '..', '..', 'experiments', 'tensorboard_logs')
         
     @staticmethod
-    @abc.abstractstaticmethod
+    @abc.abstractmethod
     def reset(agent, sess):
         """
         :param agent
