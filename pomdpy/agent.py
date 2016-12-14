@@ -218,7 +218,7 @@ class Agent:
         """
         epoch_start = time.time()
 
-        for _ in self.model.n_sims:
+        for _ in range(self.model.n_sims):
             solver.simulate(solver.belief_tree_index, eps, epoch_start)
 
             # update epsilon
