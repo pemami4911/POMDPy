@@ -1,14 +1,13 @@
 from __future__ import absolute_import
-from pomdpy.util.ops import linear, select_action
-from pomdpy.util.pickle_wrapper import save_pkl, load_pkl
+import os
+import numpy as np
+import tensorflow as tf
+from experiments.scripts.pickle_wrapper import save_pkl, load_pkl
+from .ops import simple_linear, select_action_tf
 from .alpha_vector import AlphaVector
 from .base_tf_solver import BaseTFSolver
-import tensorflow as tf
-import numpy as np
-import os
 
 
-# TODO: Add a TF solver that takes the session as an argument
 class LinearAlphaNet(BaseTFSolver):
     """
     Linear Alpha Network
@@ -41,19 +40,19 @@ class LinearAlphaNet(BaseTFSolver):
     def reset(agent, sess):
         return LinearAlphaNet(agent, sess)
 
-    def train(self):
-        start_step = self.step_assign_op.eval({self.step_input: 0})
+    def train(self, epoch):
+        start_step = self.step_assign_op.eval({self.step_input: epoch * self.model.max_steps})
 
-        total_reward, avg_reward_per_step, total_loss, total_v = 0., 0., 0., 0.
-        avg_loss, avg_v = 0., 0.
+        total_reward, avg_reward_per_step, total_loss, total_v, total_delta = 0., 0., 0., 0., 0.
+        avg_loss, avg_v, avg_delta = 0., 0., 0.
         actions = []
 
         # Reset for new run
         belief = self.model.get_initial_belief_state()
 
-        for step in range(start_step, self.model.max_steps):
+        for step in range(start_step, start_step + self.model.max_steps):
             # 1. predict
-            action, pred_v = self.predict(belief)
+            action, pred_v = self.e_greedy_predict(belief, step)
             # 2. act
             step_result = self.model.generate_step(action)
 
@@ -63,16 +62,17 @@ class LinearAlphaNet(BaseTFSolver):
                 next_belief = self.model.belief_update(belief, action, step_result.observation)
                 # optionally clip reward
                 # generate target
-                _, v_b_next = self.predict(next_belief)
+                _, v_b_next = self.greedy_predict(next_belief)
 
             target_v = self.model.discount * (step_result.reward + v_b_next)
 
             # compute gradient and do weight update
-            _, loss = self.gradients(target_v, belief, step)
+            _, loss, delta = self.gradients(target_v, belief, step)
 
             total_loss += loss
             total_reward += step_result.reward
             total_v += pred_v[0]
+            total_delta += delta[0]
 
             if step_result.is_terminal:
                 # Reset for new run
@@ -82,6 +82,7 @@ class LinearAlphaNet(BaseTFSolver):
             avg_reward_per_step = total_reward / (step + 1.)
             avg_loss = loss / (step + 1.)
             avg_v = total_v / (step + 1.)
+            avg_delta = total_delta / (step + 1.)
 
             self.step_assign_op.eval({self.step_input: step + 1})
 
@@ -89,28 +90,40 @@ class LinearAlphaNet(BaseTFSolver):
                 'average.reward': avg_reward_per_step,
                 'average.loss': avg_loss,
                 'average.v': avg_v,
-                'actions': actions,
+                'average.delta': avg_delta,
+                'training.weights': self.sess.run(self.w['l1_w'], feed_dict={
+                    self.ops['l0_in']: np.reshape(self.model.get_reward_matrix().flatten(), [1, 6]),
+                    self.ops['belief']: belief}),
                 'training.learning_rate': self.ops['learning_rate_op'].eval(
                     {self.ops['learning_rate_step']: step + 1}),
+                'training.epsilon': self.ops['epsilon_op'].eval(
+                    {self.ops['epsilon_step']: step + 1})
             }, step + 1)
 
-        print('\navg_reward: {}, avg_l: {}, avg_v: {}'.format(avg_reward_per_step, avg_loss, avg_v))
-
-    def predict(self, belief):
+    def e_greedy_predict(self, belief, epsilon_step):
         # try hard-coding input of linear net to be rewards (can try random as well)
-        action, v_b, summary = self.sess.run([self.ops['a'], self.ops['v_b'], self.summary_ops['l1_out_summary']],
-                                             feed_dict={
-            self.ops['l0_in']: np.reshape(self.model.get_reward_matrix().flatten(), [1, 6]),
-            self.ops['belief']: belief
-        })
+        action, v_b, epsilon = self.sess.run([self.ops['a'], self.ops['v_b'], self.ops['epsilon_op']],
+            feed_dict={
+                self.ops['l0_in']: np.reshape(self.model.get_reward_matrix().flatten(), [1, 6]),
+                self.ops['belief']: belief,
+                self.ops['epsilon_step']: epsilon_step})
 
-        # TODO: add step?
-        self.summary_ops['writer'].add_summary(summary)
+        # e-greedy action selection
+        if np.random.uniform(0, 1) < epsilon:
+            action = np.random.randint(self.model.num_actions)
 
         return action, v_b
 
+    def greedy_predict(self, belief):
+        # try hard-coding input of linear net to be rewards (can try random as well)
+        action, v_b = self.sess.run([self.ops['a'], self.ops['v_b']],
+             feed_dict={
+                 self.ops['l0_in']: np.reshape(self.model.get_reward_matrix().flatten(), [1, 6]),
+                 self.ops['belief']: belief})
+        return action, v_b
+
     def gradients(self, target_v, belief, learning_rate_step):
-        return self.sess.run([self.ops['optim'], self.ops['loss']], feed_dict={
+        return self.sess.run([self.ops['optim'], self.ops['loss'], self.ops['delta']], feed_dict={
             self.ops['target_v']: target_v,
             self.ops['l0_in']: np.reshape(self.model.get_reward_matrix().flatten(), [1, 6]),
             self.ops['belief']: belief,
@@ -119,8 +132,9 @@ class LinearAlphaNet(BaseTFSolver):
     def alpha_vectors(self):
         gamma = self.sess.run(self.ops['l1_out'], feed_dict={
             self.ops['l0_in']: np.reshape(self.model.get_reward_matrix().flatten(), [1, 6]),
-            self.ops['belief']: self.model.get_initial_belief_state()  # unused
+            self.ops['belief']: self.model.get_initial_belief_state()
         })
+
         gamma = np.reshape(gamma, [self.model.num_actions, self.model.num_states])
         vector_set = set()
         for i in range(self.model.num_actions):
@@ -128,29 +142,34 @@ class LinearAlphaNet(BaseTFSolver):
         return vector_set
 
     def build_linear_network(self):
-        with tf.variable_scope('linear_prediction'):
-            l1_dim = 6
-            # One linear layer
-            self.ops['l0_in'] = tf.placeholder('float32', [1, self.model.num_states *
-                                                           self.model.num_actions], name='linear_layer_input')
-            self.ops['l1_out'], self.w['l1_w'], self.w['l1_b'] = \
-                linear(self.ops['l0_in'], l1_dim, activation_fn=None, name='linear_layer')
+        with tf.variable_scope('linear_fa_prediction'):
+            self.ops['belief'] = tf.placeholder('float32', [self.model.num_states], name='belief_input')
 
-            self.ops['belief'] = tf.placeholder('float32', [self.model.num_states], name='belief')
+            with tf.name_scope('linear_layer'):
+                self.ops['l0_in'] = tf.placeholder('float32', [1, self.model.num_states *
+                                                               self.model.num_actions], name='input')
+                self.ops['l1_out'], self.w['l1_w'], self.w['l1_b'] = simple_linear(self.ops['l0_in'],
+                                                                                   activation_fn=None, name='weights')
 
-            self.ops['l1_out'] = tf.reshape(self.ops['l1_out'], [self.model.num_actions, self.model.num_states])
+                self.ops['l1_out'] = tf.reshape(self.ops['l1_out'], [self.model.num_actions,
+                                                                     self.model.num_states], name='output')
 
-            vector_set = set()
-            for i in range(self.model.num_actions):
-                vector_set.add(AlphaVector(a=i, v=self.ops['l1_out'][i]))
+            with tf.variable_scope('action_selection'):
+                vector_set = set()
+                for i in range(self.model.num_actions):
+                    vector_set.add(AlphaVector(a=i, v=self.ops['l1_out'][i, :]))
 
-            self.ops['a'], self.ops['v_b'] = select_action(self.ops['belief'], vector_set)
+                self.ops['a'], self.ops['v_b'] = select_action_tf(self.ops['belief'], vector_set)
 
-            aggregated_out = []
-            for i in range(self.model.num_actions):
-                aggregated_out.append(tf.histogram_summary('l1/{}'.format(i), self.ops['l1_out'][i]))
-
-            self.summary_ops['l1_out_summary'] = tf.merge_summary(aggregated_out, 'hyperplane_values')
+            with tf.variable_scope('epsilon_greedy'):
+                self.ops['epsilon_step'] = tf.placeholder('int64', None, name='epsilon_step')
+                self.ops['epsilon_op'] = tf.maximum(self.model.epsilon_minimum,
+                                                    tf.train.exponential_decay(
+                                                        self.model.epsilon_start,
+                                                        self.ops['epsilon_step'],
+                                                        self.model.epsilon_decay_step,
+                                                        self.model.epsilon_decay,
+                                                        staircase=True))
 
         with tf.variable_scope('linear_optimizer'):
             # MSE loss function
@@ -159,34 +178,38 @@ class LinearAlphaNet(BaseTFSolver):
             self.ops['delta'] = self.ops['target_v'] - self.ops['v_b']
             self.ops['clipped_delta'] = tf.clip_by_value(self.ops['delta'], -1, 1, name='clipped_delta')
 
-            self.ops['loss'] = tf.reduce_mean(tf.square(self.ops['clipped_delta']), name='loss')
+            # L2 regularization
+            self.ops['loss'] = tf.reduce_mean(tf.square(self.ops['clipped_delta']) +
+                                              self.model.beta * tf.nn.l2_loss(self.w['l1_w']) +
+                                              self.model.beta * tf.nn.l2_loss(self.w['l1_b']), name='loss')
+
             self.ops['learning_rate_step'] = tf.placeholder('int64', None, name='learning_rate_step')
             self.ops['learning_rate_op'] = tf.maximum(self.model.learning_rate_minimum,
                                                       tf.train.exponential_decay(
-                                                                 self.model.learning_rate,
-                                                                 self.ops['learning_rate_step'],
-                                                                 self.model.learning_rate_decay_step,
-                                                                 self.model.learning_rate_decay,
-                                                                 staircase=True))
-            self.ops['optim'] = tf.train.GradientDescentOptimizer(self.ops['learning_rate_op'],
-                                                                  name='GradientDescent'). \
+                                                          self.model.learning_rate,
+                                                          self.ops['learning_rate_step'],
+                                                          self.model.learning_rate_decay_step,
+                                                          self.model.learning_rate_decay,
+                                                          staircase=True))
+
+            self.ops['optim'] = tf.train.MomentumOptimizer(self.ops['learning_rate_op'], momentum=0.8,
+                                                                  name='Optimizer'). \
                 minimize(self.ops['loss'])
 
-        with tf.variable_scope('linear_summary'):
-            scalar_summary_tags = ['average.reward', 'average.loss', 'average.v', 'training.learning_rate']
+        with tf.variable_scope('linear_fa_summary'):
+            scalar_summary_tags = ['average.reward', 'average.loss', 'average.v',
+                                   'average.delta', 'training.learning_rate', 'training.epsilon']
 
             for tag in scalar_summary_tags:
                 self.summary_placeholders[tag] = tf.placeholder('float32', None, name=tag.replace(' ', '_'))
-                self.summary_ops['{}'.format(tag)] = tf.scalar_summary('{}'.format(tag),
+                self.summary_ops['{}'.format(tag)] = tf.summary.scalar('{}'.format(tag),
                                                                        self.summary_placeholders[tag])
 
-            histogram_summary_tags = ['actions']
-
-            for tag in histogram_summary_tags:
-                self.summary_placeholders[tag] = tf.placeholder('float32', None, name=tag.replace(' ', '_'))
-                self.summary_ops['{}'.format(tag)] = tf.histogram_summary(tag, self.summary_placeholders[tag])
-
-            self.summary_ops['writer'] = tf.train.SummaryWriter('./logs/', self.sess.graph)
+            self.summary_placeholders['training.weights'] = tf.placeholder('float32', [1, 6],
+                                                                        name='training_weights')
+            self.summary_ops['training.weights'] = tf.summary.histogram('weights',
+                                                                        self.summary_placeholders['training.weights'])
+            self.summary_ops['writer'] = tf.summary.FileWriter(self.model.logs, self.sess.graph)
 
         self.summary_ops['saver'] = tf.train.Saver(self.w, max_to_keep=30)
 

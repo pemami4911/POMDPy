@@ -5,3 +5,5 @@
 build
 POMDPy.egg-info
 dist
+experiments/tensorboard
+experiments/logs
