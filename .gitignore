@@ -5,3 +5,4 @@
 build
 POMDPy.egg-info
 dist
+experiments/logs

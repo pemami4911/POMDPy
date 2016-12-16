@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
+import matplotlib.patches as mpatches
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 
-def plot_gamma(title, gamma):
+def plot_alpha_vectors(title, gamma, n_actions):
     """
     Plot the current set of alpha vectors over the belief simplex
     :return:
@@ -13,22 +14,29 @@ def plot_gamma(title, gamma):
     fig = plt.figure()
     ax = Axes3D(fig)
     plt.title(title)
-    pts = 20
+    pts = 15
     x = np.linspace(0., 1., num=pts)
     y = np.linspace(0., 1., num=pts)
     Z = np.zeros(shape=(pts, pts))
     X, Y = np.meshgrid(x, y)
-    cmap = get_cmap(len(gamma))
-    color_idx = 0
+    cmap = get_cmap(n_actions * 10)
+    patches, patches_handles = [], []
+    for i in range(n_actions):
+        patches.append(cmap(i * 10))
+        patches_handles.append(mpatches.Patch(color=patches[i], label='action {}'.format(i)))
+
     for av in gamma:
         for i in range(pts):
             for j in range(pts):
                 Z[i][j] = np.dot(av.v, np.array([x[i], y[j]]))
 
-        ax.plot_surface(X, Y, Z, rstride=1, cstride=1, color=cmap(color_idx), linewidth=0, antialiased=False)
-        color_idx += 1
+        ax.plot_surface(X, Y, Z, rstride=1, cstride=1, color=patches[av.action], linewidth=0, antialiased=False)
+
     plt.xlabel('p1')
     plt.ylabel('p2')
+
+    plt.legend(handles=patches_handles)
+
     plt.show()
 
 

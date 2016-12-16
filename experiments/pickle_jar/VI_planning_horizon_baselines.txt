@@ -1,0 +1,89 @@
+{'action_selection_timeout': 60,
+ 'discount': 0.95,
+ 'env': 'Tiger',
+ 'epsilon_decay': 0.05,
+ 'epsilon_end': 0.1,
+ 'epsilon_start': 0.2,
+ 'learning_rate': 0.0025,
+ 'learning_rate_decay': 0.96,
+ 'learning_rate_decay_step': 10,
+ 'learning_rate_minimum': 0.0025,
+ 'max_depth': 100,
+ 'max_particle_count': 2000,
+ 'max_steps': 20,
+ 'min_particle_count': 1000,
+ 'n_epochs': 1,
+ 'n_sims': 500,
+ 'n_start_states': 2000,
+ 'planning_horizon': 8,
+ 'preferred_actions': False,
+ 'save': True,
+ 'seed': 1993,
+ 'solver': 'ValueIteration',
+ 'test': 10,
+ 'timeout': 3600,
+ 'ucb_coefficient': 3.0,
+ 'use_tf': False}
+======================================================================
+	Epoch #1 RESULTS
+======================================================================
+agent - discounted return statistics
+==========================================
+Name =  discounted return
+Running Total =  7.075
+Mean =  7.075
+Count =  1.0
+Variance =  0.0
+Max =  7.075
+Min =  7.075
+==========================================
+agent - undiscounted return statistics
+==========================================
+Name =  undiscounted return
+Running Total =  8.0
+Mean =  8.0
+Count =  1.0
+Variance =  0.0
+Max =  8
+Min =  8
+==========================================
+agent - Time
+==========================================
+Name =  Time
+Running Total =  1493.21905613
+Mean =  1493.21905613
+Count =  1.0
+Variance =  0.0
+Max =  1493.21905613
+Min =  1493.21905613
+==========================================
+==========================================
+  [*] save /Users/patrickemami/Workspace/Tensorflow/venv/POMDPy/pomdpy/pomdp/../../experiments/pickle_jar/VI-planning_horizon-8.pkl
+   [-] save_pkl : 0.02038 sec
+agent - epochs: 1
+agent - ave undiscounted return: 8.0 +- 0.0
+agent - ave discounted return: 7.075 +- 0.0
+agent - ave time/epoch: 1493.21905613
+
+Process finished with exit code 0
+
+Planning horizon = 8 agent
+
+epochs: 100
+ave undiscounted return: 4.64183638127 +- 0.62487622734
+ave discounted return: 4.00733720616 +- 0.585175804876
+ave time/epoch: 0.00848328113556
+
+Planning horizon = 1
+
+epochs: 100
+ave undiscounted return: 4.22328095241 +- 0.741062291698
+ave discounted return: 3.96493432874 +- 0.70392936278
+ave time/epoch: 0.000169098377228
+
+Random agent
+
+epochs: 100
+ave undiscounted return: -5.90047976385 +- 1.03313795582
+ave discounted return: -5.78815429794 +- 1.00882138342
+ave time/epoch: 0.000133876800537

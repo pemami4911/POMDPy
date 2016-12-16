@@ -3,6 +3,17 @@ import numpy as np
 
 
 def linear(input_, output_size, stddev=0.02, bias_start=0.0, activation_fn=None, name='linear'):
+    """
+    Fully connected linear layer
+
+    :param input_:
+    :param output_size:
+    :param stddev:
+    :param bias_start:
+    :param activation_fn:
+    :param name:
+    :return:
+    """
     shape = input_.get_shape().as_list()
 
     with tf.variable_scope(name):
@@ -19,7 +30,29 @@ def linear(input_, output_size, stddev=0.02, bias_start=0.0, activation_fn=None,
             return out, w, b
 
 
-def select_action(belief, vector_set):
+def simple_linear(input_, initializer=tf.constant_initializer([1.]), activation_fn=None, name='simple_linear'):
+    """
+    simple element-wise linear layer
+
+    :param input_:
+    :param initializer
+    :param activation_fn:
+    :param name:
+    :return:
+    """
+    with tf.variable_scope(name):
+        w = tf.get_variable('Matrix', input_.get_shape(), tf.float32,
+                            initializer)
+
+        out = tf.mul(input_, w)
+
+        if activation_fn is not None:
+            return activation_fn(out), w
+        else:
+            return out, w
+
+
+def select_action_tf(belief, vector_set):
     """
     Compute optimal action given a belief distribution
     :param belief: dim(belief) == dim(AlphaVector)
@@ -28,7 +61,7 @@ def select_action(belief, vector_set):
     """
     assert not len(vector_set) == 0
 
-    max_v = tf.constant([-np.inf])
+    max_v = tf.constant([-np.inf], tf.float32)
     best_action = tf.constant([-1])
     for av in vector_set:
         v = tf.reduce_sum(tf.mul(av.v, belief))

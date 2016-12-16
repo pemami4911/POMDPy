@@ -1,19 +1,19 @@
 from __future__ import print_function
 import time
 import logging
+import os
 from pomdpy.pomdp import Statistic
 from pomdpy.pomdp.history import Histories, HistoryEntry
-from pomdpy.util import console, print_divider, select_action
-from pomdpy.util.plot_alpha_vectors import plot_gamma
-from pomdpy.solvers import POMCP, SARSA, ValueIteration
+from pomdpy.util import console, print_divider
+from experiments.scripts.pickle_wrapper import save_pkl
 
 module = "agent"
 
 
 class Agent:
     """
-    Training loops for learning, and for
-    storing statistics on performance
+    Train and store experimental results for different types of runs
+
     """
 
     def __init__(self, model, solver):
@@ -34,11 +34,21 @@ class Agent:
 
     def discounted_return(self):
 
-        if not self.model.use_tf:
+        if self.model.solver == 'ValueIteration':
+            solver = self.solver_factory(self)
+
+            self.run_value_iteration(solver, 1)
+
+            if self.model.save:
+                save_pkl(solver.gamma,
+                         os.path.join(self.model.weight_dir, 'VI_planning_horizon_{}.pkl'.format(self.model.planning_horizon)))
+
+        elif not self.model.use_tf:
             self.multi_epoch()
         else:
             self.multi_epoch_tf()
 
+        print('\n')
         console(2, module, 'epochs: ' + str(self.model.n_epochs))
         console(2, module, 'ave undiscounted return: ' + str(self.experiment_results.undiscounted_return.mean) +
                 ' +- ' + str(self.experiment_results.undiscounted_return.std_err()))
@@ -56,21 +66,18 @@ class Agent:
 
     def multi_epoch_tf(self):
         import tensorflow as tf
+        tf.set_random_seed(self.model.seed)
 
         with tf.Session() as sess:
             solver = self.solver_factory(self, sess)
 
-            for epoch in range(self.model.n_epochs):
+            for epoch in range(self.model.n_epochs + 1):
                 epoch_start = time.time()
 
                 self.model.reset_for_epoch()
 
-                # train for 1 epoch
-                solver.train()
-
                 if epoch % self.model.test == 0:
-                    console(2, module, 'Evaluating agent at epoch {}'.format(epoch))
-                    self.results = Results()
+                    print('\nevaluating agent at epoch {}...'.format(epoch))
 
                     # evaluate agent
                     reward = 0
@@ -79,7 +86,7 @@ class Agent:
                     belief = self.model.get_initial_belief_state()
 
                     while True:
-                        action, v_b = solver.predict(belief)
+                        action, v_b = solver.greedy_predict(belief)
                         step_result = self.model.generate_step(action)
 
                         if not step_result.is_terminal:
@@ -95,27 +102,26 @@ class Agent:
                         if step_result.is_terminal:
                             break
 
-                    print('Total reward: {} discounted reward: {}'.format(reward, discounted_reward))
+                    print('\ntotal reward: {} discounted reward: {}'.format(reward, discounted_reward))
 
-                    self.results.update_reward_results(reward, discounted_reward)
-                    # self.results.show(epoch)
+                    self.experiment_results.time.add(time.time() - epoch_start)
+                    self.experiment_results.undiscounted_return.count += 1
+                    self.experiment_results.undiscounted_return.add(reward)
+                    self.experiment_results.discounted_return.count += 1
+                    self.experiment_results.discounted_return.add(discounted_reward)
 
                     # save model
                     # solver.save_model(step=epoch)
-                    plot_gamma('V for epoch {}'.format(epoch), solver.alpha_vectors())
+                    # plot_gamma('V for epoch {}'.format(epoch), solver.alpha_vectors())
+                else:
 
-                self.results.time.add(time.time() - epoch_start)
+                    # train for 1 epoch
+                    solver.train(epoch)
 
                 if self.experiment_results.time.running_total > self.model.timeout:
                     console(2, module, 'Timed out after ' + str(epoch) + ' epochs in ' +
                             self.experiment_results.time.running_total + ' seconds')
                     break
-
-        self.experiment_results.time.add(self.results.time.running_total)
-        self.experiment_results.undiscounted_return.count += (self.results.undiscounted_return.count - 1)
-        self.experiment_results.undiscounted_return.add(self.results.undiscounted_return.running_total)
-        self.experiment_results.discounted_return.count += (self.results.discounted_return.count - 1)
-        self.experiment_results.discounted_return.add(self.results.discounted_return.running_total)
 
     def multi_epoch(self):
         eps = self.model.epsilon_start
@@ -127,14 +133,11 @@ class Agent:
             # Reset the epoch stats
             self.results = Results()
 
-            if isinstance(solver, POMCP):
+            if self.model.solver == 'POMCP':
                 eps = self.run_pomcp(i + 1, eps)
                 self.model.reset_for_epoch()
-            elif isinstance(solver, SARSA):
+            elif self.model.solver == 'SARSA':
                 eps = self.run_episodic(solver, i + 1, eps)
-            elif isinstance(solver, ValueIteration):
-                self.run_value_iteration(solver, i + 1)
-                self.model.reset_for_epoch()
 
             if self.experiment_results.time.running_total > self.model.timeout:
                 console(2, module, 'Timed out after ' + str(i) + ' epochs in ' +
@@ -206,6 +209,7 @@ class Agent:
 
         return eps
 
+    # TODO: remove SARSA - replace with SARSOP or
     def run_episodic(self, solver, epoch, eps):
         """
         Used for episodic belief tree solvers that update the action-values along the tree after doing each rollout.
@@ -303,11 +307,12 @@ class Agent:
         for i in range(self.model.max_steps):
 
             # TODO: record average V(b) per epoch
-            action, v_b = select_action(b, solver.gamma)
+            action, v_b = solver.select_action(b, solver.gamma)
 
             step_result = self.model.generate_step(action)
 
-            b = self.model.belief_update(b, action, step_result.observation)
+            if not step_result.is_terminal:
+                b = self.model.belief_update(b, action, step_result.observation)
 
             reward += step_result.reward
             discounted_reward += discount * step_result.reward
@@ -316,20 +321,16 @@ class Agent:
             # show the step result
             self.display_step_result(i, step_result)
 
-            # Extend the history sequence
-            new_hist_entry = solver.history.add_entry()
-            HistoryEntry.update_history_entry(new_hist_entry, step_result.reward,
-                                              step_result.action, step_result.observation, None)
-
             if step_result.is_terminal:
                 console(3, module, 'Terminated after episode step ' + str(i + 1))
                 break
+
+            # TODO: add belief state History sequence
 
         self.results.time.add(time.time() - run_start_time)
         self.results.update_reward_results(reward, discounted_reward)
 
         # Pretty Print results
-        solver.history.show()
         self.results.show(epoch)
         console(3, module, 'Total possible undiscounted return: ' + str(self.model.get_max_undiscounted_return()))
         print_divider('medium')

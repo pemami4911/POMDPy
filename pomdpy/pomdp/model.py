@@ -2,9 +2,10 @@ from __future__ import print_function
 from builtins import object
 import abc
 import random
-import numpy as np
 from future.utils import with_metaclass
 import pprint
+import os
+from datetime import datetime
 
 pp = pprint.PrettyPrinter().pprint
 
@@ -29,8 +30,20 @@ class Model(with_metaclass(abc.ABCMeta, object)):
     def __init__(self, args):
         for k in args:
             setattr(self, k, args[k])
-        np.random.seed(args['seed'])
         pp(args)
+
+        t = str(datetime.utcnow())
+        my_dir = os.path.dirname(__file__)
+        self.weight_dir = os.path.join(my_dir, '..', '..', 'experiments', 'pickle_jar')
+        self.ckpt_dir = os.path.join(my_dir, '..', '..', 'experiments', 'checkpoints')
+        self.logs = os.path.join(my_dir, '..', '..', 'experiments', 'logs', t)
+
+        if not os.path.exists(self.weight_dir):
+            os.makedirs(self.weight_dir)
+        if not os.path.exists(self.ckpt_dir):
+            os.makedirs(self.ckpt_dir)
+        if not os.path.exists(self.logs):
+            os.makedirs(self.logs)
 
     @abc.abstractmethod
     def reset_for_simulation(self):

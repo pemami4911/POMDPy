@@ -4,7 +4,6 @@ from .alpha_vector import AlphaVector
 from scipy.optimize import linprog
 import numpy as np
 from itertools import product
-from pomdpy.util.plot_alpha_vectors import plot_gamma
 
 
 class ValueIteration(Solver):
@@ -130,3 +129,24 @@ class ValueIteration(Solver):
 
         self.gamma = Q
 
+    @staticmethod
+    def select_action(belief, vector_set):
+        """
+        Compute optimal action given a belief distribution
+        :param belief: dim(belief) == dim(AlphaVector)
+        :param vector_set
+        :return:
+        """
+        max_v = -np.inf
+        best = None
+        for av in vector_set:
+            v = np.dot(av.v, belief)
+
+            if v > max_v:
+                max_v = v
+                best = av
+
+        if best is None:
+            raise ValueError('Vector set should not be empty')
+
+        return best.action, best
