@@ -30,12 +30,14 @@ def linear(input_, output_size, stddev=0.02, bias_start=0.0, activation_fn=None,
             return out, w, b
 
 
-def simple_linear(input_, initializer=tf.constant_initializer([1.]), activation_fn=None, name='simple_linear'):
+def simple_linear(input_, initializer=tf.constant_initializer([1.]), bias_start=0.0,
+                  activation_fn=None, name='simple_linear'):
     """
     simple element-wise linear layer
 
     :param input_:
     :param initializer
+    :param bias_start
     :param activation_fn:
     :param name:
     :return:
@@ -43,13 +45,14 @@ def simple_linear(input_, initializer=tf.constant_initializer([1.]), activation_
     with tf.variable_scope(name):
         w = tf.get_variable('Matrix', input_.get_shape(), tf.float32,
                             initializer)
-
-        out = tf.mul(input_, w)
+        b = tf.get_variable('bias', [input_.get_shape()[1]],
+                            initializer=tf.constant_initializer(bias_start))
+        out = tf.nn.bias_add(tf.mul(input_, w), b)
 
         if activation_fn is not None:
-            return activation_fn(out), w
+            return activation_fn(out), w, b
         else:
-            return out, w
+            return out, w, b
 
 
 def select_action_tf(belief, vector_set):
@@ -64,10 +67,11 @@ def select_action_tf(belief, vector_set):
     max_v = tf.constant([-np.inf], tf.float32)
     best_action = tf.constant([-1])
     for av in vector_set:
-        v = tf.reduce_sum(tf.mul(av.v, belief))
-        best_action = tf.cond(tf.greater(v, max_v)[0], lambda: tf.constant([av.action]),
-                              lambda: best_action, name='optimal_action')
-        max_v = tf.maximum(v, max_v, name='V_b')
+        with tf.name_scope('V_b'):
+            v = tf.reduce_sum(tf.mul(av.v, belief))
+            best_action = tf.cond(tf.greater(v, max_v)[0], lambda: tf.constant([av.action]),
+                                  lambda: best_action)
+            max_v = tf.maximum(v, max_v)
 
     return best_action, max_v
 

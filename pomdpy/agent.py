@@ -58,9 +58,9 @@ class Agent:
 
         self.logger.info('env: ' + self.model.env + '\t' +
                          'epochs: ' + str(self.model.n_epochs) + '\t' +
-                         'ave undiscounted return: ' + str(self.experiment_results.undiscounted_return.mean) + ' +- ' +
+                         'ave undiscounted return/epoch: ' + str(self.experiment_results.undiscounted_return.mean) + ' +- ' +
                          str(self.experiment_results.undiscounted_return.std_err()) + '\t' +
-                         'ave discounted return: ' + str(self.experiment_results.discounted_return.mean) +
+                         'ave discounted return/epoch: ' + str(self.experiment_results.discounted_return.mean) +
                          ' +- ' + str(self.experiment_results.discounted_return.std_err()) +
                          '\t' + 'ave time/epoch: ' + str(self.experiment_results.time.mean))
 
@@ -84,8 +84,8 @@ class Agent:
                     discounted_reward = 0
                     discount = 1.0
                     belief = self.model.get_initial_belief_state()
-
-                    while True:
+                    step = 0
+                    while step < self.model.max_steps:
                         action, v_b = solver.greedy_predict(belief)
                         step_result = self.model.generate_step(action)
 
@@ -98,17 +98,26 @@ class Agent:
 
                         # show the step result
                         self.display_step_result(epoch, step_result)
-
+                        step += 1
                         if step_result.is_terminal:
                             break
 
-                    print('\ntotal reward: {} discounted reward: {}'.format(reward, discounted_reward))
+                    print('\navg reward/step: {} avg discounted reward/step: {}'.format(reward / step, discounted_reward / step))
 
                     self.experiment_results.time.add(time.time() - epoch_start)
-                    self.experiment_results.undiscounted_return.count += 1
+                    self.experiment_results.undiscounted_return.count += step
                     self.experiment_results.undiscounted_return.add(reward)
-                    self.experiment_results.discounted_return.count += 1
+                    self.experiment_results.discounted_return.count += step
                     self.experiment_results.discounted_return.add(discounted_reward)
+
+                    summary = sess.run([solver.experiment_summary], feed_dict={
+                        solver.avg_undiscounted_return: self.experiment_results.undiscounted_return.mean,
+                        solver.avg_undiscounted_return_std_dev: self.experiment_results.undiscounted_return.std_dev(),
+                        solver.avg_discounted_return: self.experiment_results.discounted_return.mean,
+                        solver.avg_discounted_return_std_dev: self.experiment_results.discounted_return.std_dev()
+                    })
+                    for summary_str in summary:
+                        solver.summary_ops['writer'].add_summary(summary_str, epoch)
 
                     # save model
                     # solver.save_model(step=epoch)
@@ -117,11 +126,6 @@ class Agent:
 
                     # train for 1 epoch
                     solver.train(epoch)
-
-                if self.experiment_results.time.running_total > self.model.timeout:
-                    console(2, module, 'Timed out after ' + str(epoch) + ' epochs in ' +
-                            self.experiment_results.time.running_total + ' seconds')
-                    break
 
     def multi_epoch(self):
         eps = self.model.epsilon_start
@@ -165,8 +169,8 @@ class Agent:
             action = solver.select_eps_greedy_action(eps, start_time)
 
             # update epsilon
-            if eps > self.model.epsilon_end:
-                eps -= self.model.epsilon_decay
+            if eps > self.model.epsilon_minimum:
+                eps *= self.model.epsilon_decay
 
             step_result, is_legal = self.model.generate_step(state, action)
 
@@ -214,7 +218,6 @@ class Agent:
         """
         Used for episodic belief tree solvers that update the action-values along the tree after doing each rollout.
 
-        Each
         :param solver:
         :param epoch:
         :param eps:
@@ -226,8 +229,8 @@ class Agent:
             solver.simulate(solver.belief_tree_index, eps, epoch_start)
 
             # update epsilon
-            if eps > self.model.epsilon_end:
-                eps -= self.model.epsilon_decay
+            if eps > self.model.epsilon_minimum:
+                eps *= self.model.epsilon_decay
 
         if epoch % self.model.test == 0:
             state = solver.belief_tree_index.sample_particle()

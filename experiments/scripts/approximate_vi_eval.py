@@ -1,5 +1,5 @@
-from pickle_wrapper import load_pkl
-from plot_alpha_vectors import plot_alpha_vectors
+from .pickle_wrapper import load_pkl
+from .plot_alpha_vectors import plot_alpha_vectors
 import os
 import time
 from pomdpy.agent import Results
@@ -41,6 +41,7 @@ def eval_baseline(n_epochs, agent, horizon):
         discounted_reward = 0
         discount = 1.0
         belief = model.get_initial_belief_state()
+        step = 0
 
         while True:
             action, v_b = solver.select_action(belief, baseline)
@@ -52,22 +53,23 @@ def eval_baseline(n_epochs, agent, horizon):
             reward += step_result.reward
             discounted_reward += discount * step_result.reward
             discount *= model.discount
+            step += 1
 
             if step_result.is_terminal:
                 break
 
-        print('\ntotal reward: {} discounted reward: {}'.format(reward, discounted_reward))
+        print('\navg reward/step: {} avg discounted reward/step: {}'.format(reward / step, discounted_reward / step))
 
         experiment_results.time.add(time.time() - epoch_start)
-        experiment_results.undiscounted_return.count += 1
+        experiment_results.undiscounted_return.count += step
         experiment_results.undiscounted_return.add(reward)
-        experiment_results.discounted_return.count += 1
+        experiment_results.discounted_return.count += step
         experiment_results.discounted_return.add(discounted_reward)
 
     print('\nepochs: ' + str(model.n_epochs))
-    print('ave undiscounted return: ' + str(experiment_results.undiscounted_return.mean) +
+    print('ave undiscounted return/epoch: ' + str(experiment_results.undiscounted_return.mean) +
             ' +- ' + str(experiment_results.undiscounted_return.std_err()))
-    print('ave discounted return: ' + str(experiment_results.discounted_return.mean) +
+    print('ave discounted return/epoch: ' + str(experiment_results.discounted_return.mean) +
             ' +- ' + str(experiment_results.discounted_return.std_err()))
     print('ave time/epoch: ' + str(experiment_results.time.mean))
 
@@ -87,6 +89,7 @@ def random_baseline(n_epochs, agent):
         discounted_reward = 0
         discount = 1.0
         belief = model.get_initial_belief_state()
+        step = 0
 
         while True:
             action = np.random.randint(model.num_actions)
@@ -98,11 +101,12 @@ def random_baseline(n_epochs, agent):
             reward += step_result.reward
             discounted_reward += discount * step_result.reward
             discount *= model.discount
+            step += 1
 
             if step_result.is_terminal:
                 break
 
-        print('\ntotal reward: {} discounted reward: {}'.format(reward, discounted_reward))
+        print('\navg reward/step: {} avg discounted reward/step: {}'.format(reward / step, discounted_reward / step))
 
         experiment_results.time.add(time.time() - epoch_start)
         experiment_results.undiscounted_return.count += 1
@@ -111,8 +115,8 @@ def random_baseline(n_epochs, agent):
         experiment_results.discounted_return.add(discounted_reward)
 
     print('\nepochs: ' + str(model.n_epochs))
-    print('ave undiscounted return: ' + str(experiment_results.undiscounted_return.mean) +
+    print('ave undiscounted return/epoch: ' + str(experiment_results.undiscounted_return.mean) +
           ' +- ' + str(experiment_results.undiscounted_return.std_err()))
-    print('ave discounted return: ' + str(experiment_results.discounted_return.mean) +
+    print('ave discounted return/epoch: ' + str(experiment_results.discounted_return.mean) +
           ' +- ' + str(experiment_results.discounted_return.std_err()))
     print('ave time/epoch: ' + str(experiment_results.time.mean))

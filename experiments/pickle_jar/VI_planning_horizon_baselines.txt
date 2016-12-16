@@ -2,7 +2,7 @@
  'discount': 0.95,
  'env': 'Tiger',
  'epsilon_decay': 0.05,
- 'epsilon_end': 0.1,
+ 'epsilon_minimum': 0.1,
  'epsilon_start': 0.2,
  'learning_rate': 0.0025,
  'learning_rate_decay': 0.96,

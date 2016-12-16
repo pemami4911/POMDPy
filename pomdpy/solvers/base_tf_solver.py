@@ -12,7 +12,22 @@ class BaseTFSolver(with_metaclass(abc.ABCMeta)):
         self.model = agent.model
         self._saver = None
         self.sess = sess
-        
+
+        with tf.name_scope('experiment_summary'):
+            with tf.name_scope('avg_undiscounted_return'):
+                self.avg_undiscounted_return = tf.placeholder('float32', None)
+                self.avg_undiscounted_return_std_dev = tf.placeholder('float32', None)
+                self.undiscounted_mean_summary = tf.summary.scalar('mean', self.avg_undiscounted_return)
+                self.undiscounted_std_dev_summary = tf.summary.scalar('std_dev', self.avg_undiscounted_return_std_dev)
+            with tf.name_scope('avg_discounted_return'):
+                self.avg_discounted_return = tf.placeholder('float32', None)
+                self.avg_discounted_return_std_dev = tf.placeholder('float32', None)
+                self.discounted_mean_summary = tf.summary.scalar('mean', self.avg_discounted_return)
+                self.discounted_std_dev_summary = tf.summary.scalar('std_dev', self.avg_discounted_return_std_dev)
+
+            self.experiment_summary = tf.summary.merge([self.undiscounted_mean_summary, self.undiscounted_std_dev_summary,
+                                       self.discounted_mean_summary, self.discounted_std_dev_summary])
+
     @staticmethod
     @abc.abstractmethod
     def reset(agent, sess):

@@ -32,11 +32,13 @@ class Model(with_metaclass(abc.ABCMeta, object)):
             setattr(self, k, args[k])
         pp(args)
 
-        t = str(datetime.utcnow())
         my_dir = os.path.dirname(__file__)
         self.weight_dir = os.path.join(my_dir, '..', '..', 'experiments', 'pickle_jar')
         self.ckpt_dir = os.path.join(my_dir, '..', '..', 'experiments', 'checkpoints')
-        self.logs = os.path.join(my_dir, '..', '..', 'experiments', 'logs', t)
+        self.logs = os.path.join(my_dir, '..', '..', 'experiments', 'tensorboard')
+
+        count = len(os.listdir(self.logs))
+        self.logs = os.path.join(self.logs, str(count))
 
         if not os.path.exists(self.weight_dir):
             os.makedirs(self.weight_dir)
