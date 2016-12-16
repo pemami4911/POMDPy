@@ -29,20 +29,36 @@ The easiest way to satisfy the dependencies is to use Anaconda. You might have t
 ## Supported Solvers ##
 
 * [POMCP](https://github.com/pemami4911/POMDPy/blob/master/pomdpy/solvers/pomcp.py)
-* [SARSA](https://github.com/pemami4911/POMDPy/blob/master/pomdpy/solvers/sarsa.py)
 * [Value Iteration](https://github.com/pemami4911/POMDPy/blob/master/pomdpy/solvers/value_iteration.py)
+* [Linear Value Function Approximation](https://github.com/pemami4911/POMDPy/blob/master/pomdpy/solvers/linear_alpha_net.py)
 
-The main difference between POMCP and SARSA is that POMCP uses the off-policy Q-Learning
-algorithm and the UCT action-selection strategy. SARSA uses an on-policy variant of TD-Learning. **Both algorithms 
-encode the action-value function as a belief search tree.** POMCP is an anytime planner that approximates the action-value
+### POMCP
+
+POMCP uses the off-policy Q-Learning algorithm and the UCT action-selection strategy. It is an anytime planner that approximates the action-value
 estimates of the current belief via Monte-Carlo simulations before taking a step. This is known as Monte-Carlo Tree Search (MCTS).
-SARSA is episodic, in that the agent repeatedly carries out full episodes 
-and uses the generated history of experiences to back-up the action-value estimates up the taken path to the root of the belief tree. 
 
-I have also implemented a full-width planner, value iteration, with Lark's pruning algorithm. This can only be used to solve the Tiger problem. 
+To solve a POMDP with POMCP, the following classes should be implemented:
+
+* Discrete Action
+* Discrete State
+* Discrete Observation
+* Discrete/Enumerated ActionPool
+* Model - this module is the most important, since it acts as the black-box generator
+    for (S', A, O, R) steps. This also encodes the belief update rule for the particle filter.
+
+    You may want to to provide a .txt of .cfg containing a map or other data that encapsulate
+    the environment and hence the transition probabilities for the world which the POMDP lives in.
+
+#### Heirarchy of nodes in the belief tree from a parent `BeliefNode` to a child `BeliefNode`:
+
+(parent) BeliefNode -> ActionMapping -> ActionMappingEntry -> ActionNode -> ObservationMap -> ObservationMappingEntry -> (child) BeliefNode
+
+### Value Iteration
+
+Implemented with [Lark's pruning algorithm.](http://www.bgu.ac.il/~shanigu/Publications/skyline_AMAI.3.pdf)
 
 ## Running an example ##
-**You can run tests with POMCP and SARSA on RockSample, and use value iteration to solve the Tiger example.** 
+**You can run tests with POMCP on RockSample, and use Value Iteration to solve the Tiger example.**
 
 You can optionally edit the RockSample configuration file `rock_sample_config.json` to change the map size or environment parameters.
 This file is located in `pompdy/config`.
@@ -54,16 +70,9 @@ The following maps are available:
 
 To run RockSample with POMCP:
 
-    ./main.py --env RockSample --solver POMCP --max_steps 200 --epsilon_start 1.0 --epsilon_decay 0.01 --n_runs 10 --n_sims 500  --preferred_actions --seed 123
+     python pomcp.py --env RockSample --solver POMCP --max_steps 200 --epsilon_start 1.0 --epsilon_decay 0.99 --n_epochs 10 --n_sims 500  --preferred_actions --seed 123
         
 To run the Tiger example with the full-width planning value iteration algorithm: 
 
-    ./main.py --env Tiger --solver ValueIteration --planning_horizon 3 --n_runs 10 --max_steps 10 --seed 123
-       
-See `pompdy/README.md` for details about implementing new POMDP benchmark problems.
-    
-## TODO ##
-* [ ] Random baseline solver
-* [ ] Add more unit tests
-* [ ] Add additional benchmark problems 
-* [ ] Continuous-action/state space POMDPs
+     python vi.py --env Tiger --solver ValueIteration --planning_horizon 8 --n_epochs 10 --max_steps 10 --seed 123
+
