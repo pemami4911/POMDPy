@@ -5,7 +5,6 @@ import random
 from future.utils import with_metaclass
 import pprint
 import os
-from datetime import datetime
 
 pp = pprint.PrettyPrinter().pprint
 
@@ -36,6 +35,10 @@ class Model(with_metaclass(abc.ABCMeta, object)):
         self.weight_dir = os.path.join(my_dir, '..', '..', 'experiments', 'pickle_jar')
         self.ckpt_dir = os.path.join(my_dir, '..', '..', 'experiments', 'checkpoints')
         self.logs = os.path.join(my_dir, '..', '..', 'experiments', 'tensorboard')
+
+        # TODO: More elegant naming convention for experiments
+        if not os.path.exists(self.logs):
+            os.makedirs(self.logs)
 
         count = len(os.listdir(self.logs))
         self.logs = os.path.join(self.logs, str(count))

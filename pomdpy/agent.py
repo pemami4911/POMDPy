@@ -70,6 +70,7 @@ class Agent:
 
         with tf.Session() as sess:
             solver = self.solver_factory(self, sess)
+            wrong_door_count = 0
 
             for epoch in range(self.model.n_epochs + 1):
                 epoch_start = time.time()
@@ -91,6 +92,9 @@ class Agent:
 
                         if not step_result.is_terminal:
                             belief = self.model.belief_update(belief, action, step_result.observation)
+
+                        if step_result.reward == -20:
+                            wrong_door_count += 1
 
                         reward += step_result.reward
                         discounted_reward += discount * step_result.reward
@@ -126,6 +130,8 @@ class Agent:
 
                     # train for 1 epoch
                     solver.train(epoch)
+
+            print('wrong door count: {}'.format(wrong_door_count))
 
     def multi_epoch(self):
         eps = self.model.epsilon_start

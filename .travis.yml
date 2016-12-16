@@ -35,7 +35,5 @@ install:
     fi
 
 script:
-  - chmod +x ./test/run_sarsa.sh
   - chmod +x ./test/run_pomcp.sh
-  - ./test/run_sarsa.sh
   - ./test/run_pomcp.sh

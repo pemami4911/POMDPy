@@ -30,6 +30,7 @@ def eval_baseline(n_epochs, agent, horizon):
     model = agent.model
 
     experiment_results = Results()
+    wrong_door_count = 0
 
     for epoch in range(n_epochs):
         epoch_start = time.time()
@@ -50,6 +51,9 @@ def eval_baseline(n_epochs, agent, horizon):
             if not step_result.is_terminal:
                 belief = model.belief_update(belief, action, step_result.observation)
 
+            if step_result.reward == -20:
+                wrong_door_count += 1
+
             reward += step_result.reward
             discounted_reward += discount * step_result.reward
             discount *= model.discount
@@ -58,7 +62,7 @@ def eval_baseline(n_epochs, agent, horizon):
             if step_result.is_terminal:
                 break
 
-        print('\navg reward/step: {} avg discounted reward/step: {}'.format(reward / step, discounted_reward / step))
+        # print('\navg reward/step: {} avg discounted reward/step: {}'.format(reward / step, discounted_reward / step))
 
         experiment_results.time.add(time.time() - epoch_start)
         experiment_results.undiscounted_return.count += step
@@ -72,12 +76,14 @@ def eval_baseline(n_epochs, agent, horizon):
     print('ave discounted return/epoch: ' + str(experiment_results.discounted_return.mean) +
             ' +- ' + str(experiment_results.discounted_return.std_err()))
     print('ave time/epoch: ' + str(experiment_results.time.mean))
+    print('wrong door count: {}'.format(wrong_door_count))
 
 
 def random_baseline(n_epochs, agent):
     model = agent.model
 
     experiment_results = Results()
+    wrong_door_count = 0
 
     for epoch in range(n_epochs):
         epoch_start = time.time()
@@ -98,6 +104,9 @@ def random_baseline(n_epochs, agent):
             if not step_result.is_terminal:
                 belief = model.belief_update(belief, action, step_result.observation)
 
+            if step_result.reward == -20:
+                wrong_door_count += 1
+
             reward += step_result.reward
             discounted_reward += discount * step_result.reward
             discount *= model.discount
@@ -106,7 +115,7 @@ def random_baseline(n_epochs, agent):
             if step_result.is_terminal:
                 break
 
-        print('\navg reward/step: {} avg discounted reward/step: {}'.format(reward / step, discounted_reward / step))
+        # print('\navg reward/step: {} avg discounted reward/step: {}'.format(reward / step, discounted_reward / step))
 
         experiment_results.time.add(time.time() - epoch_start)
         experiment_results.undiscounted_return.count += 1
@@ -120,3 +129,4 @@ def random_baseline(n_epochs, agent):
     print('ave discounted return/epoch: ' + str(experiment_results.discounted_return.mean) +
           ' +- ' + str(experiment_results.discounted_return.std_err()))
     print('ave time/epoch: ' + str(experiment_results.time.mean))
+    print('wrong door count: {}'.format(wrong_door_count))

@@ -53,11 +53,11 @@ if __name__ == '__main__':
         env = TigerModel(args)
         solver = ValueIteration
         agent = Agent(env, solver)
-        # print('Running classic VI agent with planning horizon of 8...')
-        # approximate_vi_eval.eval_baseline(args['n_epochs'], agent, 8)
-        # print('Running classic VI agent with planning horizon of 1...')
-        # approximate_vi_eval.eval_baseline(args['n_epochs'], agent, 1)
-        print('Running random agent...')
+        print('\nRunning classic VI agent with planning horizon of 8...')
+        approximate_vi_eval.eval_baseline(args['n_epochs'], agent, 8)
+        print('\nRunning classic VI agent with planning horizon of 1...')
+        approximate_vi_eval.eval_baseline(args['n_epochs'], agent, 1)
+        print('\nRunning random agent...')
         approximate_vi_eval.random_baseline(args['n_epochs'], agent)
 
     else:

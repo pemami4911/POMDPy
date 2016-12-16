@@ -100,9 +100,6 @@ class LinearAlphaNet(BaseTFSolver):
                     {self.ops['epsilon_step']: step + 1})
             }, step + 1)
 
-        print('\navg_reward: {}, avg_l: {}, avg_v: {}, avg_delta: {}'.format(avg_reward_per_step,
-                                                                             avg_loss, avg_v, avg_delta))
-
     def e_greedy_predict(self, belief, epsilon_step):
         # try hard-coding input of linear net to be rewards (can try random as well)
         action, v_b, epsilon = self.sess.run([self.ops['a'], self.ops['v_b'], self.ops['epsilon_op']],
