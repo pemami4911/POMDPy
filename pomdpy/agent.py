@@ -135,7 +135,6 @@ class Agent:
 
     def multi_epoch(self):
         eps = self.model.epsilon_start
-        solver = self.solver_factory(self)
 
         self.model.reset_for_epoch()
 
@@ -146,8 +145,6 @@ class Agent:
             if self.model.solver == 'POMCP':
                 eps = self.run_pomcp(i + 1, eps)
                 self.model.reset_for_epoch()
-            elif self.model.solver == 'SARSA':
-                eps = self.run_episodic(solver, i + 1, eps)
 
             if self.experiment_results.time.running_total > self.model.timeout:
                 console(2, module, 'Timed out after ' + str(i) + ' epochs in ' +
@@ -216,86 +213,6 @@ class Agent:
         self.experiment_results.undiscounted_return.add(self.results.undiscounted_return.running_total)
         self.experiment_results.discounted_return.count += (self.results.discounted_return.count - 1)
         self.experiment_results.discounted_return.add(self.results.discounted_return.running_total)
-
-        return eps
-
-    # TODO: remove SARSA - replace with SARSOP or
-    def run_episodic(self, solver, epoch, eps):
-        """
-        Used for episodic belief tree solvers that update the action-values along the tree after doing each rollout.
-
-        :param solver:
-        :param epoch:
-        :param eps:
-        :return:
-        """
-        epoch_start = time.time()
-
-        for _ in range(self.model.n_sims):
-            solver.simulate(solver.belief_tree_index, eps, epoch_start)
-
-            # update epsilon
-            if eps > self.model.epsilon_minimum:
-                eps *= self.model.epsilon_decay
-
-        if epoch % self.model.test == 0:
-            state = solver.belief_tree_index.sample_particle()
-            # console(2, module, 'Initial belief state: ' + state.to_string())
-            discount = 1.0
-            # save the pointer to the root to reset
-            root = solver.belief_tree_index.copy()
-            # Reset the history
-            solver.history = self.histories.create_sequence()
-
-            reward = 0
-            discounted_reward = 0
-
-            for i in range(self.model.max_steps):
-
-                start_time = time.time()
-
-                # action will be of type Discrete Action
-                action = solver.select_eps_greedy_action(eps, start_time)
-
-                step_result, is_legal = self.model.generate_step(state, action)
-
-                reward += step_result.reward
-                discounted_reward += discount * step_result.reward
-
-                discount *= self.model.discount
-                state = solver.belief_tree_index.sample_particle()
-
-                # show the step result
-                self.display_step_result(i, step_result)
-
-                if not step_result.is_terminal or not is_legal:
-                    solver.update(step_result, prune=False)
-
-                # Extend the history sequence
-                new_hist_entry = solver.history.add_entry()
-                HistoryEntry.update_history_entry(new_hist_entry, step_result.reward,
-                                                  step_result.action, step_result.observation, step_result.next_state)
-
-                if step_result.is_terminal or not is_legal:
-                    console(3, module, 'Terminated after episode step ' + str(i + 1))
-                    break
-
-            solver.belief_tree_index = root
-
-            self.results.time.add(time.time() - epoch_start)
-            self.results.update_reward_results(reward, discounted_reward)
-
-            # Pretty Print results
-            solver.history.show()
-            self.results.show(epoch)
-            console(3, module, 'Total possible undiscounted return: ' + str(self.model.get_max_undiscounted_return()))
-            print_divider('medium')
-
-            self.experiment_results.time.add(self.results.time.running_total)
-            self.experiment_results.undiscounted_return.count += (self.results.undiscounted_return.count - 1)
-            self.experiment_results.undiscounted_return.add(self.results.undiscounted_return.running_total)
-            self.experiment_results.discounted_return.count += (self.results.discounted_return.count - 1)
-            self.experiment_results.discounted_return.add(self.results.discounted_return.running_total)
 
         return eps
 
