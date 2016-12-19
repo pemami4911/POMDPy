@@ -1,0 +1,433 @@
+{'beta': 0.001,
+ 'discount': 0.95,
+ 'env': 'Tiger',
+ 'epsilon_decay': 0.99,
+ 'epsilon_decay_step': 75,
+ 'epsilon_minimum': 0.02,
+ 'epsilon_start': 0.2,
+ 'learning_rate': 0.05,
+ 'learning_rate_decay': 0.996,
+ 'learning_rate_decay_step': 50,
+ 'learning_rate_minimum': 0.00025,
+ 'max_steps': 50,
+ 'n_epochs': 1000,
+ 'planning_horizon': 5,
+ 'preferred_actions': False,
+ 'save': False,
+ 'seed': 111,
+ 'solver': 'LinearAlphaNet',
+ 'test': 10,
+ 'use_tf': True}
+ [*] Loading checkpoints...
+ [!] Load FAILED: /home/ubuntu/POMDPy/pomdpy/pomdp/../../experiments/checkpoints
+
+evaluating agent at epoch 0...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 10...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 20...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 30...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 40...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 50...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 60...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 70...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 80...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 90...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 100...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 110...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 120...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 130...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 140...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 150...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 160...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 170...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 180...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 190...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 200...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 210...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 220...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 230...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 240...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 250...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 260...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 270...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 280...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 290...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 300...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 310...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 320...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 330...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 340...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 350...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 360...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 370...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 380...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 390...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 400...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 410...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 420...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 430...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 440...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 450...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 460...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 470...
+
+avg reward/step: 10 avg discounted reward/step: 10.0
+
+evaluating agent at epoch 480...
+
+avg reward/step: -20 avg discounted reward/step: -20.0
+
+evaluating agent at epoch 490...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 500...
+
+avg reward/step: 10 avg discounted reward/step: 10.0
+
+evaluating agent at epoch 510...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 520...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 530...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 540...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 550...
+
+avg reward/step: -20 avg discounted reward/step: -20.0
+
+evaluating agent at epoch 560...
+
+avg reward/step: 10 avg discounted reward/step: 10.0
+
+evaluating agent at epoch 570...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 580...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 590...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 600...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 610...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 620...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 630...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 640...
+
+avg reward/step: 10 avg discounted reward/step: 10.0
+
+evaluating agent at epoch 650...
+
+avg reward/step: -20 avg discounted reward/step: -20.0
+
+evaluating agent at epoch 660...
+
+avg reward/step: 10 avg discounted reward/step: 10.0
+
+evaluating agent at epoch 670...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 680...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 690...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 700...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 710...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 720...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 730...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 740...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 750...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 760...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 770...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 780...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 790...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 800...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 810...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 820...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 830...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 840...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 850...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 860...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 870...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 880...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 890...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 900...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 910...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 920...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 930...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 940...
+
+avg reward/step: -11 avg discounted reward/step: -10.0
+
+evaluating agent at epoch 950...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 960...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 970...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 980...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 990...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+
+evaluating agent at epoch 1000...
+
+avg reward/step: 4 avg discounted reward/step: 4.25
+wrong door count: 17
+
+
+agent - epochs: 1000
+agent - ave undiscounted return: 4.27217187153 +- 0.552648136827
+agent - ave discounted return: 4.0158633091 +- 0.527456274759
+agent - ave time/epoch: 0.00190804736449

@@ -1,0 +1,48 @@
+  [*] load /home/ubuntu/POMDPy/experiments/scripts/../../experiments/pickle_jar/VI_planning_horizon_8.pkl
+   [-] load_pkl : 0.00757 sec
+  [*] load /home/ubuntu/POMDPy/experiments/scripts/../../experiments/pickle_jar/VI_planning_horizon_1.pkl
+   [-] load_pkl : 0.00039 sec
+{'beta': 0.001,
+ 'discount': 0.95,
+ 'env': 'Tiger',
+ 'epsilon_decay': 0.99,
+ 'epsilon_decay_step': 75,
+ 'epsilon_minimum': 0.02,
+ 'epsilon_start': 0.2,
+ 'learning_rate': 0.05,
+ 'learning_rate_decay': 0.996,
+ 'learning_rate_decay_step': 50,
+ 'learning_rate_minimum': 0.00025,
+ 'max_steps': 50,
+ 'n_epochs': 1000,
+ 'planning_horizon': 5,
+ 'preferred_actions': False,
+ 'save': False,
+ 'seed': 95039,
+ 'solver': 'VI-Baseline',
+ 'test': 10,
+ 'use_tf': True}
+
+Running classic VI agent with planning horizon of 8...
+
+epochs: 1000
+ave undiscounted return/epoch: 4.87238005662 +- 0.139344948711
+ave discounted return/epoch: 4.36944874686 +- 0.129471190332
+ave time/epoch: 0.000400152444839
+wrong door count: 115
+
+Running classic VI agent with planning horizon of 1...
+
+epochs: 1000
+ave undiscounted return/epoch: 4.74768135227 +- 0.178448378057
+ave discounted return/epoch: 4.46398931499 +- 0.169493381525
+ave time/epoch: 6.29870891571e-05
+wrong door count: 154
+
+Running random agent...
+
+epochs: 1000
+ave undiscounted return/epoch: -4.85870647142 +- 0.332468337107
+ave discounted return/epoch: -4.75765844831 +- 0.324670612476
+ave time/epoch: 4.08527851105e-05
+wrong door count: 485

@@ -75,3 +75,10 @@ def select_action_tf(belief, vector_set):
 
     return best_action, max_v
 
+
+def clipped_error(x):
+    # Huber loss
+    try:
+        return tf.select(tf.abs(x) < 1.0, 0.5 * tf.square(x), tf.abs(x) - 0.5)
+    except:
+        return tf.where(tf.abs(x) < 1.0, 0.5 * tf.square(x), tf.abs(x) - 0.5)

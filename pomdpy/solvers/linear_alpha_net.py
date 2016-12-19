@@ -3,7 +3,7 @@ import os
 import numpy as np
 import tensorflow as tf
 from experiments.scripts.pickle_wrapper import save_pkl, load_pkl
-from .ops import simple_linear, select_action_tf
+from .ops import simple_linear, select_action_tf, clipped_error
 from .alpha_vector import AlphaVector
 from .base_tf_solver import BaseTFSolver
 
@@ -175,10 +175,10 @@ class LinearAlphaNet(BaseTFSolver):
             self.ops['target_v'] = tf.placeholder('float32', [None], name='target_v')
 
             self.ops['delta'] = self.ops['target_v'] - self.ops['v_b']
-            self.ops['clipped_delta'] = tf.clip_by_value(self.ops['delta'], -1, 1, name='clipped_delta')
+            # self.ops['clipped_delta'] = tf.clip_by_value(self.ops['delta'], -1, 1, name='clipped_delta')
 
             # L2 regularization
-            self.ops['loss'] = tf.reduce_mean(tf.square(self.ops['clipped_delta']) +
+            self.ops['loss'] = tf.reduce_mean(clipped_error(self.ops['delta']) +
                                               self.model.beta * tf.nn.l2_loss(self.w['l1_w']) +
                                               self.model.beta * tf.nn.l2_loss(self.w['l1_b']), name='loss')
 
