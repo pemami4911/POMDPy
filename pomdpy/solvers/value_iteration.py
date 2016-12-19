@@ -58,12 +58,12 @@ class ValueIteration(Solver):
             # add (|A| * |V|^|Z|) alpha-vectors to gamma, |V| is |gamma_k|
             for u in range(actions):
                 c = self.compute_indices(idx, observations)
-                for indices in c:
-                    temp = np.zeros(states)
-                    for i in range(states):
-                        for z in range(observations):
+                for indices in c:  # n elements in c is |V|^|Z|
+                    for z in range(observations):
+                        temp = np.zeros(states)
+                        for i in range(states):
                             temp[i] = discount * (r[u][i] + v_new[indices[z]][u][z][i])
-                    gamma_k.add(AlphaVector(a=u, v=temp))
+                        gamma_k.add(AlphaVector(a=u, v=temp))
             self.gamma.update(gamma_k)
             if first:
                 # remove the dummy alpha vector
