@@ -67,7 +67,8 @@ agent - ave time/epoch: 1493.21905613
 
 Process finished with exit code 0
 
-Planning horizon = 8 agent
+Benchmarks:
+Planning horizon = 8
 
 epochs: 100
 ave undiscounted return: 4.64183638127 +- 0.62487622734

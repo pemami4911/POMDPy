@@ -44,7 +44,6 @@ class LinearAlphaNet(BaseTFSolver):
         start_step = self.step_assign_op.eval({self.step_input: epoch * self.model.max_steps})
 
         total_reward, avg_reward_per_step, total_loss, total_v, total_delta = 0., 0., 0., 0., 0.
-        avg_loss, avg_v, avg_delta = 0., 0., 0.
         actions = []
 
         # Reset for new run
