@@ -21,15 +21,15 @@ def get_time():
 
 @timeit
 def save_pkl(obj, path):
-    with open(path, 'w') as f:
-        pickle.dump(obj, f)
+    with open(path, 'wb') as f:
+        pickle.dump(obj, f, protocol=2, fix_imports=True)
         print("  [*] save %s" % path)
 
 
 @timeit
 def load_pkl(path):
-    with open(path) as f:
-        obj = pickle.load(f)
+    with open(path, 'rb') as f:
+        obj = pickle.load(f, fix_imports=True, encoding="bytes")
         print("  [*] load %s" % path)
         return obj
 

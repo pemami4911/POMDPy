@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib.patches as mpatches
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 
@@ -12,13 +11,13 @@ def plot_alpha_vectors(title, gamma, n_actions):
     :return:
     """
     fig = plt.figure()
-    ax = Axes3D(fig)
     plt.title(title)
-    pts = 15
+    pts = 30
     x = np.linspace(0., 1., num=pts)
-    y = np.linspace(0., 1., num=pts)
-    Z = np.zeros(shape=(pts, pts))
-    X, Y = np.meshgrid(x, y)
+    # y = np.linspace(0., 1., num=pts)
+    # Z = np.zeros(shape=(pts, pts))
+    # X, Y = np.meshgrid(x, y)
+    y = np.zeros(shape=pts)
     cmap = get_cmap(n_actions * 10)
     patches, patches_handles = [], []
     for i in range(n_actions):
@@ -27,14 +26,11 @@ def plot_alpha_vectors(title, gamma, n_actions):
 
     for av in gamma:
         for i in range(pts):
-            for j in range(pts):
-                Z[i][j] = np.dot(av.v, np.array([x[i], y[j]]))
-
-        ax.plot_surface(X, Y, Z, rstride=1, cstride=1, color=patches[av.action], linewidth=0, antialiased=False)
+            # for j in range(pts):
+            y[i] = np.dot(av.v, np.array([x[i], 1. - x[i]]))
+        plt.plot(x, y, color=patches[av.action], linewidth=2)
 
     plt.xlabel('p1')
-    plt.ylabel('p2')
-
     plt.legend(handles=patches_handles)
 
     plt.show()

@@ -16,23 +16,22 @@ if __name__ == '__main__':
     parser.add_argument('--seed', default=1993, type=int, help='Specify the random seed for numpy.random')
     parser.add_argument('--use_tf', dest='use_tf', action='store_true', help='Set if using TensorFlow')
     parser.add_argument('--discount', default=0.95, type=float, help='Specify the discount factor (default=0.95)')
-    parser.add_argument('--n_epochs', default=100, type=int, help='Num of epochs of the experiment to conduct')
-    parser.add_argument('--max_steps', default=200, type=int, help='Max num of steps per trial/episode/trajectory/epoch')
+    parser.add_argument('--n_epochs', default=1000, type=int, help='Num of epochs of the experiment to conduct')
+    parser.add_argument('--max_steps', default=10, type=int, help='Max num of steps per trial/episode/trajectory/epoch')
     parser.add_argument('--save', dest='save', action='store_true', help='Pickle the weights/alpha vectors')
 
     # Args for Deep Alpha Nets
-    # TODO: Hyper-parameter search needed
-    parser.add_argument('--learning_rate', default=0.0025, type=float)
+    parser.add_argument('--learning_rate', default=0.05, type=float)
     parser.add_argument('--learning_rate_minimum', default=0.0025, type=float)
-    parser.add_argument('--learning_rate_decay', default=0.96, type=float)
-    parser.add_argument('--learning_rate_decay_step', default=10, type=int)
+    parser.add_argument('--learning_rate_decay', default=0.996, type=float)
+    parser.add_argument('--learning_rate_decay_step', default=50, type=int)
     parser.add_argument('--beta', default=0.001, type=float, help='L2 regularization parameter')
 
     parser.add_argument('--test', default=10, type=int, help='Evaluate the agent every `test` epochs')
-    parser.add_argument('--epsilon_start', default=0.5, type=float)
-    parser.add_argument('--epsilon_minimum', default=0.1, type=float)
-    parser.add_argument('--epsilon_decay', default=0.95, type=float)
-    parser.add_argument('--epsilon_decay_step', default=20, type=int)
+    parser.add_argument('--epsilon_start', default=0.02, type=float)
+    parser.add_argument('--epsilon_minimum', default=0.05, type=float)
+    parser.add_argument('--epsilon_decay', default=0.96, type=float)
+    parser.add_argument('--epsilon_decay_step', default=75, type=int)
 
     # Args for value iteration
     parser.add_argument('--planning_horizon', default=5, type=int, help='Number of lookahead steps for value iteration')
@@ -45,7 +44,7 @@ if __name__ == '__main__':
 
     init_logger()
 
-    np.random.seed(args['seed'])
+    np.random.seed(int(args['seed']))
 
     if args['solver'] == 'VI-Baseline':
         from experiments.scripts import approximate_vi_eval

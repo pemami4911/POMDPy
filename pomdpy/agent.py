@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import print_function, division
 import time
 import logging
 import os
@@ -50,23 +50,23 @@ class Agent:
 
         print('\n')
         console(2, module, 'epochs: ' + str(self.model.n_epochs))
-        console(2, module, 'ave undiscounted return: ' + str(self.experiment_results.undiscounted_return.mean) +
+        console(2, module, 'ave undiscounted return/step: ' + str(self.experiment_results.undiscounted_return.mean) +
                 ' +- ' + str(self.experiment_results.undiscounted_return.std_err()))
-        console(2, module, 'ave discounted return: ' + str(self.experiment_results.discounted_return.mean) +
+        console(2, module, 'ave discounted return/step: ' + str(self.experiment_results.discounted_return.mean) +
                 ' +- ' + str(self.experiment_results.discounted_return.std_err()))
         console(2, module, 'ave time/epoch: ' + str(self.experiment_results.time.mean))
 
         self.logger.info('env: ' + self.model.env + '\t' +
                          'epochs: ' + str(self.model.n_epochs) + '\t' +
-                         'ave undiscounted return/epoch: ' + str(self.experiment_results.undiscounted_return.mean) + ' +- ' +
+                         'ave undiscounted return/step: ' + str(self.experiment_results.undiscounted_return.mean) + ' +- ' +
                          str(self.experiment_results.undiscounted_return.std_err()) + '\t' +
-                         'ave discounted return/epoch: ' + str(self.experiment_results.discounted_return.mean) +
+                         'ave discounted return/step: ' + str(self.experiment_results.discounted_return.mean) +
                          ' +- ' + str(self.experiment_results.discounted_return.std_err()) +
                          '\t' + 'ave time/epoch: ' + str(self.experiment_results.time.mean))
 
     def multi_epoch_tf(self):
         import tensorflow as tf
-        tf.set_random_seed(self.model.seed)
+        tf.set_random_seed(int(self.model.seed) + 1)
 
         with tf.Session() as sess:
             solver = self.solver_factory(self, sess)
@@ -81,8 +81,8 @@ class Agent:
                     print('\nevaluating agent at epoch {}...'.format(epoch))
 
                     # evaluate agent
-                    reward = 0
-                    discounted_reward = 0
+                    reward = 0.
+                    discounted_reward = 0.
                     discount = 1.0
                     belief = self.model.get_initial_belief_state()
                     step = 0
@@ -132,6 +132,9 @@ class Agent:
                     solver.train(epoch)
 
             print('wrong door count: {}'.format(wrong_door_count))
+            if self.model.save:
+                solver.save_alpha_vectors()
+                print('saved alpha vectors!')
 
     def multi_epoch(self):
         eps = self.model.epsilon_start

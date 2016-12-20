@@ -157,7 +157,6 @@ class LinearAlphaNet(BaseTFSolver):
                 vector_set = set()
                 for i in range(self.model.num_actions):
                     vector_set.add(AlphaVector(a=i, v=self.ops['l1_out'][i, :]))
-
                 self.ops['a'], self.ops['v_b'] = select_action_tf(self.ops['belief'], vector_set)
 
             with tf.variable_scope('epsilon_greedy'):
@@ -222,11 +221,11 @@ class LinearAlphaNet(BaseTFSolver):
             self.summary_ops['writer'].add_summary(summary_str, step)
 
     def save_weight_to_pkl(self):
-        if not os.path.exists(self.weight_dir):
-            os.makedirs(self.weight_dir)
+        if not os.path.exists(self.model.weight_dir):
+            os.makedirs(self.model.weight_dir)
 
         for name in self.w.keys():
-            save_pkl(self.w[name].eval(), os.path.join(self.weight_dir, "%s.pkl" % name))
+            save_pkl(self.w[name].eval(), os.path.join(self.model.weight_dir, "%s.pkl" % name))
 
     def load_weight_from_pkl(self):
         with tf.variable_scope('load_pred_from_pkl'):
@@ -235,4 +234,11 @@ class LinearAlphaNet(BaseTFSolver):
                 self.w_assign_op[name] = self.w[name].assign(self.w_input[name])
 
         for name in self.w.keys():
-            self.w_assign_op[name].eval({self.w_input[name]: load_pkl(os.path.join(self.weight_dir, "%s.pkl" % name))})
+            self.w_assign_op[name].eval({self.w_input[name]: load_pkl(os.path.join(self.model.weight_dir, "%s.pkl" % name))})
+
+    def save_alpha_vectors(self):
+        if not os.path.exists(self.model.weight_dir):
+            os.makedirs(self.model.weight_dir)
+
+        av = self.alpha_vectors()
+        save_pkl(av, os.path.join(self.model.weight_dir, "linear_alpha_net_vectors.pkl"))
