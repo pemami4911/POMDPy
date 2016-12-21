@@ -1,57 +1,43 @@
 # Experiment Notes
 
-## Baselines
+To determine whether it is possible to approximate a value function for a small POMDP, I 
+used simple linear function approximation to predict the pruned set of alpha vectors. For the Tiger 
+problem, one can visually inspect the value function with a planning horizon of eight, and see that it can be
+approximated by three well-placed alpha vectors. Using the one-step rewards for each of the three actions
+as a basis function, I computed the three alpha vectors as follows:
 
-```python
-{'beta': 0.001,
- 'discount': 0.95,
- 'env': 'Tiger',
- 'epsilon_decay': 0.95,
- 'epsilon_decay_step': 20,
- 'epsilon_minimum': 0.1,
- 'epsilon_start': 0.5,
- 'learning_rate': 0.0025,
- 'learning_rate_decay': 0.96,
- 'learning_rate_decay_step': 10,
- 'learning_rate_minimum': 0.0025,
- 'max_steps': 200,
- 'n_epochs': 1000,
- 'planning_horizon': 5,
- 'preferred_actions': False,
- 'save': False,
- 'seed': 1993,
- 'solver': 'VI-Baseline',
- 'test': 10,
- 'use_tf': False}
-```
+<insert MathJax equation here>
 
-Running classic VI agent with planning horizon of 8...
+where each alpha vector has the same dimension as the belief state space. I initialized all weights to 1.0, so that
+the agent essentially started learning from a planning horizon of 1 (greedy action-selection with no planning).
 
-epochs: 1000
-ave undiscounted return/epoch: 4.39679369829 +- 0.136399084841
-ave discounted return/epoch: 3.86836842853 +- 0.126652175681
-ave time/epoch: 0.000742731332779
-wrong door count: 87
+The goal of this learning task is to determine whether the classic value iteration algorithm having exponential
+run time complexity can be avoided with function approximation. For baselines, I compared against planning horizons
+of one and eight, computed with Lark's pruning algorithm, as well as a random agent. 
 
-Running classic VI agent with planning horizon of 1...
+## Baseline Results
 
-epochs: 1000
-ave undiscounted return/epoch: 5.26891697607 +- 0.167387410448
-ave discounted return/epoch: 4.95916315759 +- 0.158979475964
-ave time/epoch: 7.1573972702e-05
-wrong door count: 127
+*Results averaged over 5 experiments with different random seeds*
 
-Running random agent...
+| planning horizon | epochs/experiment  | mean reward/epoch | std dev reward/epoch | mean wrong door count  |
+|---|---|---|---|---|
+| 8 | 1000 | 4.703091980822256 | 8.3286422581 | 102.4 |
+| 1 | 1000  | 4.45726700400672 | 10.3950449814 | 148.6 |
+| random | 1000  | -5.466722724994926  | 14.6177021188  | 503.0 |
 
-epochs: 1000
-ave undiscounted return/epoch: -6.91605000138 +- 0.332756869777
-ave discounted return/epoch: -6.71346215429 +- 0.324032687787
-ave time/epoch: 3.98526191711e-05
-wrong door count: 516
+The mean wrong door counts represent the number of times the agent opened the door with the tiger.
 
-## Linear Alpha Net
+Here are plots of the alpha vectors returned by the classic value iteration algorithm.
+There are 77 alpha vectors in the value function for the planning horizon of 8.
 
-Best results so far: 
+![VI Planning Horizon 8](img/vi-horizon-8.png)
+
+![VI Planning Horizon 1](img/vi-horizon-1.png)
+
+
+## Linear Function Approximation
+
+The best results so far were obtained with the following parameters: 
 
 ```python
 {'beta': 0.001,
@@ -61,7 +47,7 @@ Best results so far:
  'epsilon_decay_step': 75,
  'epsilon_minimum': 0.02,
  'epsilon_start': 0.2,
- 'learning_rate': 0.01,
+ 'learning_rate': 0.05,
  'learning_rate_decay': 0.996,
  'learning_rate_decay_step': 50,
  'learning_rate_minimum': 0.00025,
@@ -70,7 +56,7 @@ Best results so far:
  'planning_horizon': 5,
  'preferred_actions': False,
  'save': False,
- 'seed': 1993,
+ 'seed': 123,
  'solver': 'LinearAlphaNet',
  'test': 10,
  'use_tf': True}
@@ -81,9 +67,6 @@ Best results so far:
 * mean discounted return per epoch was `3.997`
 * std dev for discounted return was `9.008`
 * wrong door count: 16
-
-### TODO 
-* Multiple experiments with different random seeds
 
 ### Results
 * experiments/results/LinearAlphaNet-best

@@ -1,7 +1,7 @@
 ## POMDPy
 ![Build](https://travis-ci.org/pemami4911/POMDPy.svg?branch=master) ![Python27](https://img.shields.io/badge/python-2.7-blue.svg)  ![Python35](https://img.shields.io/badge/python-3.5-blue.svg)
 
-This open-source project contains a framework for implementing discrete action/state POMDPs in Python. This work was inspired by [TAPIR](http://robotics.itee.uq.edu.au/~hannakur/dokuwiki/doku.php?id=wiki:tapir) and the [POMCP](http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications.html) algorithm.
+This open-source project contains a framework for implementing discrete action/state POMDPs in Python.
 
 [What the heck is a POMDP?](http://www.pomdp.org/tutorial/index.shtml)
 
@@ -55,10 +55,12 @@ To solve a POMDP with POMCP, the following classes should be implemented:
 
 ### Value Iteration
 
-Implemented with [Lark's pruning algorithm.](http://www.bgu.ac.il/~shanigu/Publications/skyline_AMAI.3.pdf)
+Implemented with [Lark's pruning algorithm.](https://arxiv.org/ftp/arxiv/papers/1302/1302.1525.pdf)
 
 ## Running an example ##
-**You can run tests with POMCP on RockSample, and use Value Iteration to solve the Tiger example.**
+You can run tests with POMCP on RockSample, and use Value Iteration to solve the Tiger example.
+
+**Note: The RockSample env needs some work to fully match up with the implementation described in Silver et al.**
 
 You can optionally edit the RockSample configuration file `rock_sample_config.json` to change the map size or environment parameters.
 This file is located in `pompdy/config`.
@@ -75,4 +77,6 @@ To run RockSample with POMCP:
 To run the Tiger example with the full-width planning value iteration algorithm: 
 
      python vi.py --env Tiger --solver ValueIteration --planning_horizon 8 --n_epochs 10 --max_steps 10 --seed 123
+
+## Experimental Results for Approximate Value Iteration
 

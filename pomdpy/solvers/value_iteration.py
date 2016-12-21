@@ -111,7 +111,8 @@ class ValueIteration(Solver):
             Q.update({best})
             F.remove(best)
         while F:
-            av_i = F.pop()
+            av_i = F.pop()  # get a reference to av_i
+            F.add(av_i)  # don't want to remove it yet from F
             dominated = False
             for av_j in Q:
                 c = np.append(np.zeros(n_states), [1.])
@@ -122,12 +123,39 @@ class ValueIteration(Solver):
                 if res.x[n_states] > 0.0:
                     # this one is dominated
                     dominated = True
+                    F.remove(av_i)
                     break
 
             if not dominated:
-                Q.update({av_i})
-
+                max_k = -np.inf
+                best = None
+                for av_k in F:
+                    b = res.x[0:2]
+                    v = np.dot(av_k.v, b)
+                    if v > max_k:
+                        max_k = v
+                        best = av_k
+                F.remove(best)
+                if not self.check_duplicate(Q, best):
+                    Q.update({best})
         self.gamma = Q
+
+    @staticmethod
+    def check_duplicate(a, av):
+        """
+        Check whether alpha vector av is already in set a
+
+        :param a:
+        :param av:
+        :return:
+        """
+        for av_i in a:
+            if np.allclose(av_i.v, av.v):
+                return True
+            if av_i.v[0] == av.v[0] and av_i.v[1] > av.v[1]:
+                return True
+            if av_i.v[1] == av.v[1] and av_i.v[0] > av.v[0]:
+                return True
 
     @staticmethod
     def select_action(belief, vector_set):
