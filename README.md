@@ -180,3 +180,17 @@ to initialize my `3` approximate alpha-vectors to be the immediate rewards glean
 
 One suggested improvement is adding an auxiliary task to the agent's loss function that seeks to maximize its information gain about 
  the effects of its actions on the environment.
+
+Another suggestion is to implement experience replay and target networks, to force the agent to train more slowly and to de-correlate 
+its experiences. 
+
+The agent needs to learn that listening more than once allows it to successfully open the correct door with a 
+higher probability. This is difficult, because listening has a slight negative reward, so that a sequence of actions consisting
+of listening once or twice followed by opening the correct door has a lower discounted reward than simply guessing the correct door
+without listening at all. This implies that the objective function for the RL agent should be maximizing expected discounted return over 
+multiple trajectories. This suggests that the use of mini-batches and experience replay could also improve performance.
+
+Approximating the piece-wise linear and convex value function with a smooth, nonlinear function is also of interest. This was
+done by [Parr and Russell](http://s3.amazonaws.com/academia.edu.documents/71834/ywecg2zat896p66ozid.pdf?AWSAccessKeyId=AKIAJ56TQJRTWSMTNPEA&Expires=1482450875&Signature=WnEUoJ6oi%2FNFgAuIKxujpfxocPk%3D&response-content-disposition=inline%3B%20filename%3DApproximating_Optimal_Policies_for_Parti.pdf)
+with SPOVA, but SPOVA was also plagued by needing good initializations, uncertain number of alpha vectors to approximate, and uses
+the TD-learning objective function. A simple MLP could potentially be used as well.
