@@ -32,11 +32,8 @@ if __name__ == '__main__':
     parser.add_argument('--epsilon_minimum', default=0.05, type=float)
     parser.add_argument('--epsilon_decay', default=0.96, type=float)
     parser.add_argument('--epsilon_decay_step', default=75, type=int)
-
-    # Args for value iteration
     parser.add_argument('--planning_horizon', default=5, type=int, help='Number of lookahead steps for value iteration')
 
-    parser.set_defaults(preferred_actions=False)
     parser.set_defaults(use_tf=False)
     parser.set_defaults(save=False)
 
@@ -52,12 +49,7 @@ if __name__ == '__main__':
         env = TigerModel(args)
         solver = ValueIteration
         agent = Agent(env, solver)
-        print('\nRunning classic VI agent with planning horizon of 8...\n')
-        approximate_vi_eval.eval_baseline(args['n_epochs'], agent, 8)
-        print('\nRunning classic VI agent with planning horizon of 1...\n')
-        approximate_vi_eval.eval_baseline(args['n_epochs'], agent, 1)
-        print('\nRunning random agent...\n')
-        approximate_vi_eval.eval_baseline(args['n_epochs'], agent, -1)
+        approximate_vi_eval.eval_baseline(args['n_epochs'], agent, args['planning_horizon'])
 
     else:
         if args['solver'] == 'ValueIteration':

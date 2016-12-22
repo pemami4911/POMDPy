@@ -130,8 +130,8 @@ class TigerModel(model.Model):
         """
         return np.array([
             [-1., -1.],
-            [-20., 10.],
-            [10., -20.]
+            [-20.0, 10.0],
+            [10.0, -20.0]
         ])
 
     @staticmethod
@@ -178,19 +178,20 @@ class TigerModel(model.Model):
         """
 
         if action.bin_number == ActionType.LISTEN:
-            return -1
+            return -1.0
 
         if is_terminal:
             assert action.bin_number > 0
             if action.bin_number == self.tiger_door:
                 ''' You chose the door with the tiger '''
-                return -20
+                # return -20
+                return -20.
             else:
                 ''' You chose the door with the prize! '''
-                return +10
+                return 10.0
         else:
             print("make_reward - Illegal action was used")
-            return 0
+            return 0.0
 
     def make_observation(self, action):
         """
@@ -214,6 +215,14 @@ class TigerModel(model.Model):
                 return TigerObservation(obs)
 
     def belief_update(self, old_belief, action, observation):
+        """
+        Belief is a 2-element array, with element in pos 0 signifying probability that the tiger is behind door 1
+
+        :param old_belief:
+        :param action:
+        :param observation:
+        :return:
+        """
         if action > 1:
             return old_belief
 

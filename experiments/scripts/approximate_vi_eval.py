@@ -9,9 +9,6 @@ import numpy as np
 my_dir = os.path.dirname(__file__)
 weight_dir = os.path.join(my_dir, '..', '..', 'experiments', 'pickle_jar')
 
-gamma_8 = load_pkl(os.path.join(weight_dir, 'VI_planning_horizon_8.pkl'))
-gamma_1 = load_pkl(os.path.join(weight_dir, 'VI_planning_horizon_1.pkl'))
-
 
 def plot_baseline(horizon, baseline):
     plot_alpha_vectors('Value Iteration - Planning Horizon - {}'.format(horizon), baseline, 3)
@@ -22,9 +19,13 @@ def eval_baseline(n_epochs, agent, horizon):
     random_action = False
 
     if horizon == 8:
-        baseline = gamma_8
+        baseline = load_pkl(os.path.join(weight_dir, 'VI_planning_horizon_8.pkl'))
     elif horizon == 1:
-        baseline = gamma_1
+        baseline = load_pkl(os.path.join(weight_dir, 'VI_planning_horizon_1.pkl'))
+    elif horizon == 4:
+        baseline = load_pkl(os.path.join(weight_dir, 'VI_planning_horizon_4.pkl'))
+    elif horizon == 0:
+        baseline = load_pkl(os.path.join(weight_dir, 'linear_alpha_net_vectors.pkl'))
     elif horizon == -1:
         baseline = None
         random_action = True
@@ -50,7 +51,6 @@ def eval_baseline(n_epochs, agent, horizon):
             discounted_reward = 0
             discount = 1.0
             belief = model.get_initial_belief_state()
-            step = 0
 
             while True:
                 if random_action:
@@ -63,13 +63,12 @@ def eval_baseline(n_epochs, agent, horizon):
                 if not step_result.is_terminal:
                     belief = model.belief_update(belief, action, step_result.observation)
 
-                if step_result.reward == -20:
+                if step_result.reward == -20.0:
                     wrong_door_count += 1
 
                 reward += step_result.reward
                 discounted_reward += discount * step_result.reward
                 discount *= model.discount
-                step += 1
 
                 if step_result.is_terminal:
                     break

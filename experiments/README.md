@@ -52,23 +52,49 @@ The best results so far were obtained with the following parameters:
  'learning_rate_decay_step': 50,
  'learning_rate_minimum': 0.00025,
  'max_steps': 50,
- 'n_epochs': 1000,
+ 'n_epochs': 5000,
  'planning_horizon': 5,
- 'preferred_actions': False,
- 'save': False,
- 'seed': 123,
+ 'save': True,
+ 'seed': 12157,
  'solver': 'LinearAlphaNet',
- 'test': 10,
+ 'test': 5,
  'use_tf': True}
 ```
 
-* mean undiscounted return per epoch was `4.251`
-* std dev for undiscounted return was `9.486`
-* mean discounted return per epoch was `3.997`
-* std dev for discounted return was `9.008`
-* wrong door count: 16
+After doing a hyperparameter search, the learning rate of `0.05` was chosen with an exponential decay of `0.996` every `50`
+steps, until the learning rate is at `0.00025`. The Momentum optimizer is used with a parameter of `0.8`. L2 regularization
+with a beta parameter of `0.001` is chosen via a parameter search as well. 
+
+To encourage exploration, e-greedy action-selection is added. This way, early on during training, the agent isn't overly
+greedy given that the weights are initialized to `1.0` to simulate a planning horizon of `1`. 
+
+Training is carried out by running for `5000` epochs, where each epoch consisted of `50` agent interactions with the environment.
+The agent is evaluated every `5` epochs to test its progress.
 
 ### Results
-* experiments/results/LinearAlphaNet-best
 
+After training, the agent is tested by averaging `5` runs with different random seeds, where each run consists of `1000` epochs.
 
+| epochs/experiment  | mean reward/epoch | std dev reward/epoch | mean wrong door count  |
+|---|---|---|---|
+| 1000 | 4.286225210218933 | 10.0488961427 | 145.8 |
+
+![Linear-Function-Approximation](img/LAN.png)
+This figure depicts the alpha vectors as computed after training the linear function approximator. 
+
+There is not a statistically significant improvement over the performance of a planning horizon of `1`. 
+Some reasons for this are:
+
+1. The objective function is minimizing the MSE of the predicted value function for a given belief and the 
+predicted value function for the transformed belief given the current action and observation. This objective function 
+doesn't encourage the agent to do things like explore actions that are more informative than others. In fact, the agent is
+quite happy to find some nearby local minima that allows its value function to be "self-consistent", i.e., it looks like
+the agent has converged onto the optimal value function, but in fact it has found a biased solution. This is a common problem
+found with objective functions modeled after Temporal Difference Learning.
+
+2. This learning approach is highly sensitive to the number of alpha vectors and their initialization. In this case,
+I can visually inspect the value function with a planning horizon of `8` and see that `3` vectors suffice. Hence, I am satisfied
+to initialize my `3` approximate alpha-vectors to be the immediate rewards gleaned from the `3` actions.
+
+One suggested improvement is adding an auxiliary task to the agent's loss function that seeks to maximize its information gain about 
+ the effects of its actions on the environment.

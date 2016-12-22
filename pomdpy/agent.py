@@ -41,7 +41,8 @@ class Agent:
 
             if self.model.save:
                 save_pkl(solver.gamma,
-                         os.path.join(self.model.weight_dir, 'VI_planning_horizon_{}.pkl'.format(self.model.planning_horizon)))
+                         os.path.join(self.model.weight_dir,
+                                      'VI_planning_horizon_{}.pkl'.format(self.model.planning_horizon)))
 
         elif not self.model.use_tf:
             self.multi_epoch()
@@ -58,9 +59,9 @@ class Agent:
 
         self.logger.info('env: ' + self.model.env + '\t' +
                          'epochs: ' + str(self.model.n_epochs) + '\t' +
-                         'ave undiscounted return/step: ' + str(self.experiment_results.undiscounted_return.mean) + ' +- ' +
+                         'ave undiscounted return: ' + str(self.experiment_results.undiscounted_return.mean) + ' +- ' +
                          str(self.experiment_results.undiscounted_return.std_err()) + '\t' +
-                         'ave discounted return/step: ' + str(self.experiment_results.discounted_return.mean) +
+                         'ave discounted return: ' + str(self.experiment_results.discounted_return.mean) +
                          ' +- ' + str(self.experiment_results.discounted_return.std_err()) +
                          '\t' + 'ave time/epoch: ' + str(self.experiment_results.time.mean))
 
@@ -70,15 +71,15 @@ class Agent:
 
         with tf.Session() as sess:
             solver = self.solver_factory(self, sess)
-            wrong_door_count = 0
 
             for epoch in range(self.model.n_epochs + 1):
-                epoch_start = time.time()
 
                 self.model.reset_for_epoch()
 
                 if epoch % self.model.test == 0:
-                    print('\nevaluating agent at epoch {}...'.format(epoch))
+                    epoch_start = time.time()
+
+                    print('evaluating agent at epoch {}...'.format(epoch))
 
                     # evaluate agent
                     reward = 0.
@@ -93,9 +94,6 @@ class Agent:
                         if not step_result.is_terminal:
                             belief = self.model.belief_update(belief, action, step_result.observation)
 
-                        if step_result.reward == -20:
-                            wrong_door_count += 1
-
                         reward += step_result.reward
                         discounted_reward += discount * step_result.reward
                         discount *= self.model.discount
@@ -106,12 +104,10 @@ class Agent:
                         if step_result.is_terminal:
                             break
 
-                    print('\navg reward/step: {} avg discounted reward/step: {}'.format(reward / step, discounted_reward / step))
-
                     self.experiment_results.time.add(time.time() - epoch_start)
-                    self.experiment_results.undiscounted_return.count += step
+                    self.experiment_results.undiscounted_return.count += 1
                     self.experiment_results.undiscounted_return.add(reward)
-                    self.experiment_results.discounted_return.count += step
+                    self.experiment_results.discounted_return.count += 1
                     self.experiment_results.discounted_return.add(discounted_reward)
 
                     summary = sess.run([solver.experiment_summary], feed_dict={
@@ -123,15 +119,12 @@ class Agent:
                     for summary_str in summary:
                         solver.summary_ops['writer'].add_summary(summary_str, epoch)
 
-                    # save model
-                    # solver.save_model(step=epoch)
-                    # plot_gamma('V for epoch {}'.format(epoch), solver.alpha_vectors())
+                    # TODO: save model at checkpoints
                 else:
 
                     # train for 1 epoch
                     solver.train(epoch)
 
-            print('wrong door count: {}'.format(wrong_door_count))
             if self.model.save:
                 solver.save_alpha_vectors()
                 print('saved alpha vectors!')
