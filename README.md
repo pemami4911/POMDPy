@@ -11,11 +11,13 @@ This project has been conducted strictly for research purposes. If you would lik
 
 If you use this work in your research, please cite with:
 
+```
 @ARTICLE{emami2015pomdpy,
   author = {Emami, Patrick and Hamlet, Alan J., and Crane, Carl},
   title = {POMDPy: An Extensible Framework for Implementing POMDPs in Python},
   year = {2015},
 }
+```
 
 ## Dependencies ##
 Download the files as a zip or clone into the repository.
