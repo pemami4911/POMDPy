@@ -9,6 +9,14 @@ Here's David Silver and Joel Veness's paper on POMCP, a ground-breaking POMDP so
 
 This project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments or suggestions, feel free to send me a pull request or send me an email at pemami@ufl.edu.  
 
+If you use this work in your research, please cite with:
+
+@ARTICLE{emami2015pomdpy,
+  author = {Emami, Patrick and Hamlet, Alan J., and Crane, Carl},
+  title = {POMDPy: An Extensible Framework for Implementing POMDPs in Python},
+  year = {2015},
+}
+
 ## Dependencies ##
 Download the files as a zip or clone into the repository.
 
