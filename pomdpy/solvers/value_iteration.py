@@ -53,7 +53,7 @@ class ValueIteration(Solver):
                         for j in range(states):
                             for i in range(states):
                                 # v_i_k * p(z | x_i, u) * p(x_i | u, x_j)
-                                v_new[idx][u][z][i] = v.v[i] * o[u][i][z] * t[u][j][i]
+                                v_new[idx][u][z][j] = v.v[i] * o[u][i][z] * t[u][j][i]
                 idx += 1
             # add (|A| * |V|^|Z|) alpha-vectors to gamma, |V| is |gamma_k|
             for u in range(actions):
