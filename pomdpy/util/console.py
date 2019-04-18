@@ -9,7 +9,7 @@ CONSOLE LOGGING VERBOSITY LEVELS
 """
 from __future__ import print_function
 
-VERBOSITY = 2
+VERBOSITY = 3
 
 
 def print_divider(size):

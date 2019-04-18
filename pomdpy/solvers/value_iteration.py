@@ -42,6 +42,7 @@ class ValueIteration(Solver):
 
         # start with 1 step planning horizon, up to horizon-length planning horizon
         for k in range(horizon):
+            print('[Value Iteration] planning horizon {}...'.format(k))
             # new set of alpha vectors to add to set gamma
             gamma_k = set()
             # Compute the new coefficients for the new alpha-vectors
@@ -53,7 +54,7 @@ class ValueIteration(Solver):
                         for j in range(states):
                             for i in range(states):
                                 # v_i_k * p(z | x_i, u) * p(x_i | u, x_j)
-                                v_new[idx][u][z][i] = v.v[i] * o[u][i][z] * t[u][j][i]
+                                v_new[idx][u][z][i] += v.v[i] * o[u][i][z] * t[u][j][i]
                 idx += 1
             # add (|A| * |V|^|Z|) alpha-vectors to gamma, |V| is |gamma_k|
             for u in range(actions):
