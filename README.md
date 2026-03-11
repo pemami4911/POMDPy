@@ -7,7 +7,7 @@ This open-source project contains a framework for implementing discrete action/s
 
 Here's David Silver and Joel Veness's paper on POMCP, a ground-breaking POMDP solver. [Monte-Carlo Planning in Large POMDPs](http://papers.nips.cc/paper/4031-monte-carlo-planning-in-large-pomdps.pdf)
 
-This project has been conducted strictly for research purposes. If you would like to contribute to POMDPy or if you have any comments or suggestions, feel free to send me a pull request or send me an email at pemami@ufl.edu.  
+This project has been conducted strictly for research purposes. 
 
 If you use this work in your research, please cite with:
 
@@ -204,3 +204,4 @@ Approximating the piece-wise linear and convex value function with a smooth, non
 done by [Parr and Russell](http://s3.amazonaws.com/academia.edu.documents/71834/ywecg2zat896p66ozid.pdf?AWSAccessKeyId=AKIAJ56TQJRTWSMTNPEA&Expires=1482450875&Signature=WnEUoJ6oi%2FNFgAuIKxujpfxocPk%3D&response-content-disposition=inline%3B%20filename%3DApproximating_Optimal_Policies_for_Parti.pdf)
 with SPOVA, but SPOVA was also plagued by needing good initializations, uncertain number of alpha vectors to approximate, and uses
 the TD-learning objective function. A simple MLP could potentially be used as well.
+
