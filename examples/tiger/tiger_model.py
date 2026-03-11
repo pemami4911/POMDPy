@@ -13,8 +13,8 @@ from pomdpy.discrete_pomdp import DiscreteObservationPool
 
 
 class TigerModel(model.Model):
-    def __init__(self, problem_name="Tiger"):
-        super(TigerModel, self).__init__(problem_name)
+    def __init__(self, args):
+        super(TigerModel, self).__init__(args)
         self.tiger_door = None
         self.num_doors = 2
         self.num_states = 2
@@ -148,7 +148,7 @@ class TigerModel(model.Model):
 
     ''' --------- BLACK BOX GENERATION --------- '''
 
-    def generate_step(self, action, state=None):
+    def generate_step(self, state, action):
         if action is None:
             print("ERROR: Tried to generate a step with a null action")
             return None
@@ -157,11 +157,12 @@ class TigerModel(model.Model):
 
         result = model.StepResult()
         result.is_terminal = self.make_next_state(action)
+        result.next_state = TigerState(result.is_terminal, state.door_prizes)
         result.action = action.copy()
         result.observation = self.make_observation(action)
         result.reward = self.make_reward(action, result.is_terminal)
 
-        return result
+        return result, True
 
     @staticmethod
     def make_next_state(action):
@@ -223,7 +224,8 @@ class TigerModel(model.Model):
         :param observation:
         :return:
         """
-        if action > 1:
+        action_bin = action.bin_number if isinstance(action, TigerAction) else action
+        if action_bin > 1:
             return old_belief
 
         probability_correct = 0.85
