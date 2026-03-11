@@ -2,6 +2,7 @@ from __future__ import print_function, division
 import time
 import logging
 import os
+import numpy as np
 from pomdpy.pomdp import Statistic
 from pomdpy.pomdp.history import Histories, HistoryEntry
 from pomdpy.util import console, print_divider
@@ -224,6 +225,8 @@ class Agent:
                                self.model.get_reward_matrix(),
                                self.model.planning_horizon)
 
+        self.display_alpha_vectors(solver.gamma)
+
         b = self.model.get_initial_belief_state()
 
         for i in range(self.model.max_steps):
@@ -233,15 +236,15 @@ class Agent:
 
             step_result = self.model.generate_step(action)
 
+            # show the step result with the current belief (before update)
+            self.display_step_result(i, step_result, b)
+
             if not step_result.is_terminal:
                 b = self.model.belief_update(b, action, step_result.observation)
 
             reward += step_result.reward
             discounted_reward += discount * step_result.reward
             discount *= self.model.discount
-
-            # show the step result
-            self.display_step_result(i, step_result)
 
             if step_result.is_terminal:
                 console(3, module, 'Terminated after episode step ' + str(i + 1))
@@ -264,18 +267,40 @@ class Agent:
         self.experiment_results.discounted_return.add(self.results.discounted_return.running_total)
 
     @staticmethod
-    def display_step_result(step_num, step_result):
+    def display_step_result(step_num, step_result, belief=None):
         """
         Pretty prints step result information
         :param step_num:
         :param step_result:
+        :param belief: optional belief state array displayed when provided
         :return:
         """
         console(3, module, 'Step Number = ' + str(step_num))
+        if belief is not None:
+            console(3, module, 'Belief (before action) = ' + str(belief))
         console(3, module, 'Step Result.Action = ' + step_result.action.to_string())
         console(3, module, 'Step Result.Observation = ' + step_result.observation.to_string())
         # console(3, module, 'Step Result.Next_State = ' + step_result.next_state.to_string())
         console(3, module, 'Step Result.Reward = ' + str(step_result.reward))
+
+    def display_alpha_vectors(self, gamma):
+        """
+        Pretty prints the alpha vectors computed by value iteration, showing
+        the optimal action for each vector and its state values.
+        :param gamma: set of AlphaVector objects
+        :return:
+        """
+        print_divider('large')
+        console(2, module, 'Computed alpha vectors (policy):')
+        print_divider('medium')
+        actions = self.model.get_all_actions()
+        for av in sorted(gamma, key=lambda x: x.action):
+            action_name = actions[av.action].to_string() if av.action >= 0 else 'Invalid'
+            console(2, module, 'Action: {:15s}  Values: {}'.format(action_name, np.round(av.v, 4)))
+        print_divider('medium')
+        console(2, module,
+                'Use select_action(belief, gamma) to query the optimal action for any belief state.')
+        print_divider('large')
 
 
 class Results(object):
