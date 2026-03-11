@@ -4,6 +4,7 @@ from pomdpy import Agent
 from pomdpy.solvers import POMCP
 from pomdpy.log import init_logger
 from examples.rock_sample import RockModel
+from examples.tiger import TigerModel
 import argparse
 import numpy as np
 
@@ -60,6 +61,10 @@ if __name__ == '__main__':
     if args['env'] == 'RockSample':
         env = RockModel(args)
         env.draw_env()
+        agent = Agent(env, solver)
+        agent.discounted_return()
+    elif args['env'] == 'Tiger':
+        env = TigerModel(args)
         agent = Agent(env, solver)
         agent.discounted_return()
     else:

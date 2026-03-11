@@ -43,7 +43,7 @@ class TigerData(HistoricalData):
 
             ''' ------- Bayes update of belief state -------- '''
 
-            next_data.door_probabilities = self.model.belief_update(np.array([self.door_probabilities]), action,
+            next_data.door_probabilities = self.model.belief_update(np.array(self.door_probabilities), action,
                                                                     observation)
         return next_data
 
